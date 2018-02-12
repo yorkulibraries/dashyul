@@ -1,0 +1,11 @@
+* About
+
+Data dashboard for York University Libraries.
+
+* Installation
+
+Details to come.  Work in progress.
+
+* License
+
+GPL v3.
