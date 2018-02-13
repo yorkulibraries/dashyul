@@ -1,3 +1,6 @@
+#+TITLE: DashYUL
+#+AUTHOR: William Denton <wdenton@yorku.ca>
+
 * About
 
 Data dashboard for York University Libraries.
@@ -8,4 +11,4 @@ Details to come.  Work in progress.
 
 * License
 
-GPL v3.
+GPL v3.  See LICENSE.
