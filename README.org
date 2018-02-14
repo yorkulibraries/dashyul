@@ -1,6 +1,9 @@
 #+TITLE: DashYUL
 #+AUTHOR: William Denton <wdenton@yorku.ca>
 
+#+STARTUP: showall entitiespretty inlineimages
+#+OPTIONS: toc:nil ^:nil
+
 * About
 
 Data dashboard for York University Libraries.
@@ -55,6 +58,22 @@ sudo gem install marc nokogiri sqlite3 bundler rubyul
 There are a number of [[https://en.wikipedia.org/wiki/Makefile][makefiles]] and [[https://www.gnu.org/software/bash/][bash]] scripts.  If your system supports R and Ruby, it will have these.
 
 ** Configuration
+
++ DASHYUL_HOME
++ DASHYUL_DATA
+
+* Guidelines
+
+Notes to myself as I work on this.
+
++ Makefiles
+  + ~make prepare~ should work anywhere and do whatever is necessary to prepare data for use
+  + ~make copydata~ is for production, and copies data to a Shiny app's ~data~ folder
+  + ~make publish~ is for local use, and pushes a Shiny app up to production
++ sources, data, viz
++ scripts/ and data/ directories
++ Rely on ~DASHYUL_HOME~ and ~DASHYUL_DATA~.
++ Use ~_file~ and ~_dir~ suffixes when storing file and directory names in variables.
 
 * License
 

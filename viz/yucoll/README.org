@@ -1,0 +1,15 @@
+#+TITLE: YuColl
+#+AUTHOR: William Denton
+
+* About
+
+Shows the growth and usage of the York University Libraries collection.
+
+* Commands
+
++ ~make prepare~ :: summarizes LibStats data into monthly counts
++ ~make publish~ :: use locally to push the Shiny app up to production
+
+* Installation
+
+This is run locally once a year and pushed into production, so there is no cron job.

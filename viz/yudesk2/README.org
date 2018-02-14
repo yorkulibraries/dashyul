@@ -3,7 +3,7 @@
 
 * About
 
-* Commands:
+* Commands
 
 + ~make prepare~ :: summarizes LibStats data into monthly counts
 + ~make copydata~ :: use in production to copy the data to the Shiny app's data directory
