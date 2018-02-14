@@ -1,0 +1,647 @@
+---
+title: "YuDesk2"
+runtime: shiny
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: scroll
+---
+
+```{r setup, echo=FALSE}
+library(dplyr)
+library(ggplot2)
+## library(lubridate)
+library(readr)
+## library(scales)
+library(flexdashboard)
+
+l <- read_csv("data/yudesk-summary.csv.gz")
+
+l$month_name <- factor(l$month_name, levels = c("Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"))
+
+l$location.name <- as.factor(l$location.name)
+
+l$library.name <- as.factor(l$library.name)
+libraries <- levels(l$library.name)
+
+l$academic_year <- as.factor(l$academic_year)
+
+question.types <- c("1. Non-Resource", "2. Skill-Based: Tech Support", "3. Skill-Based: Non-Technical", "4. Strategy-Based", "5. Specialized")
+research.questions <- question.types[4:5]
+
+```
+
+Sidebar {.sidebar}
+=====================================
+
+(Data goes to end of last month.)
+
+```{r}
+## selectInput("library_name", "Library", libraries, selected = "Scott")
+
+## library <- reactive({
+##     l %>% filter(library.name == input$library_name)
+## })
+
+## locations_vector <- reactive({
+##     as.vector((library() %>% distinct(location.name))$location.name)
+## })
+
+## output$location_choice_menu <- renderUI({
+##     selectInput("location_name", "Location", locations_vector())
+## })
+## uiOutput("location_choice_menu")
+
+
+## formats_vector <- reactive({
+##     as.vector((library() %>% distinct(question.format))$question.format)
+## })
+
+## output$format_choice_menu <- renderUI({
+##     ## selectInput("question_format", "Format", formats_vector(), selected = formats_vector(), multiple = TRUE)
+##     checkboxGroupInput("question_format", "Format", formats_vector(), selected = formats_vector())
+## })
+## uiOutput("format_choice_menu")
+
+## , question.format %in% input$question_format
+
+checkboxGroupInput("cyear", "Academic year", 2010:2017, selected = 2010:2017)
+
+checkboxGroupInput("question_type", "Question type", c("1" = "1. Non-Resource", "2" = "2. Skill-Based: Tech Support", "3" = "3. Skill-Based: Non-Technical", "4" = "4. Strategy-Based", "5" = "5. Specialized"), selected = c("1", "2", "3", "4", "5"))
+
+subsetted_by_sidebar <- reactive({
+    l %>% filter(academic_year %in% input$cyear, question.type %in% input$question_type)
+})
+
+all_questions <- reactive({
+    l %>% filter(academic_year %in% input$cyear, question.type %in% input$question_type) %>% group_by(academic_year, month_name) %>% summarise(total = sum(count))
+})
+
+subset_by_library_and_location <- function (library_name = NULL, location_name = NULL) {
+    subset <- subsetted_by_sidebar()
+    if (! is.null(library_name)) {
+        subset <- subset %>% filter(library.name == library_name)
+    }
+    if (! is.null(location_name)) {
+        subset <- subset %>% filter(location.name == location_name)
+    }
+   return(subset)
+}
+
+construct_annual_chart <- function(library_name = NULL, location_name = NULL) {
+    annual_data <- subset_by_library_and_location(library_name, location_name)
+    annual_data <- annual_data %>% group_by(academic_year) %>% summarise(total = sum(count))
+    if (! is.null(library_name)) {
+        chart_title <- library_name
+    } else {
+        chart_title <- "YUL"
+    }
+    if (! is.null(location_name)) {
+        chart_title <- paste(chart_title, " / ", location_name)
+    }
+    chart_title <- paste(chart_title, " / annual")
+    ggplot(annual_data, aes(x = academic_year, y = total)) +
+      geom_bar(stat = "identity") +
+      labs(title = chart_title, x = "Academic year", y = "") +
+      theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 90))
+}
+
+construct_monthly_chart <- function(library_name = NULL, location_name = NULL) {
+    monthly_data <- subset_by_library_and_location(library_name, location_name)
+    monthly_data <- monthly_data %>% group_by(academic_year, month_name) %>% summarise(total = sum(count))
+    if (! is.null(library_name)) {
+        chart_title <- library_name
+    } else {
+        chart_title <- "YUL"
+    }
+    if (! is.null(location_name)) {
+        chart_title <- paste(chart_title, " / ", location_name)
+    }
+    chart_title <- paste(chart_title, " / monthly")
+    ggplot(monthly_data, aes(x = academic_year, y = total)) +
+      geom_bar(stat = "identity") +
+      facet_grid(. ~ month_name) +
+      labs(title = chart_title, x = "Academic year", y = "") +
+      theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 90))
+}
+
+```
+
+YUL
+=====================================
+
+Column
+-------------------------------------
+
+### Annual
+
+```{r}
+renderPlot({
+    construct_annual_chart()
+})
+```
+
+### Monthly
+
+```{r}
+renderPlot({
+    construct_monthly_chart()
+})
+```
+
+ASC
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "ASC")
+})
+ ```
+
+### All (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "ASC")
+})
+ ```
+
+### Office (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "ASC", location_name = "Office")
+})
+```
+
+### Office (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "ASC", location_name = "Office")
+})
+```
+
+### Reference Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "ASC", location_name = "Reference Desk")
+})
+```
+
+### Reference Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "ASC", location_name = "Reference Desk")
+})
+```
+
+
+AskUs
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All
+
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "AskUs")
+})
+```
+
+### Consultation Desk
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "AskUs", location_name = "Circulation Desk")
+})
+```
+
+
+Bronfman
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All (annual)
+
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Bronfman")
+})
+```
+
+### All (monthly)
+
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Bronfman")
+})
+ ```
+
+### Circulation Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Bronfman", location_name = "Circulation Desk")
+})
+```
+
+### Circulation Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Bronfman", location_name = "Circulation Desk")
+})
+```
+
+### Office (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Bronfman", location_name = "Office")
+})
+```
+
+### Office (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Bronfman", location_name = "Office")
+})
+```
+
+### Reference Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Bronfman", location_name = "Reference Desk")
+})
+```
+
+### Reference Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Bronfman", location_name = "Reference Desk")
+})
+```
+
+
+Frost
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Frost")
+})
+ ```
+
+### All (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Frost")
+})
+ ```
+
+### Office (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Frost", location_name = "Office")
+})
+```
+
+### Office (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Frost", location_name = "Office")
+})
+```
+
+### Reference Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Frost", location_name = "Reference Desk")
+})
+```
+
+### Reference Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Frost", location_name = "Reference Desk")
+})
+```
+
+Maps
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All (annual)
+
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Maps")
+})
+ ```
+
+### All (monthly)
+
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Maps")
+})
+ ```
+
+### Office (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Maps", location_name = "Office")
+})
+```
+
+### Office (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Maps", location_name = "Office")
+})
+```
+
+### Reference Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Maps", location_name = "Reference Desk")
+})
+```
+
+### Reference Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Maps", location_name = "Reference Desk")
+})
+```
+
+
+Osgoode
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All
+
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Osgoode")
+})
+ ```
+
+### Office
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Osgoode", location_name = "Office")
+})
+```
+
+### Reference Desk
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Osgoode", location_name = "Reference Desk")
+})
+```
+
+
+Scott
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All
+
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Scott")
+})
+```
+
+### Consultation Desk
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Scott", location_name = "Consultation Desk")
+})
+```
+
+### Drop-in Desk
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Scott", location_name = "Drop-in Desk")
+})
+```
+
+### Office
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Scott", location_name = "Office")
+})
+```
+
+
+Scott Information
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### Information Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Scott Information", location_name = "Information Desk")
+})
+```
+
+### Information Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Scott Information", location_name = "Information Desk")
+})
+```
+
+
+SMIL
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All (annual)
+
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "SMIL")
+})
+ ```
+
+### All (monthly)
+
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "SMIL")
+})
+ ```
+
+### Circulation Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "SMIL", location_name = "Circulation Desk")
+})
+```
+
+### Circulation Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "SMIL", location_name = "Circulation Desk")
+})
+```
+
+### Office (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "SMIL", location_name = "Office")
+})
+```
+
+### Office (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "SMIL", location_name = "Office")
+})
+```
+
+
+Steacie
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All (annual)
+
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Steacie")
+})
+ ```
+
+### All (monthly)
+
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Steacie")
+})
+ ```
+
+### Circulation Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Steacie", location_name = "Circulation Desk")
+})
+```
+
+### Circulation Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Steacie", location_name = "Circulation Desk")
+})
+```
+
+### Office (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Steacie", location_name = "Office")
+})
+```
+
+### Office (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Steacie", location_name = "Office")
+})
+```
+
+### Reference Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Steacie", location_name = "Reference Desk")
+})
+```
+
+### Reference Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Steacie", location_name = "Reference Desk")
+})
+```

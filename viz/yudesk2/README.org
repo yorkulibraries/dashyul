@@ -1,0 +1,18 @@
+#+TITLE: YuDesk2
+#+AUTHOR: William Denton
+
+* About
+
+* Commands:
+
++ ~make prepare~ :: summarizes LibStats data into monthly counts
++ ~make copydata~ :: use in production to copy the data to the Shiny app's data directory
++ ~make publish~ :: use locally to push the Shiny app up to production
+
+* Installation
+
+One crontab line is required:
+
+#+BEGIN_EXAMPLE
+0 3 1 * * cd ${DASHYUL_HOME}/viz/yudesk2; make prepare copydata
+#+END_EXAMPLE
