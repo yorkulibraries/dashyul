@@ -1,6 +1,6 @@
 # all:
 
-setup:
+local_setup:
 	test -n "$(DASHYUL_HOME)" # Is $$DASHYUL_HOME set?
 	test -n "$(DASHYUL_DATA)" # Is $$DASHYUL_DATA set?
 	sudo mkdir -p ${DASHYUL_DATA}
