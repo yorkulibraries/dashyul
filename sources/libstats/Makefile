@@ -1,4 +1,4 @@
-LIBSTATS_DATA := ../../data/libstats
+LIBSTATS_DATA := ${DASHYUL_DATA}/libstats
 
 all:	fetch prepare
 

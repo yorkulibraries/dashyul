@@ -6,7 +6,7 @@
 
 * About
 
-Data dashboard for York University Libraries.
+Data dashboard for York University Libraries, and other interactive assessment and evaluation tools for library resources and services.
 
 * Installation
 
@@ -59,8 +59,24 @@ There are a number of [[https://en.wikipedia.org/wiki/Makefile][makefiles]] and 
 
 ** Configuration
 
-+ DASHYUL_HOME
-+ DASHYUL_DATA
+Two environment variables are used to control where things are.
+
++ ~DASHYUL_HOME~ :: where this source tree is
++ ~DASHYUL_DATA~ :: where the data is
+
+I have this in my ~.bashrc~:
+
+#+BEGIN_EXAMPLE
+# DashYUL
+export DASHYUL_HOME=~/src/dashyul
+export DASHYUL_DATA=/usr/local/dashyul/data
+#+END_EXAMPLE
+
+This source tree can be used locally or on the production server.
+
+The data files can get very large, and in any case it's good to keep them out of here.  The Shiny web apps do have data files that end up stored in this source tree, but ~.gitignore~ directives make sure they are ignored.
+
+
 
 * Guidelines
 
@@ -74,6 +90,7 @@ Notes to myself as I work on this.
 + scripts/ and data/ directories
 + Rely on ~DASHYUL_HOME~ and ~DASHYUL_DATA~.
 + Use ~_file~ and ~_dir~ suffixes when storing file and directory names in variables.
++ Have a README.org for every data, source and viz to explain what they are.
 
 * License
 

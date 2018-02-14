@@ -1,6 +1,0 @@
-#+TITLE: LibStats data
-
-* Files:
-
-+ ~libstats.csv~
-+ ...
