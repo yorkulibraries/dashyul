@@ -9,6 +9,53 @@ Data dashboard for York University Libraries.
 
 Details to come.  Work in progress.
 
+** Requirements
+
+*** R
+
+Some scripts are written in [[https://www.r-project.org/][R]] (I am using 3.4.3 right now), and [[https://shiny.rstudio.com/][Shiny]] (built in R) is how the dashboard works.
+
+Some packages are required.
+
++ devtools
++ flexdashboard
++ ggvis
++ knitr
++ lubridate
++ RCurl
++ readxl
++ roxygen2
++ shiny
++ tidyverse
++ yulr
+
+I use my [[https://github.com/wdenton/conforguration][Conforguration]] tool to get packages installed, but this will do it too:
+
+#+BEGIN_SRC shell :eval no
+sudo -i
+PACKAGE_LIST="tidyverse readxl devtools RCurl roxygen2 lubridate shiny flexdashboard knitr ggvis"
+for PKG in $PACKAGE_LIST; do Rscript --vanilla -e "install.packages('$PKG', repos=c('https://cran.hafro.is/'))"; done
+Rscript --vanilla -e "devtools::install_github('yorkulibraries/yulr')"
+#+END_SRC
+
+R and the packages need to be available system-wide to all users, including shiny.
+
+*** Ruby
+
+A lot of text munging and data cleaning is done in [[https://www.ruby-lang.org/en/][Ruby]]. (I am using version 2.5.0 right now.)
+
+Some gems are required.  Ruby and the packages need to be available system-wide, not under RVM or rbenv.
+
+#+BEGIN_SRC shell :eval no
+sudo gem install marc nokogiri sqlite3 bundler rubyul
+#+END_SRC
+
+*** Makefiles and shell scripts
+
+There are a number of [[https://en.wikipedia.org/wiki/Makefile][makefiles]] and [[https://www.gnu.org/software/bash/][bash]] scripts.  If your system supports R and Ruby, it will have these.
+
+** Configuration
+
 * License
 
-GPL v3.  See LICENSE.
+GPL v3.  See [[file:LICENSE][LICENSE]].
