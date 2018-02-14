@@ -5,8 +5,8 @@ library(readr)
 library(lubridate)
 library(yulr)
 
-libstats_data_file  <- paste0(Sys.getenv("DASHYUL_HOME"), "/data/libstats/libstats.csv")
-yudesk_summary_file <- paste0(Sys.getenv("DASHYUL_HOME"), "/viz/yudesk2/data/yudesk-summary.csv")
+libstats_data_file  <- paste0(Sys.getenv("DASHYUL_DATA"), "/libstats/libstats.csv")
+yudesk_summary_file <- paste0(Sys.getenv("DASHYUL_DATA"), "/yudesk/yudesk-summary.csv")
 
 l <- read_csv(libstats_data_file) %>% mutate(date = as.Date(timestamp, format="%m/%d/%Y %r"), month_name = month(date, label = TRUE))
 l$academic_year <- academic_year(l$date)
