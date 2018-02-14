@@ -11,6 +11,3 @@ prepare: ${LIBSTATS_DATA}/all_libraries.csv
 
 daily: data/libstats.csv
 	cd scripts; ./dashboard-libstats-daily-summary.R
-
-#publish:
-#	rsync -avz Makefile scripts vm1:/data/libstats/
