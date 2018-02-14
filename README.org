@@ -15,25 +15,25 @@ Details to come.  Work in progress.
 
 Some scripts are written in [[https://www.r-project.org/][R]] (I am using 3.4.3 right now), and [[https://shiny.rstudio.com/][Shiny]] (built in R) is how the dashboard works.
 
-Some packages are required.
+Packages required.
 
-+ devtools
-+ flexdashboard
-+ ggvis
-+ knitr
-+ lubridate
-+ RCurl
-+ readxl
-+ roxygen2
-+ shiny
-+ tidyverse
-+ yulr
++ [[https://github.com/r-lib/devtools][devtools]]
++ [[https://rmarkdown.rstudio.com/flexdashboard/index.html][flexdashboard]]
++ +ggvis+
++ [[https://yihui.name/knitr/][knitr]]
++ [[https://cran.r-project.org/web/packages/RCurl/index.html][RCurl]]
++ [[https://cran.r-project.org/web/packages/roxygen2/index.html][roxygen2]]
++ [[https://github.com/rstudio/shiny/][shiny]]
++ the entire [[https://www.tidyverse.org/][tidyverse]]
++ [[https://github.com/yorkulibraries/yulr][yulr]]
+
+(Some of those aren't actually needed; I will refine the list after testing.)
 
 I use my [[https://github.com/wdenton/conforguration][Conforguration]] tool to get packages installed, but this will do it too:
 
 #+BEGIN_SRC shell :eval no
 sudo -i
-PACKAGE_LIST="tidyverse readxl devtools RCurl roxygen2 lubridate shiny flexdashboard knitr ggvis"
+PACKAGE_LIST="tidyverse devtools RCurl roxygen2 shiny flexdashboard knitr"
 for PKG in $PACKAGE_LIST; do Rscript --vanilla -e "install.packages('$PKG', repos=c('https://cran.hafro.is/'))"; done
 Rscript --vanilla -e "devtools::install_github('yorkulibraries/yulr')"
 #+END_SRC
