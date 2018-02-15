@@ -63,15 +63,41 @@ There are a number of [[https://en.wikipedia.org/wiki/Makefile][makefiles]] and 
 
 Two environment variables are used to control where things are.
 
-+ ~DASHYUL_HOME~ :: where this source tree is
-+ ~DASHYUL_DATA~ :: where the data is
++ ~DASHYUL_HOME~ :: where this source tree is, locally
++ ~DASHYUL_DATA~ :: where the data is, locally
++ ~DASHYUL_SERVER_NAME~ :: hostname of the server
++ ~DASHYUL_SERVER_HOME~ :: where the data is, in production
++ ~DASHYUL_SERVER_DATA~ :: where the data is, in production
 
 I have this in my ~.bashrc~:
 
 #+BEGIN_EXAMPLE
+source ~/.bashrc.dashyul.rc
+#+END_EXAMPLE
+
+Then my local ~.bash.dashyul.rc~, also in my home directory, is:
+
+#+BEGIN_EXAMPLE
+# LibStats: long-lived cookie so I can download data with curl
+export LIBSTATS_LOGIN_COOKIE=12345678901234567890d6bff4ea7525
+
 # DashYUL
 export DASHYUL_HOME=~/src/dashyul
 export DASHYUL_DATA=/usr/local/dashyul/data
+export DASHYUL_SERVER_NAME=servername.library.yorku.ca
+export DASHYUL_SERVER_HOME=/dashyul/src/dashyul
+export DASHYUL_SERVER_DATA=/dashyul/data
+#+END_EXAMPLE
+
+On the server's ~.bash.dashyul.rc~, what was SERVER becomes local:
+
+#+BEGIN_EXAMPLE
+# LibStats: long-lived cookie so I can download data with curl
+export LIBSTATS_LOGIN_COOKIE=12345678901234567890d6bff4ea7525
+
+# DashYUL
+export DASHYUL_HOME=/dashyul/src/dashyul
+export DASHYUL_DATA=/dashyul/data
 #+END_EXAMPLE
 
 This source tree can be used locally or on the production server.
@@ -82,9 +108,20 @@ To set things up on your local machine, get this source tree and create your loc
 
 #+BEGIN_SRC shell :eval no
 cd ~/src
-https://github.com/yorkulibraries/dashyul.git
+git pull https://github.com/yorkulibraries/dashyul.git
 cd dashyul
-make local_setup
+make setup_data_directories
+#+END_SRC
+
+To set things up on your production server, do something like:
+
+#+BEGIN_SRC shell :eval no
+sudo mkdir - /dashyul/src/
+sudo chown -R ${USER}:${USER} /dashyul/
+cd /dashyul/src
+git clone https://github.com/yorkulibraries/dashyul.git
+cd dashyul
+make setup_data_directories
 #+END_SRC
 
 * Guidelines
