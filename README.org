@@ -16,6 +16,12 @@ Details to come.  Work in progress.
 
 ** Requirements
 
+*** General
+
+#+BEGIN_SRC shell :eval no
+sudo apt install yaz
+#+END_SRC
+
 *** R
 
 Some scripts are written in [[https://www.r-project.org/][R]] (I am using 3.4.3 right now), and [[https://shiny.rstudio.com/][Shiny]] (built in R) is how the dashboard works.
