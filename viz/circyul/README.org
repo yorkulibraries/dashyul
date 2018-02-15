@@ -1,0 +1,15 @@
+#+TITLE: CircYUL
+#+AUTHOR: William Denton
+
+* About
+
+Shows the circulation history of any given item in YUL's circulating collection.
+
+* Commands
+
++ ~make prepare~ :: summarizes Symphony collection and transaction data
++ ~make publish~ :: use locally to push the Shiny app up to production
+
+* Installation
+
+This is run locally once a year and pushed into production, so there is no cron job.
