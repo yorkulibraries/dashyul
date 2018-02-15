@@ -4,7 +4,10 @@ library(readr)
 library(scales)
 library(shiny)
 
-acqs_with_circs <- read_csv("data/yucoll-data.csv.gz")
+yucoll_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/yucoll/")
+yucoll_data_file <- paste0(circyul_data_dir, "yucoll-data.csv.gz")
+
+yucoll_data <- read_csv(yucoll_data_file)
 
 types <- list("BRONFMAN" = c("BRONF-BOOK"),
              "FROST" = c("FROST-BOOK"),
@@ -29,7 +32,7 @@ shinyServer(function(input, output, session) {
 
     j <- reactive({
         print(input$lc_digit_high)
-        acqs_with_circs %>%
+        yucoll_data %>%
         filter(home_location == input$home_location,
                item_type == input$item_type,
                lc_letters == toupper(input$lc_letters),
