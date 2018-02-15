@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SYMPHONY_SCRIPTS=${DASHYUL_HOME}/symphony/scripts
+SYMPHONY_SCRIPTS=${DASHYUL_HOME}/sources/symphony/scripts
 SYMPHONY_DATA=${DASHYUL_DATA}/symphony
 
 # Path to the raw, ugly Symphony dump of user information.
