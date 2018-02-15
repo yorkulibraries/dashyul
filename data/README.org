@@ -1,5 +1,0 @@
-#+TITLE: DashYUL data (local)
-
-* About
-
-This is where local DashYUL data goes, for now.
