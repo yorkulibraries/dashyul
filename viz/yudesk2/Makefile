@@ -1,6 +1,6 @@
 YUDESK_DATA := ${DASHYUL_DATA}/yudesk
 
-all:
+all: prepare
 
 prepare:
 	rm -f ${YUDESK_DATA}/yudesk-summary.csv.gz
