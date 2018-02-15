@@ -14,6 +14,5 @@ fi
 YYYYMMDD=`echo $USER_DUMP_FULL_PATH | sed 's/.*out-//'`
 
 ${SYMPHONY_SCRIPTS}/convert-symphony-user-dump.rb $USER_DUMP_FULL_PATH > ${SYMPHONY_USER_DATA}/user-information-$YYYYMMDD.csv
-gzip -f ${SYMPHONY_USER_DATA}/user-information-$YYYYMMDD.csv
 rm -f ${SYMPHONY_USER_DATA}/user-information.csv
-ln -s ${SYMPHONY_USER_DATA}/user-information-$YYYYMMDD.csv.gz ${SYMPHONY_USER_DATA}/user-information.csv.gz
+ln -s ${SYMPHONY_USER_DATA}/user-information-$YYYYMMDD.csv ${SYMPHONY_USER_DATA}/user-information.csv
