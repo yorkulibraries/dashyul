@@ -7,4 +7,4 @@ prepare:
 	gzip -f ${CIRCYUL_DATA}/*.csv
 
 push_app:
-	rsync -avz --delete . orez:/srv/shiny-server/circyul/
+	rsync -avz --delete . ${DASHYUL_SERVER_NAME}:/srv/shiny-server/circyul/

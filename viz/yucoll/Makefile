@@ -7,4 +7,4 @@ prepare:
 	gzip -f ${YUCOLL_DATA}/yucoll-data.csv
 
 push_app:
-	rsync -avz --delete . orez:/srv/shiny-server/yucoll/
+	rsync -avz --delete . ${DASHYUL_SERVER_NAME}:/srv/shiny-server/yucoll/

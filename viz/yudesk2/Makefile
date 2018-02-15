@@ -11,4 +11,4 @@ copydata:
 	cp -p ${YUDESK_DATA}/yudesk-summary.csv.gz /srv/shiny-server/yudesk2/data/
 
 push_app:
-	rsync -avz Makefile index.Rmd orez:/srv/shiny-server/yudesk2/
+	rsync -avz Makefile index.Rmd ${DSAHYUL_SERVER_NAME}:/srv/shiny-server/yudesk2/
