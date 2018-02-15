@@ -14,6 +14,8 @@ source ~/.bash.orez.rc
 SYMPHONY_DATA=${DASHYUL_DATA}/symphony
 SYMPHONY_SCRIPTS=${DASHYUL_HOME}/sources/symphony/scripts
 
+SIS_SCRIPTS=${DASHYUL_HOME}/sources/sis/scripts
+
 SYMPHONY_LOG_FULL_PATH=$1
 
 if [ -z $SYMPHONY_LOG_FULL_PATH ]
@@ -33,7 +35,7 @@ echo "Stage 2: users: making user list ..."
 ${SYMPHONY_SCRIPTS}/make-detailed-transactions-stage-2.R ${SYMPHONY_DATA}/transactions/$TRANSACTIONS ${SYMPHONY_DATA}/users/user-information.csv > /tmp/tmp-$YYYYMM-1.csv
 
 echo "Stage 3: users: getting student information from SIS ... "
-# /data/users/scripts/get-student-information.rb /tmp/tmp-$YYYYMM-1.csv > /tmp/tmp-$YYYYMM-2.csv
+${SIS_SCRIPTS}/get-student-information.rb /tmp/tmp-$YYYYMM-1.csv > /tmp/tmp-$YYYYMM-2.csv
 
 echo "Stage 4: users: saving detailed user list ..."
 ${SYMPHONY_SCRIPTS}/make-detailed-transactions-stage-4.R /tmp/tmp-$YYYYMM-1.csv /tmp/tmp-$YYYYMM-2.csv > ${SYMPHONY_DATA}/transactions/$YYYYMM-users.csv
