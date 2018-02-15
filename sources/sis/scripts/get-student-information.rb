@@ -40,7 +40,7 @@ CSV.parse(File.read(input_csv_file), { headers: true, header_converters: :symbol
   next if cyin.to_s[0] == "1"
 
   next if seen[cyin]
-  seen[cyin] = TRUE
+  seen[cyin] = true
 
   # while r = cursor.fetch_hash()
   #   puts r
