@@ -1,26 +1,5 @@
 * Symphony
 
-** Config
-
-#+NAME: SERVER_NAME
-| orez  |
-
-** Synchronization
-
-*** Push the scripts up
-
-#+BEGIN_SRC shell :results none :exports none :var SERVER_NAME=SERVER_NAME
-rsync -avz --delete ~/york/shared/analytics/symphony/scripts/ $SERVER_NAME:/data/symphony/scripts/
-rsync -avz --delete ~/york/shared/analytics/users/scripts/ $SERVER_NAME:/data/users/scripts/
-#+END_SRC
-
-*** Download the data
-
-#+BEGIN_SRC shell :results silent :exports none :dir ~/york/shared/analytics/symphony/data/
-rsync -avz --copy-links $SERVER_NAME:/data/symphony/data/catalogue/catalogue-current* catalogue/
-rsync -avz $SERVER_NAME:/data/symphony/data/transactions/2016*csv transactions/
-#+END_SRC
-
 ** Processing the most recent transaction log
 
 *** Stage 1: Parse the raw transaction log
