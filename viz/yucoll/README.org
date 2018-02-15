@@ -7,8 +7,8 @@ Shows the growth and usage of the York University Libraries collection.
 
 * Commands
 
-+ ~make prepare~ :: summarizes LibStats data into monthly counts
-+ ~make publish~ :: use locally to push the Shiny app up to production
++ ~make~ :: summarizes LibStats data into monthly counts
++ ~make push_app~ :: use locally to push the Shiny app up to production
 
 * Installation
 

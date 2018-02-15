@@ -6,5 +6,5 @@ prepare:
 	cd scripts && ./yucoll-prepare.R
 	gzip -f ${YUCOLL_DATA}/yucoll-data.csv
 
-publish:
+push_app:
 	rsync -avz --delete . orez:/srv/shiny-server/yucoll/

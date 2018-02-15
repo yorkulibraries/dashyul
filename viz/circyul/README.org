@@ -7,8 +7,8 @@ Shows the circulation history of any given item in YUL's circulating collection.
 
 * Commands
 
-+ ~make prepare~ :: summarizes Symphony collection and transaction data
-+ ~make publish~ :: use locally to push the Shiny app up to production
++ ~make~ :: summarizes Symphony collection and transaction data
++ ~make push_app~ :: use locally to push the Shiny app up to production
 
 * Installation
 

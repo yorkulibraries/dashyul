@@ -5,9 +5,9 @@
 
 * Commands
 
-+ ~make prepare~ :: summarizes LibStats data into monthly counts
++ ~make~ :: summarizes LibStats data into monthly counts
 + ~make copydata~ :: use in production to copy the data to the Shiny app's data directory
-+ ~make publish~ :: use locally to push the Shiny app up to production
++ ~make push_app~ :: use locally to push the Shiny app up to production
 
 * Installation
 
