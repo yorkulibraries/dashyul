@@ -60,6 +60,59 @@ Uses:
 
 Crontab:  goes with ~process-catalogue-dump.sh~ because it needs to run right after it.
 
+** ~process-monthly-transaction-logs.rb~
+
+These transaction logs are generated with a Symphony report, which generates files named ~/sirsilogs/YYYYMM.hist~.  They look like:
+
+#+BEGIN_EXAMPLE
+E201603010005510006R ^S01RVFFSIRSI^FEYORK^FcNONE^FWSIRSI^NQ39007053755963^UO29001111111111^^O00072
+E201603010008000006R ^S01RVFFSIRSI^FEYORK^FcNONE^FWSIRSI^NQ39007041514092^UO29002222222222^^O00072
+#+END_EXAMPLE
+
+The first part is structured ~FYYYYMMDDHHMMSSWWWWT~ and has the transaction date, time and some internal information:
+
++ F = the transaction format. Here it is "E"
++ YYYY = four-digit year
++ MM = two-digit month, 01 - 12
++ DD = two-digit day of month, 01 - 31
++ HH = two-digit hour, 00 - 23
++ MM = two-digit minute, 00 - 59
++ SS = two-digit second, 00 - 59
++ WWWW = four-digit station number, 0001 - 9999
++ T = transaction type
+  + R for requests
+  + F for final part of response(or complete response)
+  + I intermediate portion(s) of longer responses
+
+The last two letters in ~^S01CV~ or the like is the transaction command.  We only care about these four commands; everything else (such as when a book is added to the collection, or a fine is paid) is ignored.
+
++ CV = check out ("Charge Item Part B")
++ EV = check in ("Discharge Item)
++ JZ = hold ("Create Hold")
++ RV = renew ("Renew Item")
+
+Then:
+
++ ^FE = library
++ ^UO = user barcode
++ ^NQ = item barcode
+
+Finally:
+
++ ^Q = end of record.
+
+The script outputs to STDOUT, sending clean CSV with these fields:
+
++ date
++ transaction_command
++ library
++ item_barcode
++ user_barcode
+
+TODO:
+
++ [ ] Document the Symphony report?
+
 ** ~extract-catalogue-title-metadata.rb~
 
 ** ~extract-catalogue-item-details.rb~

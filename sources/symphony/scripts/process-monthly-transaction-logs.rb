@@ -3,42 +3,7 @@
 # Parse Symphony transaction logs to pick out the data I need and save
 # it in a tidy CSV file.
 
-# Lines in the Symphony transaction logs look like this, generally:
-#
-# E201603010005510006R ^S01RVFFSIRSI^FEYORK^FcNONE^FWSIRSI^NQ39007053755963^UO29001111111111^^O00072
-# E201603010008000006R ^S01RVFFSIRSI^FEYORK^FcNONE^FWSIRSI^NQ39007041514092^UO29002222222222^^O00072
-
-# The first part is the transaction date and time, D19960601141219013,
-# FYYYYMMDDHHMMSSWWWWT
-# F = the transaction format. Here it is "E"
-# YYYY = four-digit year
-# MM = two-digit month, 01 - 12
-# DD = two-digit day of month, 01 - 31
-# HH = two-digit hour, 00 - 23
-# MM = two-digit minute, 00 - 59
-# SS = two-digit second, 00 - 59
-# WWWW = four-digit station number, 0001 - 9999
-# T = transaction type
-# R for requests
-# F for final part of response(or complete response)
-# I intermediate portion(s) of longer responses
-
-# ^S01CV CV is the transaction when the material is checked out.
-# ^S01EV EV is a discharge this happens when the material is checked in.
-# RV = renewal
-# JZ = hold
-
-# CV = check out ("Charge Item Part B")
-# EV = check in ("Discharge Item)
-# JZ = hold ("Create Hold")
-# RV = renew ("Renew Item")
-
-# ^FE = library
-# ^UO = user barcode
-# ^NQ = item barcode
-
-# ^Q = end of record.
-# TODO Strip this before splitting the line
+# TODO:  Strip final ^Q this before splitting the line
 
 require "csv"
 
@@ -47,7 +12,11 @@ require_relative "data-codes"
 
 error_lines = []
 
-puts "date,transaction_command,library,item_barcode,user_barcode"
+puts %w[date
+        transaction_command
+        library
+        item_barcode
+        user_barcode].to_csv
 
 ARGF.each do |line|
   begin

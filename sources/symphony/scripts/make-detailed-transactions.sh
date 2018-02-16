@@ -26,7 +26,7 @@ TRANSACTIONS=$YYYYMM-transactions.csv
 echo "Month: $YYYYMM"
 
 echo "Stage 1: transactions: parsing raw log file ... "
-gunzip -c $SYMPHONY_LOG_FULL_PATH | ${SYMPHONY_SCRIPTS}/parse-monthly-transaction-logs.rb > ${SYMPHONY_DATA}/transactions/$TRANSACTIONS
+gunzip -c $SYMPHONY_LOG_FULL_PATH | ${SYMPHONY_SCRIPTS}/process-monthly-transaction-logs.rb > ${SYMPHONY_DATA}/transactions/$TRANSACTIONS
 
 echo "Stage 2: users: making user list ..."
 ${SYMPHONY_SCRIPTS}/make-detailed-transactions-stage-2.R ${SYMPHONY_DATA}/transactions/$TRANSACTIONS ${SYMPHONY_DATA}/users/user-information.csv > /tmp/tmp-$YYYYMM-1.csv
