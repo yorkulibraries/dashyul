@@ -1,0 +1,26 @@
+#+TITLE: Source: SIS
+
+#+STARTUP: showall entitiespretty inlineimages
+#+OPTIONS: toc:nil ^:nil
+
+* About
+
+SIS is York's [[http://www.sis.yorku.ca/][Student Information System]]: "the administrative application used to track academic records of all undergraduate and graduate students."  It is behind Passport York authentication, and beyond that access is restricted so that students can only see data about themselves, and employees only what they need for their jobs.
+
+* Scripts
+
+** ~[[file:scripts/get-student-information.rb][get-student-information.rb]]~
+
+This is the only SIS-related script, and it does one thing: given a CSV file that contains a ~cyin~ column, it will output CSV structure with with detailed information about those CYINs.
+
+Output:
+
++ cyin
++ faculty (two-letter code, e.g. AP, GS, SB)
++ degree (e.g. BA, BUAD, MA, PHD)
++ progtype (U for undergraduate, G for graduate)
++ year (two-digit number, e.g. 01 or 05)
++ subject1 (e.g. BIOL, ENVS, HIST, PSYC, SOWK)
++ subject2 (same, but most likely NA)
+
+For non-students everything will be NA.
