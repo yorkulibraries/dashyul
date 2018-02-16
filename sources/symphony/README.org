@@ -1,139 +1,63 @@
-* Symphony
+#+TITLE: Source: Symphony
 
-** Processing the most recent transaction log
+#+STARTUP: showall entitiespretty inlineimages
+#+OPTIONS: toc:nil ^:nil
 
-*** Stage 1: Parse the raw transaction log
+* About
 
-*** Stage 2: Make list of all users with activity that month, with profile and affiliation
+* Scripts
 
-#+BEGIN_SRC R :session :tangle scripts/make-detailed-transactions-stage-2.R :shebang "#!/usr/bin/env Rscript" :dir ~/york/shared/analytics/symphony :results values
-library(readr)
-library(dplyr)
+** ~process-weekly-user-dump.rb~
 
-args <- commandArgs(trailingOnly = TRUE)
+Every week Symphony generates a big file (e.g. ~/sirsilogs/barcode.sysid.profile.affil.out-20180210~) that looks like this:
 
-transactions <- read_csv(args[1], col_types = "Dcccc")
-all_user_information <- read_csv(args[2], col_types = "cccc")
+#+BEGIN_EXAMPLE
+29007005111111|859199999|LAW|LAW|
+29007013222222|872888888|EDUCATION|EDUCATION|
+29007014333333|102777777|FACULTYX|CUPE3903|
+29007015444444|100666666|STAFF|YUSA|
+29007005555555|100555555|STAFF|YUSA|
+29007016666666|100555555|STAFF|CPM|
+#+END_EXAMPLE
 
-tmp_user_details <- transactions %>% select(user_barcode) %>% distinct %>% left_join(all_user_information, by = "user_barcode")
+That needs to be converted into CSV to be usable, which is what this script does.  It picks apart the fields (user_barcode, cyin, profile, affiliation) and outputs CSV.
 
-write(format_csv(tmp_user_details), stdout())
-#+END_SRC
+It can be run on a specific file, or, if there is no argument, it runs on the most recent one.
 
-*** Stage 3: Look up SIS information about all the students
+The output is written to ~${DASHYUL_DATA}/symphony/user-information-$YYYYMMDD.csv~, and a symlink is made so that ~${DASHYUL_DATA}/symphony/user-information.csv~ is a stable filename that always points to the most recent data.
 
-The code for this is not in this file.
+Uses:
 
-*** Stage 4: Save detailed user list
++ ~convert-symphony-user-dump.rb~
 
-#+BEGIN_SRC R :session :tangle scripts/make-detailed-transactions-stage-4.R :shebang "#!/usr/bin/env Rscript" :dir ~/york/shared/analytics/symphony :results values
-library(readr)
-library(dplyr)
+Crontab:
 
-args <- commandArgs(trailingOnly = TRUE)
+#+BEGIN_EXAMPLE
+## User information (weekly)
+0 9 * * Sat  ${DASHYUL_HOME}/symphony/scripts/process-weekly-user-dump.sh
+#+END_EXAMPLE
 
-tmp_user_information <- read_csv(args[1], col_types = "cccc")
-sis_information <- read_csv(args[2])
+** ~process-catalogue-dump.sh~
 
-user_details <- left_join(tmp_user_information, sis_information, by = "cyin")
+Crontab:
 
-write(format_csv(user_details), stdout())
-#+END_SRC
+#+BEGIN_EXAMPLE
+## Symphony (monthly)
+0 11 2 * * ${DASHYUL_HOME}/symphony/scripts/process-catalogue-dump.sh &> /tmp/catalogue-dump.txt; ${DASHYUL_HOME}/symphony/scripts/make-detailed-transactions.sh &> /tmp/detailed-transactions.txt
+#+END_EXAMPLE
 
-*** Stage 5: Save item and details
+** ~make-detailed-transactions.sh~
 
-#+BEGIN_SRC R :session :tangle scripts/make-detailed-transactions-stage-5.R :shebang "#!/usr/bin/env Rscript" :dir ~/york/shared/analytics/symphony :results values
-library(readr)
-library(dplyr)
+Uses:
 
-args <- commandArgs(trailingOnly = TRUE)
++ ~parse-monthly-transactions-logs.rb~ (which requires ~command-codes.rb~ and ~data-codes.rb~)
++ ~make-detailed-transactions-stage-2.R~
++ ~make-detailed-transactions-stage-4.R~
++ ~make-detailed-transactions-stage-5.R~
++ ~make-detailed-transactions-stage-6.R~
 
-transactions <- read_csv(args[1], col_types = "Dcccc")
-catalogue_current_item_details <- read_csv(args[2], col_types = "ccccc_______cc______cc_c")
+Crontab:  goes with ~process-catalogue-dump.sh~ because it needs to run right after it.
 
-catalogue_items_used <- transactions %>% select(item_barcode) %>% distinct %>% left_join(catalogue_current_item_details, by = "item_barcode")
+** ~extract-catalogue-title-metadata.rb~
 
-write(format_csv(catalogue_items_used), stdout())
-#+END_SRC
-
-*** Stage 6: Save record details
-
-#+BEGIN_SRC R :session :tangle scripts/make-detailed-transactions-stage-6.R :shebang "#!/usr/bin/env Rscript" :dir ~/york/shared/analytics/symphony :results values
-library(readr)
-library(dplyr)
-
-args <- commandArgs(trailingOnly = TRUE)
-
-catalogue_items_used <- read_csv(args[1], col_types = "cccccccccc")
-catalogue_title_metadata <- read_csv(args[2], col_types = "ccc")
-
-catalogue_records_used <- catalogue_items_used %>% select(control_number) %>% distinct %>% left_join(catalogue_title_metadata, by = "control_number")
-
-write(format_csv(catalogue_records_used), stdout())
-#+END_SRC
-
-*** Shell script to do it all automatically
-
-It needs to be passed the right parameters to get the right files, and all that takes is a basic shell script that can be called from cron.
-
-#+BEGIN_SRC shell :session :tangle scripts/make-detailed-transactions.sh :shebang "#!/usr/bin/env bash" :dir ~/york/shared/analytics/symphony :results values
-# If no file is specified, it will use the most recent one in /sirsilogs/.
-#
-# To specify a file, give its full path as an argument:
-#
-# $ make-detailed-transactions.sh /sirsilogs/201608.hist.Z
-#
-# This script depends on the logs being named YYYYMM.hist.Z
-
-# Get the Oracle environment variables.
-source ~/.bash.vm1.rc
-
-# Run the Ruby under RVM
-# TODO: Use proper system-wide Ruby.
-RVM_PATH=`~/.rvm/bin/rvm env --path -- ruby-version[@gemset-name]`
-source $RVM_PATH
-
-cd /data/symphony
-
-SYMPHONY_LOG_FULL_PATH=$1
-
-if [ -z $SYMPHONY_LOG_FULL_PATH ]
-then
-  SYMPHONY_LOG_FULL_PATH=`ls -rt /sirsilogs/20*.hist.Z | tail -1`
-fi
-
-YYYYMM=`basename -s .hist.Z $SYMPHONY_LOG_FULL_PATH`
-TRANSACTIONS=$YYYYMM-transactions.csv
-
-echo "Month: $YYYYMM"
-
-echo "Stage 1: transactions: parsing raw log file ... "
-gunzip -c $SYMPHONY_LOG_FULL_PATH | scripts/parse-monthly-transaction-logs.rb > data/transactions/$TRANSACTIONS
-
-echo "Stage 2: users: making user list ..."
-scripts/make-detailed-transactions-stage-2.R data/transactions/$TRANSACTIONS /data/users/user-information.csv > tmp-$YYYYMM-1.csv
-
-echo "Stage 3: users: getting student information from SIS ... "
-/data/users/scripts/get-student-information.rb tmp-$YYYYMM-1.csv > tmp-$YYYYMM-2.csv
-
-echo "Stage 4: users: saving detailed user list ..."
-scripts/make-detailed-transactions-stage-4.R tmp-$YYYYMM-1.csv tmp-$YYYYMM-2.csv > data/transactions/$YYYYMM-users.csv
-
-echo "Stage 5: items: saving item information ..."
-scripts/make-detailed-transactions-stage-5.R data/transactions/$TRANSACTIONS data/catalogue/catalogue-current-item-details.csv > data/transactions/$YYYYMM-items.csv
-
-echo "Stage 6: records: saving record information ..."
-scripts/make-detailed-transactions-stage-6.R data/transactions/$YYYYMM-items.csv data/catalogue/catalogue-current-title-metadata.csv > data/transactions/$YYYYMM-records.csv
-
-rm tmp-$YYYYMM-1.csv
-rm tmp-$YYYYMM-2.csv
-
-echo "Finished: `date`"
-#+END_SRC
-
-
-** Occassionally useful
-
-*** Merge this academic year's transaction files into one CSV
-
-*** Aggregate A2016 into one file
+** ~extract-catalogue-item-details.rb~
