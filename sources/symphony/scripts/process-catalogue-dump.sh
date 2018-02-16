@@ -14,13 +14,13 @@ DUMP_FILE=`basename -s .mrc $MARC_DUMP`
 
 cd ${SYMPHONY_CATALOGUE_DATA}
 
-echo -n "$DUMP_FILE:  item details (~ 70 mins) ... "
+echo -n "$DUMP_FILE:  item details (~ 25 mins) ... "
 ${SYMPHONY_SCRIPTS}/extract-catalogue-item-details.rb $MARC_DUMP > ${DUMP_FILE}-item-details.csv
 
-echo -n "title metadata ... (~ 60 mins) ... "
+echo -n "title metadata ... (~ 20 mins) ... "
 ${SYMPHONY_SCRIPTS}/extract-catalogue-title-metadata.rb $MARC_DUMP > ${DUMP_FILE}-title-metadata.csv
 
-echo -n "to text ... (~ 4 mins) "
+echo -n "to text ... (~ 1 mins) "
 yaz-marcdump $MARC_DUMP > ${DUMP_FILE}.txt
 
 echo -n "linking ..."

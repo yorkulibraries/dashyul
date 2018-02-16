@@ -8,9 +8,6 @@
 #
 # This script depends on the logs being named YYYYMM.hist.Z
 
-# Get the Oracle environment variables.
-source ~/.bash.orez.rc
-
 SYMPHONY_DATA=${DASHYUL_DATA}/symphony
 SYMPHONY_SCRIPTS=${DASHYUL_HOME}/sources/symphony/scripts
 
