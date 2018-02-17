@@ -73,6 +73,7 @@ Two environment variables are used to control where things are.
 
 + ~DASHYUL_HOME~ :: where this source tree is, locally
 + ~DASHYUL_DATA~ :: where the data is, locally
++ DASHYUL_LOGS :: where logfiles go
 + ~DASHYUL_SERVER_NAME~ :: hostname of the server
 + ~DASHYUL_SERVER_HOME~ :: where the data is, in production
 + ~DASHYUL_SERVER_DATA~ :: where the data is, in production
@@ -92,6 +93,7 @@ export LIBSTATS_LOGIN_COOKIE=12345678901234567890d6bff4ea7525
 # DashYUL
 export DASHYUL_HOME=~/src/dashyul
 export DASHYUL_DATA=/usr/local/dashyul/data
+export DASHYUL_LOGS=/usr/local/dashyul/logs
 export DASHYUL_SERVER_NAME=servername.library.yorku.ca
 export DASHYUL_SERVER_HOME=/dashyul/src/dashyul
 export DASHYUL_SERVER_DATA=/dashyul/data
@@ -106,6 +108,7 @@ export LIBSTATS_LOGIN_COOKIE=12345678901234567890d6bff4ea7525
 # DashYUL
 export DASHYUL_HOME=/dashyul/src/dashyul
 export DASHYUL_DATA=/dashyul/data
+export DASHYUL_LOGS=/dashyul/logs
 #+END_EXAMPLE
 
 This source tree can be used locally or on the production server.  Data files are kept separate.
@@ -129,6 +132,11 @@ git clone https://github.com/yorkulibraries/dashyul.git
 cd dashyul
 make setup_data_directories
 #+END_SRC
+
+** Crontabs
+
++ Note PATHs and that ~/usr/local/bin~ needs to come first, since that's where I installed Ruby and R (using system packages should just work)
++ TODO: Update the cron job examples
 
 * Guidelines
 
