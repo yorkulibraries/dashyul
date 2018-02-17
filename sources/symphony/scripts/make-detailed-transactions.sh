@@ -23,6 +23,9 @@ fi
 YYYYMM=`basename -s .hist.Z $SYMPHONY_LOG_FULL_PATH`
 TRANSACTIONS=$YYYYMM-transactions.csv
 
+echo "------"
+echo "Started: `date`"
+
 echo "Month: $YYYYMM"
 
 echo "Stage 1: transactions: parsing raw log file ... "

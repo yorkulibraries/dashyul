@@ -14,6 +14,9 @@ DUMP_FILE=`basename -s .mrc $MARC_DUMP`
 
 cd ${SYMPHONY_CATALOGUE_DATA}
 
+echo "------"
+echo "Started: `date`"
+
 echo -n "$DUMP_FILE:  item details (~ 25 mins) ... "
 ${SYMPHONY_SCRIPTS}/extract-catalogue-item-details.rb $MARC_DUMP > ${DUMP_FILE}-item-details.csv
 
