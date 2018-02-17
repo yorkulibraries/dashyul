@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # If no file is specified, it will use the most recent one in /sirsilogs/.
 #

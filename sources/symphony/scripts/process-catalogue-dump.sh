@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Turn the huge monthly catalogue MARC dump into more usable files.
 
