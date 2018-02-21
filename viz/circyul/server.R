@@ -1,12 +1,13 @@
-library(dplyr)
-library(ggplot2)
-library(readr)
+library(tidyverse)
 library(scales)
 library(shiny)
 library(lubridate)
 library(yulr)
 
-circyul_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/circyul/")
+## TODO: Fix the hardcoding of the data directory.
+
+## circyul_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/circyul/")
+circyul_data_dir <- "/dashyul/data/circyul/"
 circyul_checkouts_file <- paste0(circyul_data_dir, "checkouts.csv.gz")
 circulated_item_details_file <- paste0(circyul_data_dir, "circulated_item_details.csv.gz")
 circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata.csv.gz")
@@ -43,13 +44,9 @@ shinyServer(function(input, output, session) {
     })
 
     output$circ_history_plot <- renderPlot({
-        ## checkouts_by_month <- record_item_history() %>% mutate(month = floor_date(date, "year")) %>% group_by(month) %>% summarise(circs = n())
-        checkouts_by_ayear <- record_item_history() %>% mutate(ayear = academic_year(date)) %>% group_by(ayear) %>% summarise(circs = n())
+        checkouts_by_ayear <- record_item_history() %>% mutate(ayear = academic_year_as_year(date)) %>% count(ayear)
 
-        ggplot(checkouts_by_ayear, aes(x = ayear, y = circs)) +
-        geom_bar(stat = "identity") +
-        labs(title = paste("Checkouts"), x = "Academic year", y = "") + scale_x_date(labels = date_format("%Y"))
-        ## theme(axis.text = element_text(size = 12), axis.text.x = element_text(angle = 90))
+        ggplot(checkouts_by_ayear, aes(x = ayear, y = n)) + geom_col() + labs(title = paste("Checkouts"), x = "Academic year", y = "") + scale_x_date(date_labels = "%Y")
     })
 
     output$item_history_table <- renderTable({
