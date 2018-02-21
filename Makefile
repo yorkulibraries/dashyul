@@ -20,6 +20,9 @@ setup_directories:
 	test -n "$(DASHYUL_SHINY_DASHYUL)"
 	sudo mkdir -p ${DASHYUL_SHINY_DASHYUL}
 	sudo chown ${USER}:${USER} ${DASHYUL_SHINY_DASHYUL}
+	mkdir -p ${DASHYUL_SHINY_DASHYUL}/circyul
+	mkdir -p ${DASHYUL_SHINY_DASHYUL}/yucoll
+	mkdir -p ${DASHYUL_SHINY_DASHYUL}/yudesk2
 	test -n "$(DASHYUL_SHINY_DASHBOARD)"
 	sudo mkdir -p ${DASHYUL_SHINY_DASHBOARD}
 	sudo chown ${USER}:${USER} ${DASHYUL_SHINY_DASHBOARD}
