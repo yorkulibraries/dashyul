@@ -17,3 +17,9 @@ setup_directories:
 	test -n "$(DASHYUL_LOGS)" # Is $$DASHYUL_DATA set?
 	sudo mkdir -p ${DASHYUL_LOGS}
 	sudo chown ${USER}:${USER} ${DASHYUL_LOGS}
+	test -n "$(DASHYUL_SHINY_DASHYUL)"
+	sudo mkdir -p ${DASHYUL_SHINY_DASHYUL}
+	sudo chown ${USER}:${USER} ${DASHYUL_SHINY_DASHYUL}
+	test -n "$(DASHYUL_SHINY_DASHBOARD)"
+	sudo mkdir -p ${DASHYUL_SHINY_DASHBOARD}
+	sudo chown ${USER}:${USER} ${DASHYUL_SHINY_DASHBOARD}
