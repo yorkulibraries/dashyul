@@ -36,7 +36,7 @@ Packages required.
 + [[https://cran.r-project.org/web/packages/roxygen2/index.html][roxygen2]]
 + [[https://github.com/rstudio/shiny/][shiny]]
 + the entire [[https://www.tidyverse.org/][tidyverse]]
-+ [[https://github.com/yorkulibraries/yulr][yulr]]
++ [[https://github.com/yorkulibraries/yulr][yulr]], which offers small useful YUL-related functions in R
 
 (Some of those aren't actually needed; I will refine the list after testing.)
 
@@ -55,13 +55,20 @@ R and the packages need to be available system-wide to all users, including shin
 
 A lot of text munging and data cleaning is done in [[https://www.ruby-lang.org/en/][Ruby]]. (I am using version 2.5.0 right now.)
 
-Some gems are required.  Ruby and the packages need to be available system-wide, not under RVM or rbenv.
+Some gems are required:
+
++ [[https://github.com/ruby-marc/ruby-marc][marc]], for reading MARC records
++ [[http://www.nokogiri.org/][nokogiri]], for reading XML and HTML
++ +sqlite3+
++ +bundler+
++ [[https://github.com/kubo/ruby-oci8][ruby-oci8]], for talking to Oracle (requires Oracle libraries, follow [[https://help.ubuntu.com/community/Oracle%2520Instant%2520Client][Oracle Instant Client]] instructions for how to get it working)
++ [[https://github.com/yorkulibraries/rubyul][rubyul]] is the Ruby parallel to [[https://github.com/yorkulibraries/yulr][yulr]], and offers small useful YUL-related helper functions in Ruby
 
 #+BEGIN_SRC shell :eval no
 sudo gem install marc nokogiri sqlite3 bundler ruby-oci8 rubyul
 #+END_SRC
 
-(We use Oracle, which is why we need the ~ruby-oci8~ gem; follow [[https://help.ubuntu.com/community/Oracle%2520Instant%2520Client][Oracle Instant Client]] instructions for how to get it working.)
+Ruby and the packages need to be available system-wide, not under RVM or rbenv.
 
 *** Makefiles and shell scripts
 
@@ -94,9 +101,14 @@ export LIBSTATS_LOGIN_COOKIE=12345678901234567890d6bff4ea7525
 export DASHYUL_HOME=~/src/dashyul
 export DASHYUL_DATA=/usr/local/dashyul/data
 export DASHYUL_LOGS=/usr/local/dashyul/logs
+export DASHYUL_SHINY_DASHYUL=/usr/local/dashyul/shiny/dashyul
+export DASHYUL_SHINY_DASHBOARD=/usr/local/dashyul/shiny/dashboard
+
 export DASHYUL_SERVER_NAME=servername.library.yorku.ca
 export DASHYUL_SERVER_HOME=/dashyul/src/dashyul
 export DASHYUL_SERVER_DATA=/dashyul/data
+export DASHYUL_SERVER_SHINY_DASHYUL=/dashyul/shiny/dashyul
+export DASHYUL_SERVER_SHINY_DASHBOARD=/dashyul/shiny/dashboard
 #+END_EXAMPLE
 
 On the server's ~.bash.dashyul.rc~, what was SERVER becomes local:
@@ -109,6 +121,8 @@ export LIBSTATS_LOGIN_COOKIE=12345678901234567890d6bff4ea7525
 export DASHYUL_HOME=/dashyul/src/dashyul
 export DASHYUL_DATA=/dashyul/data
 export DASHYUL_LOGS=/dashyul/logs
+export DASHYUL_SHINY_DASHYUL=/dashyul/shiny/dashyul
+export DASHYUL_SHINY_DASHBOARD=/dashyul/shiny/dashboard
 #+END_EXAMPLE
 
 This source tree can be used locally or on the production server.  Data files are kept separate.
@@ -137,6 +151,10 @@ make setup_data_directories
 
 + Note PATHs and that ~/usr/local/bin~ needs to come first, since that's where I installed Ruby and R (using system packages should just work)
 + TODO: Update the cron job examples
+
+** Shiny
+
+
 
 * Guidelines
 
