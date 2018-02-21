@@ -5,7 +5,11 @@ library(lubridate)
 library(readr)
 library(yulr)
 
-l <- read_csv("../data/libstats.csv") %>% mutate(date = as.Date(timestamp, format="%m/%d/%Y %r"), month_name = month(date, label = TRUE))
+libstats_data_file  <- paste0(Sys.getenv("DASHYUL_DATA"), "/libstats/libstats.csv")
+
+libstats_daily_dashboard_summary_file <- paste0(Sys.getenv("DASHYUL_DATA"), "/dashboard/dashboard-libstats-daily-summary.csv")
+
+l <- read_csv(libstats_data_file) %>% mutate(date = as.Date(timestamp, format="%m/%d/%Y %r"), month_name = month(date, label = TRUE))
 l$academic_year <- academic_year(l$date)
 l$library.name <- as.factor(l$library.name)
 
@@ -14,4 +18,4 @@ l$library.name <- as.factor(l$library.name)
 
 summary <- l %>% filter(academic_year == 2017) %>% filter(question.type != "LCO") %>% group_by(library.name, question.type) %>% summarise(count = n())
 
-write_csv(summary, "../data/dashboard-libstats-daily-summary.csv")
+write_csv(summary, libstats_daily_dashboard_summary_file)
