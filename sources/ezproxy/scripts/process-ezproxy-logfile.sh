@@ -24,6 +24,9 @@ YYYYMMDD=`basename -s .gz $EZPROXY_LOG_FULL_PATH | sed 's/ezproxy.log-//'`
 EZPROXY_SCRIPTS=${DASHYUL_HOME}/sources/ezproxy/scripts
 EZPROXY_DATA=${DASHYUL_DATA}/ezproxy
 
+echo "------"
+echo "Started: `date`"
+
 echo -n "$YYYYMMDD: grepping ... "
 gunzip -c $EZPROXY_LOG_FULL_PATH | ${EZPROXY_SCRIPTS}/extract-date-userbarcode-host.rb > /tmp/tmp-$YYYYMMDD-host.csv
 
@@ -32,7 +35,7 @@ uniq /tmp/tmp-$YYYYMMDD-host.csv > /tmp/tmp-$YYYYMMDD-uniq.csv
 rm /tmp/tmp-$YYYYMMDD-host.csv
 
 echo -n "sorting ... "
-sort -S 75% -n /tmp/tmp-$YYYYMMDD-uniq.csv > /tmp/tmp-$YYYYMMDD-uniq-sorted.csv
+sort --buffer-size 75% --parallel=4 --numeric-sort /tmp/tmp-$YYYYMMDD-uniq.csv > /tmp/tmp-$YYYYMMDD-uniq-sorted.csv
 rm /tmp/tmp-$YYYYMMDD-uniq.csv
 
 echo -n "uniqing ... "
@@ -40,7 +43,7 @@ uniq /tmp/tmp-$YYYYMMDD-uniq-sorted.csv > ${EZPROXY_DATA}/$YYYYMMDD-daily-users-
 rm /tmp/tmp-$YYYYMMDD-uniq-sorted.csv
 
 echo -n "platforming ... "
-${EZPROXY_SCRIPTS}/rename-hosts-to-platforms.rb ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-host.csv | sort -n -S 75% | uniq > ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-platform.csv
+${EZPROXY_SCRIPTS}/rename-hosts-to-platforms.rb ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-host.csv | sort --buffer-size 75% --parallel=4 --numeric-sort | uniq > ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-platform.csv
 
 echo -n "merging ... "
 ${EZPROXY_SCRIPTS}/ezp-merge-profile-affiliation-with-platform.R ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-platform.csv ${DASHYUL_DATA}/symphony/users/user-information.csv /tmp/tmp-$YYYYMMDD-merged.csv
@@ -53,3 +56,5 @@ ${EZPROXY_SCRIPTS}/ezp-merge-all-information.R /tmp/tmp-$YYYYMMDD-merged.csv /tm
 
 rm /tmp/tmp-$YYYYMMDD-merged.csv
 rm /tmp/tmp-$YYYYMMDD-student-information.csv
+
+echo "Finished: `date`"
