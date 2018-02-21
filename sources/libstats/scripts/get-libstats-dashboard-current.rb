@@ -12,7 +12,7 @@ require "optparse"
 
 options = {}
 options[:minutes] = 30
-options[:circ] = FALSE
+options[:circ] = true
 OptionParser.new do |opts|
   opts.banner = "Usage: get-activity-by-branch.rb [options]"
   opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
@@ -22,7 +22,7 @@ OptionParser.new do |opts|
     options[:minutes] = m.to_i
   end
   opts.on("c", "--circ", "Include circulation desks") do
-    options[:circ] = TRUE
+    options[:circ] = true
   end
 end.parse!
 

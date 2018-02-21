@@ -1,6 +1,6 @@
 all:
 
-setup_data_directories:
+setup_directories:
 	test -n "$(DASHYUL_DATA)" # Is $$DASHYUL_DATA set?
 	sudo mkdir -p ${DASHYUL_DATA}
 	sudo chown ${USER}:${USER} ${DASHYUL_DATA}
@@ -14,3 +14,6 @@ setup_data_directories:
 	mkdir -p ${DASHYUL_DATA}/symphony/users
 	mkdir -p ${DASHYUL_DATA}/yucoll
 	mkdir -p ${DASHYUL_DATA}/yudesk
+	test -n "$(DASHYUL_LOGS)" # Is $$DASHYUL_DATA set?
+	sudo mkdir -p ${DASHYUL_LOGS}
+	sudo chown ${USER}:${USER} ${DASHYUL_LOGS}
