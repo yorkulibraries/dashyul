@@ -22,7 +22,7 @@ ARGF.each do |line|
 
   begin
     date = DateTime.strptime(elements[4], "%d/%B/%Y:%H:%M:%S %z").to_date.to_s
-    ayear = academic_year(date)
+    ayear = Rubyul.academic_year(date)
     next if options[:ayear] && options[:ayear] != ayear
 
     user_barcode = elements[3]
