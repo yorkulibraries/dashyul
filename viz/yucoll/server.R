@@ -41,8 +41,7 @@ shinyServer(function(input, output, session) {
                lc_digits <= as.numeric(input$lc_digit_high)
                ) %>%
         group_by(acq_ayear) %>%
-        summarise(total_circed = sum(circed),
-                  total_uncirced = sum(uncirced)) %>%
+        summarise(total_circed = sum(circed), total_uncirced = sum(uncirced)) %>%
         mutate(pct_uncirced = as.integer(round((total_uncirced / (total_uncirced + total_circed) * 100))))
     })
 
@@ -97,7 +96,6 @@ shinyServer(function(input, output, session) {
     })
 
     output$acqs_table <- renderTable({
-
         growth <- j() %>%
         rename(year = acq_ayear) %>%
         mutate(acquired = total_circed + total_uncirced) %>%
@@ -106,7 +104,6 @@ shinyServer(function(input, output, session) {
         ## growth$year <- substring(as.character(growth$year), 0, 4)
         ## print(growth)
         growth
-
     })
 
 })
