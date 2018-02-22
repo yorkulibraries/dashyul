@@ -22,7 +22,7 @@ fi
 YYYYMMDD=`basename -s .gz $EZPROXY_LOG_FULL_PATH | sed 's/ezproxy.log-//'`
 
 EZPROXY_SCRIPTS=${DASHYUL_HOME}/sources/ezproxy/scripts
-EZPROXY_DATA=${DASHYUL_DATA}/ezproxy
+EZPROXY_DATA=${DASHYUL_DATA}/ezproxy/current
 
 echo "------"
 echo "Started: `date`"
