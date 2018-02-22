@@ -1,11 +1,12 @@
-library(dplyr)
-library(ggplot2)
-library(readr)
+library(tidyverse)
 library(scales)
 library(shiny)
 
-yucoll_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/yucoll/")
-yucoll_data_file <- paste0(circyul_data_dir, "yucoll-data.csv.gz")
+## TODO: Fix the hardcoding of the data directory.
+
+## yucoll_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/yucoll/")
+yucoll_data_dir <- "/dashyul/data/yucoll/"
+yucoll_data_file <- paste0(yucoll_data_dir, "yucoll-data.csv.gz")
 
 yucoll_data <- read_csv(yucoll_data_file)
 
@@ -45,24 +46,12 @@ shinyServer(function(input, output, session) {
         mutate(pct_uncirced = as.integer(round((total_uncirced / (total_uncirced + total_circed) * 100))))
     })
 
-    ## lowest_lc_number <- min_lc_digits(j())
-
-    ## lowest_lc_number <- reactive({
-    ##     j() %>% select(lc_digits) %>% min(na.rm = TRUE)
-    ## })
-
-    ## highest_lc_number <- reactive({
-    ##     j() %>% select(lc_digits) %>% max(na.rm = TRUE)
-    ## })
-
     output$digits_low <- renderUI({
         textInput("lc_digit_low", "Lowest number", value = 0)
-        ##textInput("lc_digit_low", "Lowest number")
     })
 
     output$digits_high <- renderUI({
         textInput("lc_digit_high", "Highest number", value = 10000)
-        ## textInput("lc_digit_high", "Highest number")
     })
 
     acqs <- reactive({
@@ -90,8 +79,7 @@ shinyServer(function(input, output, session) {
                            "total acquisitions"),
              x = "Academic year",
              y = "") +
-        theme(axis.text = element_text(size = 12),
-              axis.text.x = element_text(angle = 90))
+        theme(axis.text = element_text(size = 12), axis.text.x = element_text(angle = 90))
     })
 
     output$uncirced_plot <- renderPlot({
@@ -102,11 +90,10 @@ shinyServer(function(input, output, session) {
                            input$item_type,
                            toupper(input$lc_letters),
                            "(", input$lc_digit_low, "–", input$lc_digit_high, ")",
-                           "acquisitions uncirced at end of A2015"),
+                           "acquisitions uncirced at end of A2016"),
              x = "Academic year",
              y = "%") +
-        theme(axis.text = element_text(size = 12),
-              axis.text.x = element_text(angle = 90))
+        theme(axis.text = element_text(size = 12), axis.text.x = element_text(angle = 90))
     })
 
     output$acqs_table <- renderTable({

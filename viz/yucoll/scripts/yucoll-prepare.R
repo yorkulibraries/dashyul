@@ -17,7 +17,8 @@ catalogue_current_item_details_file <- paste0(catalogue_data_dir, "catalogue-cur
 
 write("Reading transaction logs ...", stderr())
 
-files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a(200[6789]|201[0123456]).csv.gz$", full.names = TRUE)
+files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a20??.csv.gz$", full.names = TRUE)
+## files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a(200[6789]|201[0123456]).csv.gz$", full.names = TRUE)
 
 checkouts <- do.call("rbind", lapply(files, read_csv, col_types = "Dcccc")) %>%
 filter(transaction_command == "CV") %>%
@@ -33,7 +34,7 @@ write("Reading item details ...", stderr())
 
 items <- read_csv(catalogue_current_item_details_file, col_types = "")
 items <- items %>% filter(class_scheme == "LC")
-items <- items %>% mutate(acq_ayear = academic_year(acq_date)) %>% filter(acq_ayear >= 2005, acq_ayear <= 2016)
+items <- items %>% mutate(acq_ayear = academic_year(acq_date)) %>% filter(acq_ayear >= 2000, acq_ayear <= 2016)
 items <- items %>% select(item_barcode, control_number, lc_letters, lc_digits, home_location, item_type, acq_ayear)
 items <- items %>% filter(home_location %in% c("SCOTT", "SCOTT-LEIS", "STEACIE", "FROST", "BRONFMAN", "SCOTT-MAPS", "LAW"))
 items <- items %>% filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "SCORE", "MAP", "SCMAP-BOOK", "LAW-BOOK"))

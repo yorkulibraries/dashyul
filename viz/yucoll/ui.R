@@ -4,7 +4,7 @@ shinyUI(
 
     fluidPage(
 
-        titlePanel("Growth and usage of the collection (A2005–A2016)"),
+        titlePanel("Growth and usage of the collection (A2000–A2016)"),
 
         sidebarLayout(
 
@@ -17,7 +17,7 @@ shinyUI(
                 uiOutput("digits_high"),
 
                 tags$p("William Denton (wdenton@yorku.ca)"),
-                tags$p("Updated 04 October 2017.")
+                tags$p("Updated 22 February 2017.")
 
             ),
 
