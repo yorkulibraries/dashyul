@@ -4,8 +4,8 @@ library(shiny)
 
 ## TODO: Fix the hardcoding of the data directory.
 
-## yucoll_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/yucoll/")
-yucoll_data_dir <- "/dashyul/data/yucoll/"
+## yucoll_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/yucoll/")
+yucoll_data_dir <- "/dashyul/data/viz/yucoll/"
 yucoll_data_file <- paste0(yucoll_data_dir, "yucoll-data.csv.gz")
 
 yucoll_data <- read_csv(yucoll_data_file)

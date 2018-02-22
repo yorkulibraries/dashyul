@@ -1,14 +1,14 @@
-YUDESK_DATA := ${DASHYUL_DATA}/yudesk
+YUDESK_DATA := ${DASHYUL_DATA}/viz/yudesk
 YUDESK2_SERVER_SHINY := ${DASHYUL_SERVER_SHINY_DASHYUL}/yudesk2
 
 all: prepare
 
 prepare:
-	scripts/yudesk-summarize.R
+	scripts/prepare-yudesk.R
 	gzip -f ${YUDESK_DATA}/yudesk-summary.csv
 
-copydata:
-	cp -p ${YUDESK_DATA}/yudesk-summary.csv.gz /srv/shiny-server/yudesk2/data/
+get_data:
+	rsync --archive --verbose --compress ${DASHYUL_SERVER_NAME}:${DASHYUL_SERVER_DATA}/viz/yudesk/ ${YUDESK_DATA}/
 
 push_app:
 	rsync -avz Makefile index.Rmd ${DASHYUL_SERVER_NAME}:${YUDESK2_SERVER_SHINY}/

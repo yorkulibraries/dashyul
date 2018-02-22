@@ -3,7 +3,7 @@ library(dplyr)
 library(readr)
 library(lubridate)
 
-circyul_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/circyul/")
+circyul_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
 circyul_checkouts_file <- paste0(circyul_data_dir, "checkouts.csv")
 circulated_item_details_file <- paste0(circyul_data_dir, "circulated_item_details.csv")
 circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata.csv")

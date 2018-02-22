@@ -1,16 +1,14 @@
 #!/usr/bin/env Rscript
 
-library(dplyr)
-library(readr)
+library(tidyverse)
 library(lubridate)
 library(yulr)
 
 libstats_data_file  <- paste0(Sys.getenv("DASHYUL_DATA"), "/libstats/libstats.csv")
-yudesk_summary_file <- paste0(Sys.getenv("DASHYUL_DATA"), "/yudesk/yudesk-summary.csv")
+yudesk_summary_file <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/yudesk/yudesk-summary.csv")
 
 l <- read_csv(libstats_data_file) %>% mutate(date = as.Date(timestamp, format="%m/%d/%Y %r"), month_name = month(date, label = TRUE))
 l$ayear <- academic_year(l$date)
-## l$library.name <- as.factor(l$library.name)
 
 ## Filter out this month's data (so there's nothing incomplete that looks strange), then summarize.
 yudesk_summary <- l %>% filter(date < floor_date(Sys.Date(), "month")) %>% group_by(question.type, question.format, time.spent, library.name, location.name, month_name, ayear) %>% summarise(count = n())

@@ -6,8 +6,8 @@ library(yulr)
 
 ## TODO: Fix the hardcoding of the data directory.
 
-## circyul_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/circyul/")
-circyul_data_dir <- "/dashyul/data/circyul/"
+## circyul_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
+circyul_data_dir <- "/dashyul/data/viz/circyul/"
 circyul_checkouts_file         <- paste0(circyul_data_dir, "checkouts.csv.gz")
 circulated_item_details_file   <- paste0(circyul_data_dir, "circulated_item_details.csv.gz")
 circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata.csv.gz")
