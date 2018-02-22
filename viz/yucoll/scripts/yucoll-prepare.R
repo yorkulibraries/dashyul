@@ -6,7 +6,7 @@ library(lubridate)
 library(yulr)
 
 yucoll_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/yucoll/")
-yucoll_data_file <- paste0(yucoll_data_dir, "yucoll-data.csv.gz")
+yucoll_data_file <- paste0(yucoll_data_dir, "yucoll-data.csv")
 
 transaction_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
