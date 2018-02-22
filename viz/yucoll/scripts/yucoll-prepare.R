@@ -6,7 +6,7 @@ library(lubridate)
 library(yulr)
 
 yucoll_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/yucoll/")
-yucoll_data_file <- paste0(yucoll_data_dir, "yucoll-data.csv")
+yucoll_data_file <- paste0(yucoll_data_dir, "yucoll-data.csv.gz")
 
 transaction_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
@@ -17,7 +17,7 @@ catalogue_current_item_details_file <- paste0(catalogue_data_dir, "catalogue-cur
 
 write("Reading transaction logs ...", stderr())
 
-files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a20??.csv.gz$", full.names = TRUE)
+files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a20*.csv.gz$", full.names = TRUE)
 ## files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a(200[6789]|201[0123456]).csv.gz$", full.names = TRUE)
 
 checkouts <- do.call("rbind", lapply(files, read_csv, col_types = "Dcccc")) %>%
