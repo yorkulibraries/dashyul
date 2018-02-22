@@ -8,14 +8,19 @@ output:
 ---
 
 ```{r setup, echo=FALSE}
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 ## library(lubridate)
-library(readr)
 ## library(scales)
 library(flexdashboard)
 
-l <- read_csv("data/yudesk-summary.csv.gz")
+## TODO: Fix the hardcoding of the data directory.
+
+## yudesk_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/yudesk/")
+yudesk_data_dir <- "/dashyul/data/yudesk/"
+
+yudesk_data_file <- paste0(yudesk_data_dir, "yudesk-summary.csv.gz")
+
+l <- read_csv(yudesk_data_file)
 
 l$month_name <- factor(l$month_name, levels = c("Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"))
 
@@ -24,7 +29,7 @@ l$location.name <- as.factor(l$location.name)
 l$library.name <- as.factor(l$library.name)
 libraries <- levels(l$library.name)
 
-l$academic_year <- as.factor(l$academic_year)
+l$ayear <- as.factor(l$ayear)
 
 question.types <- c("1. Non-Resource", "2. Skill-Based: Tech Support", "3. Skill-Based: Non-Technical", "4. Strategy-Based", "5. Specialized")
 research.questions <- question.types[4:5]
@@ -65,16 +70,16 @@ Sidebar {.sidebar}
 
 ## , question.format %in% input$question_format
 
-checkboxGroupInput("cyear", "Academic year", 2010:2017, selected = 2010:2017)
+checkboxGroupInput("ayear", "Academic year", 2010:2017, selected = 2010:2017)
 
-checkboxGroupInput("question_type", "Question type", c("1" = "1. Non-Resource", "2" = "2. Skill-Based: Tech Support", "3" = "3. Skill-Based: Non-Technical", "4" = "4. Strategy-Based", "5" = "5. Specialized"), selected = c("1", "2", "3", "4", "5"))
+checkboxGroupInput("question_type", label = "Question type", choices = c("1" = "1. Non-Resource", "2" = "2. Skill-Based: Tech Support", "3" = "3. Skill-Based: Non-Technical", "4" = "4. Strategy-Based", "5" = "5. Specialized"), selected = c("1. Non-Resource", "2. Skill-Based: Tech Support", "3. Skill-Based: Non-Technical", "4. Strategy-Based", "5. Specialized"))
 
 subsetted_by_sidebar <- reactive({
-    l %>% filter(academic_year %in% input$cyear, question.type %in% input$question_type)
+    l %>% filter(ayear %in% input$ayear, question.type %in% input$question_type)
 })
 
 all_questions <- reactive({
-    l %>% filter(academic_year %in% input$cyear, question.type %in% input$question_type) %>% group_by(academic_year, month_name) %>% summarise(total = sum(count))
+    l %>% filter(ayear %in% input$ayear, question.type %in% input$question_type) %>% group_by(ayear, month_name) %>% summarise(total = sum(count))
 })
 
 subset_by_library_and_location <- function (library_name = NULL, location_name = NULL) {
@@ -90,7 +95,7 @@ subset_by_library_and_location <- function (library_name = NULL, location_name =
 
 construct_annual_chart <- function(library_name = NULL, location_name = NULL) {
     annual_data <- subset_by_library_and_location(library_name, location_name)
-    annual_data <- annual_data %>% group_by(academic_year) %>% summarise(total = sum(count))
+    annual_data <- annual_data %>% group_by(ayear) %>% summarise(total = sum(count))
     if (! is.null(library_name)) {
         chart_title <- library_name
     } else {
@@ -100,15 +105,15 @@ construct_annual_chart <- function(library_name = NULL, location_name = NULL) {
         chart_title <- paste(chart_title, " / ", location_name)
     }
     chart_title <- paste(chart_title, " / annual")
-    ggplot(annual_data, aes(x = academic_year, y = total)) +
-      geom_bar(stat = "identity") +
+    ggplot(annual_data, aes(x = ayear, y = total)) +
+      geom_col() +
       labs(title = chart_title, x = "Academic year", y = "") +
       theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 90))
 }
 
 construct_monthly_chart <- function(library_name = NULL, location_name = NULL) {
     monthly_data <- subset_by_library_and_location(library_name, location_name)
-    monthly_data <- monthly_data %>% group_by(academic_year, month_name) %>% summarise(total = sum(count))
+    monthly_data <- monthly_data %>% group_by(ayear, month_name) %>% summarise(total = sum(count))
     if (! is.null(library_name)) {
         chart_title <- library_name
     } else {
@@ -118,8 +123,8 @@ construct_monthly_chart <- function(library_name = NULL, location_name = NULL) {
         chart_title <- paste(chart_title, " / ", location_name)
     }
     chart_title <- paste(chart_title, " / monthly")
-    ggplot(monthly_data, aes(x = academic_year, y = total)) +
-      geom_bar(stat = "identity") +
+    ggplot(monthly_data, aes(x = ayear, y = total)) +
+      geom_col() +
       facet_grid(. ~ month_name) +
       labs(title = chart_title, x = "Academic year", y = "") +
       theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 90))
