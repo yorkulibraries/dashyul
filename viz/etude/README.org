@@ -1,0 +1,17 @@
+#+TITLE: Étude
+#+AUTHOR: William Denton
+
+* About
+
+* Commands
+
++ ~make~ :: summarizes LibStats data into monthly counts
++ ~make copydata~ :: use in production to copy the data to the Shiny app's data directory
++ ~make push_app~ :: use locally to push the Shiny app up to production
+
+* Installation
+
+Two crontab lines are required:
+
+#+BEGIN_EXAMPLE
+#+END_EXAMPLE

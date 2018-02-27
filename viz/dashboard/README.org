@@ -1,0 +1,18 @@
+#+TITLE: Dashboard
+#+AUTHOR: William Denton
+
+* About
+
+* Data sources
+
++ EZProxy
++ Symphony
++ YorkSpace (on hold, stats not working)
++ OJS (on hold, stats not working)
++ YUDL
+
+* Crontab
+
+#+BEGIN_EXAMPLE
+
+#+END_EXAMPLE

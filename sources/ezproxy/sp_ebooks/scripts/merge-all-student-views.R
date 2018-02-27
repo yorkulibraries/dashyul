@@ -1,13 +1,15 @@
 #!/usr/bin/env Rscript
 
-## Merge all weekly detailed CSV files into one and then pick out just the student views, suitable for Étude.
+## Merge all current detailed CSV files into one and then pick out just the student views, suitable for Étude.
 
-library(dplyr)
-library(readr)
+library(tidyverse)
 
-data_path <- "/data/ezproxy/ebooks/data/"
+sp_ebooks_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/ebooks/scholarsportal/")
 
-files <- list.files(data_path, pattern = "sp-ebook-views-.*.csv", full.names = TRUE)
-student_views <- do.call("rbind", lapply(files, function (f) {read_csv(f, col_types = "Dccccccccccc")})) %>% filter(date >= as.Date("2017-09-01")) %>% filter(! is.na(faculty))
+student_sp_ebook_views_file <- paste0(sp_ebooks_data_dir, "student-sp-ebook-views.csv")
 
-write_csv(student_views, paste0(data_path, "student-sp-ebook-views.csv"))
+files <- list.files(sp_ebooks_data_dir, pattern = "sp-ebook-views-.*.csv", full.names = TRUE)
+
+student_sp_ebook_views <- do.call("rbind", lapply(files, function (f) {read_csv(f, col_types = "Dccccccccccc")})) %>% filter(date >= as.Date("2017-09-01")) %>% filter(! is.na(faculty))
+
+write_csv(student_sp_ebook_views, student_sp_ebook_views_file)
