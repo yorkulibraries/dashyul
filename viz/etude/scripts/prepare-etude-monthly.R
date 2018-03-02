@@ -15,40 +15,16 @@ catalogue_title_metadata_file <- paste0(symphony_catalogue_data_dir, "catalogue-
 #### Symphony data
 ####
 
-## Transactions
+symphony_source_lib_dir <- paste0(Sys.getenv("DASHYUL_HOME"), "/sources/symphony/lib/")
 
-## In e.g. December we want September--November, so floor the month, subtract a month, and that gives
-## the previous month.
-## TODO Update this so it rolls over nicely in October without human intervention.  Or solve the September problem somehow.
-months_to_read <- format(seq(from = as.Date("2017-09-01"), to = floor_date(Sys.Date(), "month") - months(1), by = "month"), "%Y%m")
+## Read in the current year's transactions
+## Result is data frame: all_transaction_details
+source(paste0(symphony_source_lib_dir, "read-current-year-transactions.R"))
 
-write("Reading monthly transactions ...", stderr())
-
-all_transaction_details <- data.frame()
-for (month in months_to_read) {
-  write(month, stderr())
-  monthly_transactions <- read_csv(paste0(symphony_transactions_data_dir, month, "-transactions.csv"), col_types = "Dcccc")
-  items <- read_csv(paste0(symphony_transactions_data_dir, month, "-items.csv"), col_types = "cccccccccc")
-  users <- read_csv(paste0(symphony_transactions_data_dir, month, "-users.csv"), col_types = "cccccccccc")
-  monthly_transaction_details <- left_join(monthly_transactions, items, by = "item_barcode") %>% left_join(users, by = "user_barcode") %>% filter(! is.na(faculty))
-  all_transaction_details <- rbind(all_transaction_details, monthly_transaction_details)
-}
-
-write("Calculating ...", stderr())
-
-## We want checkouts of everything that isn't an accessory, laptop, headphone, etc.
-## These item types should be normalised---looks like people sometimes make up new ones.
-all_checkouts <- all_transaction_details %>% filter(transaction_command == "CV")
-all_checkouts <- all_checkouts %>% filter(! item_type %in% c("LAPTOP", "PHONECHAR", "SMIL-ACSRY", "ACCESSORY", "CABLEPC", "LAW-ACSRY", "IPAD"))
-all_checkouts <- all_checkouts %>% filter(! grepl("(HEAD|MACBOOK|IPAD)", call_number))
-all_checkouts <- all_checkouts %>% filter(! control_number %in% c("a1506037", "a2529550", "a2215511", "a3103097", "a2275708", "a1983265", "a2309305", "a2877007", "a3103097", "a3195548", "a3195552", "a3197914", "a3326615", "a3355741", "a2999756", "a1952111"))
-
-## Not sure how this can happen, but it did with a phone charger that seemed to be removed from the catalogue.
-all_checkouts <- all_checkouts %>% filter(! is.na(call_number))
-
-## Rewrite the ED students's subject1 so that instead of being grouped by teachable
-## (BIOL, EN, HIST, VISA) they are all grouped into EDUC.
-all_checkouts$subject1[all_checkouts$faculty == "ED"] <- "EDUC"
+## Pick checkouts out from all_transaction_details,
+## dropping various types and sources of items we don't want to track.
+## Result is data frame: all_checkouts
+source(paste0(symphony_source_lib_dir, "list-current-year-checkouts.R"))
 
 all_holds <- all_transaction_details %>% filter(transaction_command == "JZ")
 
@@ -93,6 +69,8 @@ write("Calculating demographics ...", stderr())
 symphony_demographics_file <- paste0(dashboard_data_dir, "symphony-demographics.csv")
 symphony_demographics <- all_checkouts %>% select(user_barcode, faculty, subject1, degree, year) %>% distinct %>% group_by(faculty, subject1, degree, year) %>% summarise(symphony = n())
 write_csv(symphony_demographics, symphony_demographics_file)
+
+## MOVE THIS INTO THE DASHBOAR#D SOURCE
 
 ## #### Dashboard
 
