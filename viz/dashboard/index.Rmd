@@ -36,7 +36,7 @@ question_count_today_box <- function(library_name) {
 
 ## LibStats summary
 
-libstats_summary = read_csv(paste0(dashboard_data_dir,  "dashboard-libstats-daily-summary.csv"))
+libstats_summary = read_csv(paste0(dashboard_data_dir, "libstats-daily-summary.csv"))
 
 question_count_summary_box <- function(library_name) {
   renderValueBox ({valueBox(libstats_summary %>% filter(library.name == library_name) %>% summarise(total = sum(count)) %>% select(total), icon = "fa-question") })

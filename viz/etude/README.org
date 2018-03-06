@@ -6,10 +6,18 @@
 * Commands
 
 + ~make~ :: summarizes LibStats data into monthly counts
-+ ~make copydata~ :: use in production to copy the data to the Shiny app's data directory
++ ~make get_data~ :: use locally to pull down production Étude data
 + ~make push_app~ :: use locally to push the Shiny app up to production
 
-* Installation
+* Scripts
+
+** ~count-ezproxy-users.sh~
+
+** ~process-ezproxy-daily.R~
+
+** ~process-symphony-monthly.R~
+
+* Installation or Crontab
 
 Two crontab lines are required:
 

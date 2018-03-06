@@ -6,10 +6,28 @@
 * Data sources
 
 + EZProxy
++ LibStats
 + Symphony
-+ YorkSpace (on hold, stats not working)
-+ OJS (on hold, stats not working)
-+ YUDL
++ +YorkSpace+ (on hold, stats not working)
++ +OJS+ (on hold, stats not working)
++ +YUDL+ (on hold, stats not working)
+
+* Make targets
+
++ ~make~ :: summarizes LibStats data into monthly counts
++ ~make get_data~ :: use locally to pull down production Dashboard data
++ ~make libstats_today~ :: generate CSV of today's LibStats activity
++ ~make push_app~ :: use locally to push the Shiny app up to production
+
+* Scripts
+
+** ~extract-libstats-daily-summary.R~
+
+** ~get-libstats-today.rb~
+
+** ~process-ezproxy-daily.R~
+
+** ~process-symphony-monthly.R~
 
 * Crontab
 
