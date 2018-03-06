@@ -13,6 +13,7 @@ setup_directories:
 	mkdir    ${DASHYUL_DATA}/viz
 	mkdir    ${DASHYUL_DATA}/viz/circyul
 	mkdir    ${DASHYUL_DATA}/viz/dashboard
+	mkdir    ${DASHYUL_DATA}/viz/etude
 	mkdir    ${DASHYUL_DATA}/viz/ezpz
 	mkdir    ${DASHYUL_DATA}/viz/yucoll
 	mkdir    ${DASHYUL_DATA}/viz/yudesk

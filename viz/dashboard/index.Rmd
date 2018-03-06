@@ -1,0 +1,323 @@
+---
+title: "YUL Dashboard"
+runtime: shiny
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r setup, echo=FALSE}
+library(DT)
+library(tidyverse)
+library(flexdashboard)
+library(lubridate)
+
+## dashboard_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/dashboard/")
+dashboard_data_dir <- "/dashyul/data/viz/dashboard/"
+
+## LibStats today
+
+libstats_today <- read_csv(paste0(dashboard_data_dir, "libstats-today.csv"))
+
+question.types <- c("1. Non-Resource", "2. Skill-Based: Tech Support", "3. Skill-Based: Non-Technical", "4. Strategy-Based", "5. Specialized")
+nonresearch.questions <- question.types[1:3]
+research.questions <- question.types[4:5]
+
+desk_questions <- libstats_today %>% filter(location.name %in% c("Reference Desk", "Drop-in Desk"))
+research_at_desk_count <- nrow(desk_questions %>% filter(question.type %in% research.questions))
+
+office_questions <- libstats_today %>% filter(location.name == "Office")
+research_in_office_count <- nrow(office_questions %>% filter(question.type %in% research.questions))
+
+question_count_today_box <- function(library_name) {
+  renderValueBox ({valueBox(libstats_today %>% filter(library.name == library_name) %>% summarise(count = n()) %>% select(count), icon = "fa-question") })
+}
+
+## LibStats summary
+
+libstats_summary = read_csv(paste0(dashboard_data_dir,  "dashboard-libstats-daily-summary.csv"))
+
+question_count_summary_box <- function(library_name) {
+  renderValueBox ({valueBox(libstats_summary %>% filter(library.name == library_name) %>% summarise(total = sum(count)) %>% select(total), icon = "fa-question") })
+}
+
+libstats_summary_all_qs <- sum(libstats_summary$count)
+libstats_summary_nonres_qs <- (libstats_summary %>% filter(question.type %in% nonresearch.questions))$count %>% sum
+libstats_summary_res_qs <- libstats_summary_all_qs - libstats_summary_nonres_qs
+
+## EZProxy
+ezp_users_today     <- scan(paste0(dashboard_data_dir, "ezp-users-today.txt"))
+ezp_users_yesterday <- scan(paste0(dashboard_data_dir, "ezp-users-yesterday.txt"))
+new_ezp_users <- ezp_users_today - ezp_users_yesterday
+
+ezp_daily_users <- read_csv(paste0(dashboard_data_dir, "dashboard-ezp-daily-users.csv"))
+ezp_daily_users <- ezp_daily_users %>% filter(date <= Sys.Date() - days(2)) ## Drop the partial yesterday
+
+platform_metrics <- read_csv("data/dashboard-platform-metrics.csv")
+
+## Symphony
+
+symphony_most_borrowed_titles <- read_csv(paste0(dashboard_data_dir, "symphony-most-borrowed-titles.csv"))
+symphony_most_holded_titles   <- read_csv(paste0(dashboard_data_dir, "symphony-most-holded-titles.csv"))
+symphony_borrows_per_day      <- read_csv(paste0(dashboard_data_dir, "symphony-borrows-per-day.csv"))
+
+symphony_users_so_far <- scan(paste0(dashboard_data_dir, "symphony-users-so-far.txt"))
+symphony_items_so_far <- scan(paste0(dashboard_data_dir, "symphony-items-so-far.txt"))
+
+####
+#### Digital repositories and platforms
+####
+
+## None of these are generating valid numbers, so don't use them (for now).
+
+## ## YorkSpace
+## yorkspace_numbers <- read_csv(paste0(dashboard_data_dir, "yorkspace-numbers.csv"))
+
+## ## YUDL
+## yudl_objects <- scan(paste0(dashboard_data_dir, "yudl-current-total-objects.txt"))
+
+## ## OJS
+## ojs_total_downloads <- scan(paste0(dashboard_data_dir, "ojs-total-downloads.txt"))
+
+
+```
+
+
+Row
+-------------------------------------
+
+### AskUs questions today
+
+```{r}
+question_count_today_box("AskUs")
+```
+
+### Building Services
+
+```{r}
+question_count_today_box("BuildingServices")
+```
+
+### ASC
+
+```{r}
+question_count_today_box("ASC")
+```
+
+### Bronfman
+
+```{r}
+question_count_today_box("Bronfman")
+```
+
+### Frost
+
+```{r}
+question_count_today_box("Frost")
+```
+
+### Maps
+
+```{r}
+question_count_today_box("Maps")
+```
+
+### Osgoode
+
+```{r}
+question_count_today_box("Osgoode")
+```
+
+### Scott
+
+```{r}
+question_count_today_box("Scott")
+```
+
+### SMIL
+
+```{r}
+question_count_today_box("SMIL")
+```
+
+### Steacie
+
+```{r}
+question_count_today_box("Steacie")
+```
+
+
+Row
+-------------------------------------
+
+### research qs at ref desks today
+
+```{r}
+gauge(research_at_desk_count, min = 0, max = nrow(desk_questions))
+```
+
+### research qs in offices today
+
+```{r}
+gauge(research_in_office_count, min = 0, max = nrow(office_questions))
+```
+
+Row
+-------------------------------------
+
+### questions asked since Sep 1
+
+```{r}
+renderValueBox ({valueBox(libstats_summary %>% summarise(total = sum(count)) %>% select(total), icon = "fa-question") })
+```
+
+### nonresearch questions
+
+```{r}
+gauge(libstats_summary_nonres_qs, min = 0, max = libstats_summary_all_qs)
+```
+
+### research questions
+
+```{r}
+gauge(libstats_summary_res_qs, min = 0, max = libstats_summary_all_qs)
+```
+
+Row
+-------------------------------------
+
+### people have used EZProxy since Sep 1
+
+```{r}
+renderValueBox({
+    valueBox(ezp_users_today, icon = "fa-database")
+})
+```
+
+### people used EZProxy yesterday for the first time this year
+
+```{r}
+renderValueBox({
+    valueBox(new_ezp_users, icon = "fa-database")
+})
+```
+
+### people have borrowed something since Sep 1
+
+```{r}
+renderValueBox({
+    valueBox(symphony_users_so_far, icon = "glyphicon glyphicon-book")
+ })
+ ```
+
+### items borrowed so far
+
+```{r}
+renderValueBox({
+    valueBox(symphony_items_so_far, icon = "glyphicon glyphicon-book")
+ })
+ ```
+
+<!-- ### checkouts of those items
+
+```{r}
+renderValueBox({
+    valueBox(c(27342), icon = "glyphicon glyphicon-book")
+ })
+```
+-->
+
+<!-- Row
+-------------------------------------
+
+### YorkSpace items added since Sep 1 2016
+
+```{r}
+renderValueBox({
+    valueBox(yorkspace_numbers$items_added, icon = "fa-database")
+})
+```
+
+### YorkSpace downloads since Sep 1 2016
+
+```{r}
+renderValueBox({
+    valueBox(yorkspace_numbers$author_downloads, icon = "fa-database")
+})
+```
+
+### OJS downloads since Sep 1 2016
+
+```{r}
+renderValueBox({
+    valueBox(ojs_total_downloads, icon = "fa-database")
+})
+```
+
+### YUDL objects
+
+```{r}
+renderValueBox({
+    valueBox(yudl_objects, icon = "fa-database")
+})
+```
+-->
+
+Row
+-------------------------------------
+
+### EZProxy platform metrics since Sep 1
+
+```{r}
+DT::renderDataTable(platform_metrics %>% arrange(desc(users)), rownames = FALSE)
+```
+
+### EZProxy users per day
+
+```{r}
+ggplot(ezp_daily_users, aes(x = date, y = users)) + geom_bar(stat = "identity") + labs(title = "EZProxy users per day", x = "", y = "")
+```
+
+Row
+-------------------------------------
+
+### most borrowed since Sep 1 2017
+
+```{r}
+DT::renderDataTable(symphony_most_borrowed_titles %>% arrange(desc(borrows)), escape = FALSE, rownames = FALSE)
+## , include.rownames = FALSE, sanitize.text.function = function(x) x)
+```
+
+### items borrowed per day (not including accessories)
+
+```{r}
+ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) + geom_bar(stat = "identity") + labs(title = "Items borrowed per day", x = "", y = "")
+```
+
+Sidebar {.sidebar}
+-------------------------------------
+
+#### Étude
+
+* [Étude](/etude/): student-centred view of collection use
+
+#### Collections
+
+* [ezproxy.interactive](/ezproxy.interactive/): details on EZProxy eresource use
+* [CircYUL](/circyul/): circ histories (A2006–A2016)
+* [YuColl](/yucoll/): growth and usage of the collection (A2005–A2016)
+* [YuRang](/yurang/): compare p and e editions
+
+#### Moodle
+
+* [moodleviz](/moodleviz/): Library Resources Box impressions and clickthroughs
+
+#### Desks
+
+* [YuDesk2](/yudesk2/): desk analytics
+
+#### Elsewhere
+
+* [Google Analytics at York](http://analytics.info.yorku.ca/)
+* [LibGuides usage statistics](http://researchguides.library.yorku.ca/admin_stats.php)
