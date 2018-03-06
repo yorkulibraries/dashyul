@@ -12,4 +12,4 @@ get_data:
 	rsync --archive --verbose --compress ${DASHYUL_SERVER_NAME}:${DASHYUL_SERVER_DATA}/viz/dashboard/ ${DASHBOARD_DATA}/
 
 push_app:
-	rsync -avz --delete . ${DASHYUL_SERVER_NAME}:${DASHBOARD_SERVER_SHINY}
+	rsync --archive --verbose --compress --delete . ${DASHYUL_SERVER_NAME}:${DASHBOARD_SERVER_SHINY}
