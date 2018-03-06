@@ -51,10 +51,10 @@ ezp_users_today     <- scan(paste0(dashboard_data_dir, "ezp-users-today.txt"))
 ezp_users_yesterday <- scan(paste0(dashboard_data_dir, "ezp-users-yesterday.txt"))
 new_ezp_users <- ezp_users_today - ezp_users_yesterday
 
-ezp_daily_users <- read_csv(paste0(dashboard_data_dir, "dashboard-ezp-daily-users.csv"))
+ezp_daily_users <- read_csv(paste0(dashboard_data_dir, "ezp-daily-users.csv"))
 ezp_daily_users <- ezp_daily_users %>% filter(date <= Sys.Date() - days(2)) ## Drop the partial yesterday
 
-platform_metrics <- read_csv("data/dashboard-platform-metrics.csv")
+platform_metrics <- read_csv(paste0(dashboard_data_dir, "ezp-platform-metrics.csv"))
 
 ## Symphony
 
