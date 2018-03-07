@@ -8,10 +8,12 @@ library(yulr)
 ## dashboard_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/etude/")
 etude_data_dir <- "/dashyul/data/viz/etude/"
 
-symphony_checkouts_by_class_letter  <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-class-letter.csv"))
-symphony_checkouts_by_checkout_date <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-checkout-date.csv"))
-symphony_checkouts_by_item_type     <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-item-type.csv"))
+sp_ebooks_data_dir <- "/dashyul/data/ebooks/scholarsportal/"
+
 symphony_checkouts_by_acq_year      <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-acq-year.csv"))
+symphony_checkouts_by_checkout_date <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-checkout-date.csv"))
+symphony_checkouts_by_class_letter  <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-class-letter.csv"))
+symphony_checkouts_by_item_type     <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-item-type.csv"))
 symphony_checkouts_by_student_year  <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-student-year.csv"))
 symphony_most_checkouted            <- read_csv(paste0(etude_data_dir, "symphony-most-checkouted.csv"))
 
@@ -21,10 +23,10 @@ ezp_user_per_day  <- ezp_users_per_day %>% filter(date <= Sys.Date() - days(2)) 
 ezp_platforms_by_student_year <- read_csv(paste0(etude_data_dir, "ezp-platforms-by-student-year.csv"))
 
 sp_ebook_most_viewed <- read_csv(paste0(etude_data_dir, "sp-ebook-most-viewed.csv"))
-sp_ebook_id_map      <- read_csv(paste0(etude_data_dir, "sp-ebook-id-mapping.csv"))
+sp_ebook_id_map      <- read_csv(paste0(sp_ebooks_data_dir, "sp-ebook-id-mapping.csv"))
 
 ezp_demographics      <- read_csv(paste0(etude_data_dir, "ezp-demographics.csv"))
-symphony_demographics <- read_csv(paste0(etude_data_dir, "symphony-demog.csv"))
+symphony_demographics <- read_csv(paste0(etude_data_dir, "symphony-demographics.csv"))
 demographics          <- merge(symphony_demographics, ezp_demographics)
 
 all_faculties_and_subjects <- rbind(symphony_checkouts_by_class_letter %>% select(faculty, subject1), ezp_platform_uses %>% select(faculty, subject1)) %>% distinct

@@ -32,7 +32,7 @@ symph_checkouts_by_checkout_date_file <- paste0(etude_data_dir,"symphony-checkou
 symph_checkouts_by_checkout_date <- all_checkouts %>% group_by(date, faculty, subject1) %>% summarise(checkouts = n())
 write_csv(symph_checkouts_by_checkout_date, symph_checkouts_by_checkout_date_file)
 
-symph_checkouts_by_item_type_file <- paste0(etude_data_dir, "symphony-checkouts-by-item_type.csv")
+symph_checkouts_by_item_type_file <- paste0(etude_data_dir, "symphony-checkouts-by-item-type.csv")
 symph_checkouts_by_item_type <- all_checkouts %>% group_by(faculty, subject1, item_type) %>% summarise(checkouts = n())
 write_csv(symph_checkouts_by_item_type, symph_checkouts_by_item_type_file)
 
