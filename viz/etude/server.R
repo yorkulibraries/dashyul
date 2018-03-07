@@ -15,7 +15,7 @@ symphony_checkouts_by_checkout_date <- read_csv(paste0(etude_data_dir, "symphony
 symphony_checkouts_by_class_letter  <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-class-letter.csv"))
 symphony_checkouts_by_item_type     <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-item-type.csv"))
 symphony_checkouts_by_student_year  <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-student-year.csv"))
-symphony_most_checkouted            <- read_csv(paste0(etude_data_dir, "symphony-most-checkouted.csv"))
+symphony_checkous_most_checkouted   <- read_csv(paste0(etude_data_dir, "symphony-checkouts-most-checkouted.csv"))
 
 ezp_platform_uses <- read_csv(paste0(etude_data_dir, "ezp-platform-uses.csv"))
 ezp_users_per_day <- read_csv(paste0(etude_data_dir, "ezp-users-per-day.csv"))
@@ -70,7 +70,7 @@ shinyServer(function(input, output, session) {
     })
 
     output$most_checkouted_table <- renderTable({
-        symphony_most_checkouted %>% filter(faculty == input$faculty, subject1 == input$subject) %>% arrange(desc(checkouts)) %>% head(10) %>% mutate(record_link = link_to_vufind(control_number, readable_marc245(title_author))) %>% select(checkouts, record_link)
+        symphony_checkouts_most_checkouted %>% filter(faculty == input$faculty, subject1 == input$subject) %>% arrange(desc(checkouts)) %>% head(10) %>% mutate(record_link = link_to_vufind(control_number, readable_marc245(title_author))) %>% select(checkouts, record_link)
     }, include.rownames = FALSE, sanitize.text.function = function(x) x)
 
     output$demog_degree_table <- renderTable({

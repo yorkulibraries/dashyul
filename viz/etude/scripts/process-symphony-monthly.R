@@ -58,6 +58,6 @@ catalogue_title_metadata <- read_csv(catalogue_title_metadata_file, col_types = 
 
 write("Calculating ...", stderr())
 
-symphony_most_checkouted_file <- paste0(etude_data_dir,"symphony-most-checkedouted.csv")
-symphony_most_checkouted <- all_checkouts %>% group_by(control_number, faculty, subject1) %>% summarise(checkouts = n()) %>% filter(checkouts >= 5) %>% left_join(catalogue_title_metadata, by = "control_number")
-write_csv(symphony_most_checkouted, symphony_most_checkouted_file)
+symphony_checkouts_most_checkouted_file <- paste0(etude_data_dir,"symphony-checkouts-most-checkouted.csv")
+symphony_checkouts_most_checkouted <- all_checkouts %>% group_by(control_number, faculty, subject1) %>% summarise(checkouts = n()) %>% filter(checkouts >= 5) %>% left_join(catalogue_title_metadata, by = "control_number")
+write_csv(symphony_checkouts_most_checkouted, symphony_checkouts_most_checkouted_file)
