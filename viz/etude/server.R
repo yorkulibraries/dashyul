@@ -15,14 +15,14 @@ symphony_checkouts_by_checkout_date <- read_csv(paste0(etude_data_dir, "symphony
 symphony_checkouts_by_class_letter  <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-class-letter.csv"))
 symphony_checkouts_by_item_type     <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-item-type.csv"))
 symphony_checkouts_by_student_year  <- read_csv(paste0(etude_data_dir, "symphony-checkouts-by-student-year.csv"))
-symphony_checkous_most_checkouted   <- read_csv(paste0(etude_data_dir, "symphony-checkouts-most-checkouted.csv"))
+symphony_checkouts_most_checkouted  <- read_csv(paste0(etude_data_dir, "symphony-checkouts-most-checkouted.csv"))
 
 ezp_platform_uses <- read_csv(paste0(etude_data_dir, "ezp-platform-uses.csv"))
 ezp_users_per_day <- read_csv(paste0(etude_data_dir, "ezp-users-per-day.csv"))
 ezp_user_per_day  <- ezp_users_per_day %>% filter(date <= Sys.Date() - days(2)) ## Drop the partial yesterday
 ezp_platforms_by_student_year <- read_csv(paste0(etude_data_dir, "ezp-platforms-by-student-year.csv"))
 
-sp_ebook_most_viewed <- read_csv(paste0(etude_data_dir, "sp-ebook-most-viewed.csv"))
+sp_ebook_most_viewed <- read_csv(paste0(etude_data_dir, "sp-most-viewed-ebooks.csv"))
 sp_ebook_id_map      <- read_csv(paste0(sp_ebooks_data_dir, "sp-ebook-id-mapping.csv"))
 
 ezp_demographics      <- read_csv(paste0(etude_data_dir, "ezp-demographics.csv"))
@@ -42,29 +42,33 @@ shinyServer(function(input, output, session) {
     })
 
     output$checkouts_by_class_letter_plot <- renderPlot({
-        ggplot(symphony_checkouts_by_class_letter %>% filter(faculty == input$faculty, subject1 == input$subject), aes(x = lc_letters, y = checkouts)) +
-        geom_bar(stat = "identity") +
-        labs(title = paste("Checkouts by class letter:", input$faculty, "/", input$subject, "(includes multiples by same student)"), x = "Subject", y = "") +
+        checkouts_by_class_letter <- symphony_checkouts_by_class_letter %>% filter(faculty == input$faculty, subject1 == input$subject)
+        minimum_checkouts <- signif(mean(checkouts_by_class_letter$checkouts), 1) ## Round it nicely to a ten or hundred
+        ggplot(checkouts_by_class_letter %>% filter(checkouts > minimum_checkouts), aes(x = lc_letters, y = checkouts)) +
+        geom_col() +
+        labs(title = paste("Checkouts by class letter (minimum", minimum_checkouts, "):", input$faculty, "/", input$subject, "(includes multiples by same student)"), x = "Subject", y = "") +
         theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 45))
     })
 
     output$checkouts_by_checkout_date_plot <- renderPlot({
         ggplot(symphony_checkouts_by_checkout_date %>% filter(faculty == input$faculty, subject1 == input$subject), aes(x = date, y = checkouts)) +
-        geom_bar(stat = "identity") +
+        geom_col() +
         labs(title = paste("Checkouts by date:", input$faculty, "/", input$subject, "(includes multiples by same student)"), x = "", y = "") +
         theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 45))
     })
 
     output$checkouts_by_item_type_plot <- renderPlot({
-        ggplot(symphony_checkouts_by_item_type %>% filter(faculty == input$faculty, subject1 == input$subject), aes(x = item_type, y = checkouts)) +
-        geom_bar(stat = "identity") +
-        labs(title = paste("Checkouts by item type:", input$faculty, "/", input$subject, "(includes multiples by same student)"), x = "Item type", y = "") +
+        checkouts_by_item_type <- symphony_checkouts_by_item_type %>% filter(faculty == input$faculty, subject1 == input$subject)
+        minimum_checkouts <- signif(mean(checkouts_by_item_type$checkouts), 1) ## Round it nicely to a ten or hundred
+        ggplot(checkouts_by_item_type %>% filter(checkouts > minimum_checkouts), aes(x = item_type, y = checkouts)) +
+        geom_col() +
+        labs(title = paste("Checkouts by item type (minimum", minimum_checkouts, "):", input$faculty, "/", input$subject, "(includes multiples by same student)"), x = "Item type", y = "") +
         theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 45))
     })
 
     output$checkouts_by_year_acq_plot <- renderPlot({
         ggplot(symphony_checkouts_by_acq_year %>% filter(faculty == input$faculty, subject1 == input$subject), aes(x = acq_year, y = count)) +
-        geom_bar(stat = "identity") +
+        geom_col() +
         labs(title = paste("Checkouts by acquisition year:", input$faculty, "/", input$subject, "(no duplicate items)"), x = "Acquisition year", y = "") +
         theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 45))
     })
@@ -73,14 +77,14 @@ shinyServer(function(input, output, session) {
         symphony_checkouts_most_checkouted %>% filter(faculty == input$faculty, subject1 == input$subject) %>% arrange(desc(checkouts)) %>% head(10) %>% mutate(record_link = link_to_vufind(control_number, readable_marc245(title_author))) %>% select(checkouts, record_link)
     }, include.rownames = FALSE, sanitize.text.function = function(x) x)
 
-    output$demog_degree_table <- renderTable({
-        demog %>% filter(faculty == input$faculty, subject1 == input$subject) %>% select(degree, symphony, ezproxy) %>% gather(where, count, symphony:ezproxy) %>% group_by(degree, where) %>% summarise(students = sum(count)) %>% spread(where, students)
+    output$demographics_degree_table <- renderTable({
+        demographics %>% filter(faculty == input$faculty, subject1 == input$subject) %>% select(degree, symphony, ezproxy) %>% gather(where, count, symphony:ezproxy) %>% group_by(degree, where) %>% summarise(students = sum(count)) %>% spread(where, students)
     }, include.rownames = FALSE)
 
-    output$demog_year_table <- renderTable({
+    output$demographics_year_table <- renderTable({
         ## Only show the year breakdown for undegrads.  Some grad programs are small.
         if (! input$faculty == "GS") {
-            demog %>% filter(faculty == input$faculty, subject1 == input$subject) %>% select(year, symphony, ezproxy) %>% gather(where, count, symphony:ezproxy) %>% group_by(year, where) %>% summarise(students = sum(count)) %>% spread(where, students)
+            demographics %>% filter(faculty == input$faculty, subject1 == input$subject) %>% select(year, symphony, ezproxy) %>% gather(where, count, symphony:ezproxy) %>% group_by(year, where) %>% summarise(students = sum(count)) %>% spread(where, students)
         }
     }, include.rownames = FALSE)
 
@@ -108,7 +112,7 @@ shinyServer(function(input, output, session) {
         platforms_used <- ezp_platform_uses %>% filter(faculty == input$faculty, subject1 == input$subject)
         minimum_uses <- signif(mean(platforms_used$uses), 1) ## Round it nicely to a ten or hundred
         ggplot(platforms_used %>% filter(uses > minimum_uses), aes(x = platform, y = uses)) +
-        geom_bar(stat = "identity") +
+        geom_col() +
         labs(title = paste("Platform uses (>", minimum_uses, "through EZProxy):", input$faculty, "/", input$subject), x = "Platform", y = "") +
         theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 90, hjust = 0.95)) +
         coord_flip()
@@ -116,7 +120,7 @@ shinyServer(function(input, output, session) {
 
     output$ezp_users_per_day_plot <- renderPlot({
         ggplot(ezp_users_per_day %>% filter(faculty == input$faculty, subject1 == input$subject), aes(x = date, y = users)) +
-        geom_bar(stat = "identity") +
+        geom_step() +
         labs(title = paste("EZProxy users per day:", input$faculty, "/", input$subject), x = "", y = "") +
         theme(axis.text = element_text(size = 10), axis.text.x = element_text(angle = 45))
     })
