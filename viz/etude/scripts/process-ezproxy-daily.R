@@ -38,15 +38,16 @@ write_csv(ezp_platforms_by_student_year, ezp_platforms_by_student_year_file)
 
 sp_ebooks_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/ebooks/scholarsportal/")
 
-student_sp_ebook_views_file <- paste0(sp_ebooks_data_dir, "student-sp-ebook-views.csv")
-student_sp_ebook_views <- read_csv(student_sp_ebook_views_file)
+sp_student_most_viewed_ebooks_file <- paste0(etude_data_dir, "sp-most-viewed-ebooks.csv")
 
-student_sp_most_viewed_ebooks_file <- paste0(etude_data_dir, "sp-most-viewed-ebooks.csv")
+files <- list.files(sp_ebooks_data_dir, pattern = "sp-ebook-views-.*.csv", full.names = TRUE)
+
+sp_student_ebook_views <- do.call("rbind", lapply(files, function (f) {read_csv(f, col_types = "Dccccccccccc")})) %>% filter(date >= as.Date("2017-09-01")) %>% filter(! is.na(faculty))
 
 ## Count of ebook views (count multiple per day as one), at least 5
-student_sp_most_viewed_ebooks <- student_sp_ebook_views %>% select(date, ebook_id, faculty, subject1) %>% distinct %>% group_by(ebook_id, faculty, subject1) %>% summarise(viewed = n()) %>% filter(viewed >= 5)
+sp_student_most_viewed_ebooks <- sp_student_ebook_views %>% select(date, ebook_id, faculty, subject1) %>% distinct %>% group_by(ebook_id, faculty, subject1) %>% summarise(viewed = n()) %>% filter(viewed >= 5)
 
-write_csv(student_sp_most_viewed_ebooks, student_sp_most_viewed_ebooks_file)
+write_csv(sp_student_most_viewed_ebooks, sp_student_most_viewed_ebooks_file)
 
 ## EZP demographics
 
