@@ -24,23 +24,23 @@ source(paste0(symphony_source_lib_dir, "get-current-year-checkouts.R"))
 
 all_holds <- all_transaction_details %>% filter(transaction_command == "JZ")
 
-symph_checkouts_by_class_letter_file <- paste0(etude_data_dir,"symph-checkouts-by-class-letter.csv")
+symph_checkouts_by_class_letter_file <- paste0(etude_data_dir,"symphony-checkouts-by-class-letter.csv")
 symph_checkouts_by_class_letter <- all_checkouts %>% group_by(faculty, subject1, lc_letters) %>% summarise(checkouts = n())
 write_csv(symph_checkouts_by_class_letter, symph_checkouts_by_class_letter_file)
 
-symph_checkouts_by_checkout_date_file <- paste0(etude_data_dir,"symph-checkouts-by-checkout-date.csv")
+symph_checkouts_by_checkout_date_file <- paste0(etude_data_dir,"symphony-checkouts-by-checkout-date.csv")
 symph_checkouts_by_checkout_date <- all_checkouts %>% group_by(date, faculty, subject1) %>% summarise(checkouts = n())
 write_csv(symph_checkouts_by_checkout_date, symph_checkouts_by_checkout_date_file)
 
-symph_checkouts_by_item_type_file <- paste0(etude_data_dir, "symph-checkouts-by-item_type.csv")
+symph_checkouts_by_item_type_file <- paste0(etude_data_dir, "symphony-checkouts-by-item_type.csv")
 symph_checkouts_by_item_type <- all_checkouts %>% group_by(faculty, subject1, item_type) %>% summarise(checkouts = n())
 write_csv(symph_checkouts_by_item_type, symph_checkouts_by_item_type_file)
 
-symph_checkouts_by_acq_year_file <- paste0(etude_data_dir, "symph-checkouts-by-acq-year.csv")
+symph_checkouts_by_acq_year_file <- paste0(etude_data_dir, "symphony-checkouts-by-acq-year.csv")
 symph_checkouts_by_acq_year <- all_checkouts %>% select(item_barcode, user_barcode, faculty, subject1, acq_date) %>% mutate(acq_year = floor_date(as.Date(acq_date), "year")) %>% distinct %>% group_by(faculty, subject1, acq_year) %>% summarise(count = n())
 write_csv(symph_checkouts_by_acq_year, symph_checkouts_by_acq_year_file)
 
-symph_checkouts_by_student_year_file <- paste0(etude_data_dir,"symph-checkouts-by-student-year.csv")
+symph_checkouts_by_student_year_file <- paste0(etude_data_dir,"symphony-checkouts-by-student-year.csv")
 symph_checkouts_by_student_year <- all_checkouts %>% select(item_barcode, user_barcode, faculty, subject1, degree, year) %>% distinct %>% group_by(user_barcode, faculty, subject1, degree, year) %>% summarise(items = n()) %>% ungroup %>% select(faculty, subject1, items, degree, year)
 write_csv(symph_checkouts_by_student_year, symph_checkouts_by_student_year_file)
 
