@@ -15,8 +15,8 @@ library(flexdashboard)
 
 ## TODO: Fix the hardcoding of the data directory.
 
-## yudesk_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/yudesk/")
-yudesk_data_dir <- "/dashyul/data/yudesk/"
+## yudesk_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/yudesk/")
+yudesk_data_dir <- "/dashyul/data/viz/yudesk/"
 
 yudesk_data_file <- paste0(yudesk_data_dir, "yudesk-summary.csv.gz")
 
