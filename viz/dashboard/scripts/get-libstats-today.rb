@@ -4,6 +4,9 @@
 #
 # Explain about the LIBSTATS_LOGIN_COOKIE.
 
+STDERR.puts "------"
+STDERR.puts "Started: #{Time.now}"
+
 require "cgi"
 require "csv"
 require "date"
@@ -96,3 +99,5 @@ unless csv.empty?
     ].to_csv
   end
 end
+
+STDERR.puts "Finished: #{Time.now}"

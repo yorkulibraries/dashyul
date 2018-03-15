@@ -5,6 +5,9 @@ library(lubridate)
 library(readr)
 library(yulr)
 
+write("------", stderr())
+write(paste("Started: ", Sys.time()), stderr())
+
 libstats_data_file  <- paste0(Sys.getenv("DASHYUL_DATA"), "/libstats/libstats.csv")
 
 libstats_daily_summary_file <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/dashboard/libstats-daily-summary.csv")
@@ -19,3 +22,5 @@ l$library.name <- as.factor(l$library.name)
 summary <- l %>% filter(academic_year == 2017) %>% filter(question.type != "LCO") %>% group_by(library.name, question.type) %>% summarise(count = n())
 
 write_csv(summary, libstats_daily_summary_file)
+
+write(paste("Finished: ", Sys.time()), stderr())

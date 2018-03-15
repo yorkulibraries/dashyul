@@ -2,6 +2,9 @@
 
 # Turn the huge monthly catalogue MARC dump into more usable files.
 
+echo "------"
+echo "Started: `date`"
+
 SYMPHONY_SCRIPTS=${DASHYUL_HOME}/sources/symphony/scripts
 SYMPHONY_CATALOGUE_DATA=${DASHYUL_DATA}/symphony/catalogue
 
@@ -13,9 +16,6 @@ fi
 DUMP_FILE=`basename -s .mrc $MARC_DUMP`
 
 cd ${SYMPHONY_CATALOGUE_DATA}
-
-echo "------"
-echo "Started: `date`"
 
 echo -n "$DUMP_FILE:  item details (~ 25 mins) ... "
 ${SYMPHONY_SCRIPTS}/extract-catalogue-item-details.rb $MARC_DUMP > ${DUMP_FILE}-item-details.csv
