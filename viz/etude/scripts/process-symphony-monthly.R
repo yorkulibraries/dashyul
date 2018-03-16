@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+write("------", stderr())
+write(paste("Started: ", Sys.time()), stderr())
+
 library(tidyverse)
 library(lubridate)
 library(yulr)
@@ -61,3 +64,5 @@ write("Calculating most checkouted ...", stderr())
 symphony_checkouts_most_checkouted_file <- paste0(etude_data_dir,"symphony-checkouts-most-checkouted.csv")
 symphony_checkouts_most_checkouted <- all_checkouts %>% group_by(control_number, faculty, subject1) %>% summarise(checkouts = n()) %>% filter(checkouts >= 5) %>% left_join(catalogue_title_metadata, by = "control_number")
 write_csv(symphony_checkouts_most_checkouted, symphony_checkouts_most_checkouted_file)
+
+write(paste("Finished: ", Sys.time()), stderr())

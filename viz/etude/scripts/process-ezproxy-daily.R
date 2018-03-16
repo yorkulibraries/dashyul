@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+write("------", stderr())
+write(paste("Started: ", Sys.time()), stderr())
+
 library(tidyverse)
 library(lubridate)
 
@@ -57,3 +60,5 @@ ezp_demographics_file <- paste0(etude_data_dir, "ezp-demographics.csv")
 
 ezp_demographics <- ezp %>% select(user_barcode, faculty, subject1, degree, year) %>% distinct %>% group_by(faculty, subject1, degree, year) %>% summarise(ezproxy = n())
 write_csv(ezp_demographics, ezp_demographics_file)
+
+write(paste("Finished: ", Sys.time()), stderr())
