@@ -2,6 +2,9 @@
 
 library(tidyverse)
 
+write("------", stderr())
+write(paste("Started: ", Sys.time()), stderr())
+
 dashboard_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/dashboard/")
 
 platform_metrics_file <- paste0(dashboard_data_dir, "ezp-platform-metrics.csv")
@@ -24,3 +27,5 @@ write_csv(platform_metrics, platform_metrics_file)
 ## EZP daily users
 ezp_daily_users <- ezp %>% select(date, user_barcode) %>% distinct %>% group_by(date) %>% summarise(users = n())
 write_csv(ezp_daily_users, ezp_daily_users_file)
+
+write(paste("Finished: ", Sys.time()), stderr())
