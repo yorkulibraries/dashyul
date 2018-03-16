@@ -4,9 +4,11 @@ YUDESK2_SERVER_SHINY := ${DASHYUL_SERVER_SHINY_DASHYUL}/yudesk2
 all: prepare
 
 prepare:
-	$(info Start: $(shell date))
+	echo "------"
+	echo "Started: `date`"
 	scripts/prepare-yudesk.R
 	gzip -f ${YUDESK_DATA}/yudesk-summary.csv
+	echo "Finished: `date`"
 
 get_data:
 	rsync --archive --verbose --compress ${DASHYUL_SERVER_NAME}:${DASHYUL_SERVER_DATA}/viz/yudesk/ ${YUDESK_DATA}/
