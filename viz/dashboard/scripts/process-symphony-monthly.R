@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+write("------", stderr())
+write(paste("Started: ", Sys.time()), stderr())
+
 library(tidyverse)
 library(lubridate)
 library(yulr)
@@ -59,3 +62,5 @@ write(users_so_far, file = users_so_far_file)
 items_so_far_file <- paste0(dashboard_data_dir, "symphony-items-so-far.txt")
 items_so_far <- all_checkouts %>% select(item_barcode) %>% distinct %>% nrow
 write(items_so_far, items_so_far_file)
+
+write(paste("Finished: ", Sys.time()), stderr())
