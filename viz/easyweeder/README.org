@@ -1,9 +1,9 @@
-#+TITLE: EasyWeeder
+#+TITLE: Easy Weeder
 #+AUTHOR: William Denton
 
 * About
 
-Shows the circulation history of any given item in YUL's circulating collection.
+TODO: Explain what this does.
 
 * Example
 
@@ -36,30 +36,29 @@ circ_window_ayear <- academic_year(Sys.Date()) - circ_window_years
 item_circ_history <- items_and_checkouts_in_range %>% mutate(has_circed = ! is.na(circ_ayear)) %>% group_by(item_barcode, control_number, home_location, item_type, circ_ayear) %>% summarise(circs = sum(has_circed))
 
 ## Circ details for each item at a higher level: total circs and year last circed.  One row for each item.
-item_circ_summary <- item_circ_history %>% mutate(ayear_item_last_circed = max(circ_ayear)) %>% group_by(item_barcode, control_number, home_location, ayear_item_last_circed) %>% summarise(total_circs = sum(circs))
-
-item_circ_summary$ayear_item_last_circed[is.na(item_circ_summary$ayear_item_last_circed)] <- "0"
+item_circ_summary <- item_circ_history %>% mutate(item_last_circed_ayear = max(circ_ayear)) %>% group_by(item_barcode, control_number, home_location, item_last_circed_ayear) %>% summarise(total_circs = sum(circs))
+item_circ_summary$item_last_circed_ayear[is.na(item_circ_summary$item_last_circed_ayear)] <- "0"
 
 ## Basic circ metrics data frame, which we'll add to.
 ## Here, for each control numbers, in each location, show the number of copies, total circs, and year of last circ.
-circ_metrics <- item_circ_summary %>% group_by(control_number, home_location) %>% summarise(copies = n(), total_circs = sum(total_circs), ayear_last_circed = max(ayear_item_last_circed))
+circ_metrics <- item_circ_summary %>% group_by(control_number, home_location) %>% summarise(copies = n(), total_circs = sum(total_circs), last_circed_ayear = max(item_last_circed_ayear))
 
-## Take a step aside to set up cirpercop_in_window data
+## Take a step aside to set up circs_per_copy data
 control_number_circs_in_window <- item_circ_history %>% filter(circ_ayear >= circ_window_ayear) %>% group_by(control_number, home_location) %>% summarise(circs_in_window = sum(circs))
 
 control_number_copies <- item_circ_history %>% select(control_number, item_barcode, home_location) %>% distinct %>% group_by(control_number, home_location) %>% summarise(copies = n())
 
-cirpercop_in_window <- left_join(control_number_copies, control_number_circs_in_window, by = c("control_number", "home_location"))
-cirpercop_in_window$circs_in_window[is.na(cirpercop_in_window$circs_in_window)] <- "0"
-cirpercop_in_window$circs_in_window <- as.integer(cirpercop_in_window$circs_in_window)
-cirpercop_in_window <- cirpercop_in_window %>% mutate(raw_cirpercop_in_window = circs_in_window / copies, cirpercop_in_window = round(raw_cirpercop_in_window, 1), cirpercop = round(raw_cirpercop_in_window / circs_per_copy_window, 1)) %>% select(-raw_cirpercop_in_window)
+circs_per_copy <- left_join(control_number_copies, control_number_circs_in_window, by = c("control_number", "home_location"))
+circs_per_copy$circs_in_window[is.na(circs_per_copy$circs_in_window)] <- "0"
+circs_per_copy$circs_in_window <- as.integer(circs_per_copy$circs_in_window)
+circs_per_copy <- circs_per_copy %>% mutate(raw_circs_per_copy = circs_in_window / copies, circs_per_copy = round(raw_circs_per_copy, 1), cirpercop = round(raw_circs_per_copy / circs_per_copy_window, 1)) %>% select(-raw_circs_per_copy)
 
-circ_metrics <- left_join(circ_metrics, cirpercop_in_window, by = c("control_number", "home_location", "copies")) %>% left_join(ezweeder_titles, by = "control_number")
+circ_metrics <- left_join(circ_metrics, circs_per_copy, by = c("control_number", "home_location", "copies")) %>% left_join(ezweeder_titles, by = "control_number")
 #+END_SRC
 
 * Commands
 
-+ ~make~ :: summarizes Symphony collection and transaction data
++ ~make~ :: ???
 + ~make push_app~ :: use locally to push the Shiny app up to production
 
 * Installation

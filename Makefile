@@ -5,18 +5,19 @@ setup_directories:
 	sudo mkdir -p ${DASHYUL_DATA}
 	sudo chown ${USER}:${USER} ${DASHYUL_DATA}
 	mkdir -p ${DASHYUL_DATA}/ebooks/scholarsportal
-	mkdir    ${DASHYUL_DATA}/ezproxy
-	mkdir    ${DASHYUL_DATA}/libstats
+	mkdir -p ${DASHYUL_DATA}/ezproxy
+	mkdir -p ${DASHYUL_DATA}/libstats
 	mkdir -p ${DASHYUL_DATA}/symphony/catalogue
-	mkdir    ${DASHYUL_DATA}/symphony/transactions
-	mkdir    ${DASHYUL_DATA}/symphony/users
-	mkdir    ${DASHYUL_DATA}/viz
-	mkdir    ${DASHYUL_DATA}/viz/circyul
-	mkdir    ${DASHYUL_DATA}/viz/dashboard
-	mkdir    ${DASHYUL_DATA}/viz/etude
-	mkdir    ${DASHYUL_DATA}/viz/ezpz
-	mkdir    ${DASHYUL_DATA}/viz/yucoll
-	mkdir    ${DASHYUL_DATA}/viz/yudesk
+	mkdir -p ${DASHYUL_DATA}/symphony/transactions
+	mkdir -p ${DASHYUL_DATA}/symphony/users
+	mkdir -p ${DASHYUL_DATA}/viz
+	mkdir -p ${DASHYUL_DATA}/viz/circyul
+	mkdir -p ${DASHYUL_DATA}/viz/dashboard
+	mkdir -p ${DASHYUL_DATA}/viz/easyweeder
+	mkdir -p ${DASHYUL_DATA}/viz/etude
+	mkdir -p ${DASHYUL_DATA}/viz/ezpz
+	mkdir -p ${DASHYUL_DATA}/viz/yucoll
+	mkdir -p ${DASHYUL_DATA}/viz/yudesk
 	test -n "$(DASHYUL_LOGS)" # Is $$DASHYUL_DATA set?
 	sudo mkdir -p ${DASHYUL_LOGS}
 	sudo chown ${USER}:${USER} ${DASHYUL_LOGS}
