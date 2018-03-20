@@ -276,7 +276,7 @@ DT::renderDataTable(platform_metrics %>% arrange(desc(users)), rownames = FALSE)
 ### EZProxy users per day
 
 ```{r}
-ggplot(ezp_daily_users, aes(x = date, y = users)) + geom_bar(stat = "identity") + labs(title = "EZProxy users per day", x = "", y = "")
+ggplot(ezp_daily_users, aes(x = date, y = users)) + geom_col(width = 0.6) + labs(title = "EZProxy users per day", x = "", y = "")
 ```
 
 Row
@@ -292,7 +292,7 @@ DT::renderDataTable(symphony_most_borrowed_titles %>% arrange(desc(borrows)), es
 ### items borrowed per day (not including accessories)
 
 ```{r}
-ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) + geom_bar(stat = "identity") + labs(title = "Items borrowed per day", x = "", y = "")
+ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) + geom_col(width = 0.6) + labs(title = "Items borrowed per day", x = "", y = "")
 ```
 
 Sidebar {.sidebar}

@@ -11,4 +11,4 @@ get_data:
 	rsync --archive --verbose --compress ${DASHYUL_SERVER_NAME}:${DASHYUL_SERVER_DATA}/viz/circyul/ ${CIRCYUL_DATA}/
 
 push_app:
-	rsync -avz --delete . ${DASHYUL_SERVER_NAME}:${CIRCYUL_SERVER_SHINY}
+	rsync --archive --verbose --compress --delete app/ ${DASHYUL_SERVER_NAME}:${CIRCYUL_SERVER_SHINY}

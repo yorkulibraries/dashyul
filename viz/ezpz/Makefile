@@ -8,4 +8,4 @@ prepare:
 	gzip -f ${EZPZ_DATA}/*csv
 
 push_app:
-	rsync -avz --delete . ${DASHYUL_SERVER_NAME}:${EZPZ_SERVER_SHINY}
+	rsync --archive --verbose --compress --delete app/ ${DASHYUL_SERVER_NAME}:${EZPZ_SERVER_SHINY}

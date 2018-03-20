@@ -7,4 +7,4 @@ get_data:
 	rsync --archive --verbose --compress ${DASHYUL_SERVER_NAME}:${DASHYUL_SERVER_DATA}/viz/etude/ ${ETUDE_DATA}/
 
 push_app:
-	rsync -avz --delete . ${DASHYUL_SERVER_NAME}:${ETUDE_SERVER_SHINY}
+	rsync --archive --verbose --compress --delete app/ ${DASHYUL_SERVER_NAME}:${ETUDE_SERVER_SHINY}
