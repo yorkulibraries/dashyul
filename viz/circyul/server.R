@@ -38,9 +38,8 @@ shinyServer(function(input, output, session) {
     })
 
     output$circ_history_plot <- renderPlot({
-        checkouts_by_ayear <- record_item_history() %>% mutate(ayear = academic_year_as_year(date)) ## %>% count(ayear)
-        ## ggplot(checkouts_by_ayear, aes(x = ayear, y = n)) + geom_col() + labs(title = paste("Checkouts"), x = "Academic year", y = "") + scale_x_date(date_labels = "%Y")
-        ggplot(checkouts_by_ayear, aes(x = ayear)) + geom_bar(width = 300) + labs(title = paste("Circs per academic year"), x = "", y = "") + scale_y_continuous(breaks = pretty_breaks())
+        checkouts_by_ayear <- record_item_history() %>% mutate(ayear = academic_year(date))
+        ggplot(checkouts_by_ayear, aes(x = ayear)) + geom_bar(width = 0.8) + labs(title = paste("Circs per academic year"), x = "", y = "") + scale_y_continuous(breaks = pretty_breaks()) + scale_x_continuous(breaks = pretty_breaks())
     })
 
     output$item_history_table <- renderTable({
