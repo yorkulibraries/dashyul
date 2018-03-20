@@ -24,6 +24,7 @@ setup_directories:
 	sudo mkdir -p ${DASHYUL_SHINY_DASHYUL}
 	sudo chown ${USER}:${USER} ${DASHYUL_SHINY_DASHYUL}
 	mkdir -p ${DASHYUL_SHINY_DASHYUL}/circyul
+	mkdir -p ${DASHYUL_SHINY_DASHYUL}/easyweeder
 	mkdir -p ${DASHYUL_SHINY_DASHYUL}/etude
 	mkdir -p ${DASHYUL_SHINY_DASHYUL}/ezpz
 	mkdir -p ${DASHYUL_SHINY_DASHYUL}/yucoll

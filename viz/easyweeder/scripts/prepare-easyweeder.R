@@ -1,56 +1,74 @@
 #!/usr/bin/env Rscript
 
+write("------", stderr())
+write(paste("Started: ", Sys.time()), stderr())
+
 library(tidyverse)
 library(lubridate)
 library(yulr)
 
-write("Reading in transactions ...", stderr())
+ezweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
+ezweeder_checkout_file <- paste0(ezweeder_data_dir, "ezweeder-checkouts.csv")
+ezweeder_items_file <- paste0(ezweeder_data_dir, "ezweeder-items.csv")
+ezweeder_titles_file <- paste0(ezweeder_data_dir, "ezweeder-titles.csv")
 
-ezweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
-ezweeder_file <- paste0(ezweeder_data_dir, "ezweeder.csv")
+symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
+symphony_catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
 
+catalogue_current_item_details_file <- paste0(symphony_catalogue_data_dir, "catalogue-current-item-details.csv")
+catalogue_current_title_metadata_file <- paste0(symphony_catalogue_data_dir, "catalogue-current-title-metadata.csv")
 
+symphony_source_lib_dir <- paste0(Sys.getenv("DASHYUL_HOME"), "/sources/symphony/lib/")
 
-circulated_item_details_file <- paste0(circyul_data_dir, "circulated_item_details.csv")
-circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata.csv")
+## First, get checkout data.  This includes all checkouts, including many
+## we don't care about (like laptop chargers), but we'll filter all that
+## out later.
 
-transaction_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
-catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+write("Reading checkouts ...", stderr())
 
-catalogue_current_item_details_file <- paste0(catalogue_data_dir, "catalogue-current-item-details.csv")
-catalogue_current_title_metadata_file <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.csv")
+## Get simple data on checkouts from this current year.
+## Result is data frame: current_simple_checkouts
+source(paste0(symphony_source_lib_dir, "get-current-year-simple-checkouts.R"))
 
-## Use Symphony lib for current year
-## Make lib for all previous years
-
-
-
-
-## First, grab the complete years.
-## files <- list.files("../../symphony/data/transactions", pattern = "symphony-transactions-a(200[6789]|201[012345]).csv.gz$", full.names = TRUE)
-files <- list.files("../../symphony/data/transactions", pattern = "symphony-transactions-a[[:digit:]]{4}.csv.gz$", full.names = TRUE)
-
-checkouts <- do.call("rbind", lapply(files, read_csv, col_types = "Dcccc")) %>% filter(transaction_command == "CV") %>% mutate(circ_ayear = academic_year(date)) %>% select(item_barcode, library, circ_ayear)
-
-## Now get the ones in this academic year so far.
-current_academic_year <- academic_year(Sys.Date())
-checkouts_so_far_this_ayear <- read_csv(paste0("../../symphony/data/transactions/symphony-transactions-so-far-a", current_academic_year, ".csv"), col_types = "Dcccc") %>% filter(transaction_command == "CV") %>% mutate(circ_ayear = academic_year(date)) %>% select(item_barcode, library, circ_ayear)
+## Get all checkouts from past yearss.
+## Result is data frame: past_simple_checkouts
+source(paste0(symphony_source_lib_dir, "get-past-simple-checkouts.R"))
 
 ## Combine, and we've got them all.
-checkouts <- bind_rows(checkouts, checkouts_so_far_this_ayear)
+checkouts <- bind_rows(past_simple_checkouts, current_simple_checkouts)
 
-write("Reading in catalogue data ...", stderr())
+write("Writing checkouts ...", stderr())
+write_csv(checkouts, ezweeder_checkout_file)
 
-ezweeder <- read_csv(catalogue_current_item_details_file, col_types = "")
-ezweeder <- ezweeder %>% filter(home_location %in% c("SCOTT", "STEACIE", "FROST", "BRONFMAN", "LAW"))
-ezweeder <- ezweeder %>% filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "LAW-BOOK")) %>% filter(class_scheme == "LC")
-ezweeder$current_location[is.na(ezweeder$current_location)] <- "X"
-ezweeder <- ezweeder %>% filter(current_location != "DISCARD")
-ezweeder <- ezweeder %>% mutate(acq_ayear = academic_year(acq_date))
-ezweeder <- ezweeder %>% select(item_barcode, control_number, lc_letters, lc_digits, home_location, item_type, acq_ayear)
+## Next, prepare the catalogue data.
 
-ezweeder <- left_join(ezweeder, checkouts, by = "item_barcode")
+write("Reading catalogue item data ...", stderr())
+catalogue_current_item_details <- read_csv(catalogue_current_item_details_file, col_types = "")
 
-write("Writing out combined data ...", stderr())
+## Now construct the Easy Weeder data bit by bit.
+## First, pick out just items from the libraries we're interested in.
+items <- catalogue_current_item_details %>% filter(home_location %in% c("SCOTT", "STEACIE", "FROST", "BRONFMAN", "LAW"))
+## Filter to just item types we're interested in (not microform, etc.).
+items <- items %>% filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "LAW-BOOK")) %>% filter(class_scheme == "LC")
+## If no location is known, mark it X, don't leave it as NA.
+items$current_location[is.na(items$current_location)] <- "X"
+## Ignore discards.
+items <- items %>% filter(current_location != "DISCARD")
+## Set the academic year for the acquisition.
+items <- items %>% mutate(acq_ayear = academic_year(acq_date))
+## And pick out the few fields we care about.
+items <- items %>% select(item_barcode, control_number, lc_letters, lc_digits, home_location, item_type, acq_ayear)
 
-write_csv(ezweeder, ezweeder_file)
+write("Writing items ...", stderr())
+write_csv(items, ezweeder_items_file)
+
+## Finally, pull title metadata for everything in the items list.
+
+write("Reading catalogue title metadata ...", stderr())
+catalogue_current_title_metadata <- read_csv(catalogue_current_title_metadata_file, col_types = "ccc")
+titles <- catalogue_current_title_metadata %>% filter(control_number %in% items$control_number)
+
+write("Writing title details ...", stderr())
+write_csv(titles, ezweeder_titles_file)
+
+write(paste("Finished: ", Sys.time()), stderr())
