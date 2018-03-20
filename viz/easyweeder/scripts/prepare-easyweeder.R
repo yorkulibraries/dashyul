@@ -8,9 +8,9 @@ library(lubridate)
 library(yulr)
 
 ezweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
-ezweeder_checkout_file <- paste0(ezweeder_data_dir, "ezweeder-checkouts.csv")
-ezweeder_items_file <- paste0(ezweeder_data_dir, "ezweeder-items.csv")
-ezweeder_titles_file <- paste0(ezweeder_data_dir, "ezweeder-titles.csv")
+ezweeder_checkout_file <- paste0(ezweeder_data_dir, "easyweeder-checkouts.csv")
+ezweeder_items_file <- paste0(ezweeder_data_dir, "easyweeder-items.csv")
+ezweeder_titles_file <- paste0(ezweeder_data_dir, "easyweeder-titles.csv")
 
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 symphony_catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")

@@ -1,9 +1,61 @@
-#+TITLE: CircYUL
+#+TITLE: EasyWeeder
 #+AUTHOR: William Denton
 
 * About
 
 Shows the circulation history of any given item in YUL's circulating collection.
+
+* Example
+
+#+BEGIN_SRC R :session R:easyweeder :results values :colnames yes
+library(tidyverse)
+
+ezweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
+ezweeder_checkouts <- read_csv(paste0(ezweeder_data_dir, "easyweeder-checkouts.csv"), col_types = "cci")
+ezweeder_items     <- read_csv(paste0(ezweeder_data_dir, "easyweeder-items.csv"), col_types = "cccdcci")
+ezweeder_titles    <- read_csv(paste0(ezweeder_data_dir, "easyweeder-titles.csv"), col_types = "ccc")
+
+## Only consider books acquired over five years ago, i.e. in academic year 2012 or earlier.
+acquired_before <- 2013
+
+items_in_range <- ezweeder_items %>% filter(home_location == "STEACIE", item_type == "STEAC-BOOK", lc_letters == "QA")
+items_in_range <- items_in_range %>% filter(acq_ayear < acquired_before)
+
+items_and_checkouts_in_range <- left_join(items_in_range, ezweeder_checkouts, by = "item_barcode")
+
+circs_per_copy_window <- 5
+
+## Window for considering circ metrics, like circs per year.
+## 5 should mean "in the last five years", e.g. in a2016 that means a2012, a2013, a2014, a2015, a2016
+## so we can't substract 5, we need to subtract 4, so add 1.
+circ_window_years <- 5
+
+circ_window_ayear <- academic_year(Sys.Date()) - circ_window_years
+
+## Circ details for each item, grouped by year.  One row for each item each year it circed (and one row if it didn't).
+item_circ_history <- items_and_checkouts_in_range %>% mutate(has_circed = ! is.na(circ_ayear)) %>% group_by(item_barcode, control_number, home_location, item_type, circ_ayear) %>% summarise(circs = sum(has_circed))
+
+## Circ details for each item at a higher level: total circs and year last circed.  One row for each item.
+item_circ_summary <- item_circ_history %>% mutate(ayear_item_last_circed = max(circ_ayear)) %>% group_by(item_barcode, control_number, home_location, ayear_item_last_circed) %>% summarise(total_circs = sum(circs))
+
+item_circ_summary$ayear_item_last_circed[is.na(item_circ_summary$ayear_item_last_circed)] <- "0"
+
+## Basic circ metrics data frame, which we'll add to.
+## Here, for each control numbers, in each location, show the number of copies, total circs, and year of last circ.
+circ_metrics <- item_circ_summary %>% group_by(control_number, home_location) %>% summarise(copies = n(), total_circs = sum(total_circs), ayear_last_circed = max(ayear_item_last_circed))
+
+## Take a step aside to set up cirpercop_in_window data
+control_number_circs_in_window <- item_circ_history %>% filter(circ_ayear >= circ_window_ayear) %>% group_by(control_number, home_location) %>% summarise(circs_in_window = sum(circs))
+
+control_number_copies <- item_circ_history %>% select(control_number, item_barcode, home_location) %>% distinct %>% group_by(control_number, home_location) %>% summarise(copies = n())
+
+cirpercop_in_window <- left_join(control_number_copies, control_number_circs_in_window, by = c("control_number", "home_location"))
+cirpercop_in_window$circs_in_window[is.na(cirpercop_in_window$circs_in_window)] <- "0"
+cirpercop_in_window$circs_in_window <- as.integer(cirpercop_in_window$circs_in_window)
+cirpercop_in_window <- cirpercop_in_window %>% mutate(raw_cirpercop_in_window = circs_in_window / copies, cirpercop_in_window = round(raw_cirpercop_in_window, 1), cirpercop = round(raw_cirpercop_in_window / circs_per_copy_window, 1)) %>% select(-raw_cirpercop_in_window)
+
+circ_metrics <- left_join(circ_metrics, cirpercop_in_window, by = c("control_number", "home_location", "copies")) %>% left_join(ezweeder_titles, by = "control_number")
+#+END_SRC
 
 * Commands
 
