@@ -84,7 +84,6 @@ items <- items %>% select(item_barcode, control_number, lc_letters, lc_digits, c
 ###
 ### Circulation metrics calculations
 ###
-
 write("3.  Calculating metrics ...", stderr())
 
 ## The starting year of the circulation window.  Used below for filtering.
