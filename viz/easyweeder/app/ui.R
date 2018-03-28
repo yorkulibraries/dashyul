@@ -17,7 +17,7 @@ shinyUI(
                 uiOutput("digits_high"),
 
                 tags$p("William Denton (wdenton@yorku.ca)"),
-                tags$p("Updated 22 February 2018.")
+                tags$p("Updated 28 March 2018.")
 
             ),
 

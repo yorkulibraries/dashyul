@@ -10,62 +10,53 @@ TODO: Explain what this does.
 #+BEGIN_SRC R :session R:easyweeder :results values :colnames yes
 library(tidyverse)
 
-ezweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
-ezweeder_checkouts <- read_csv(paste0(ezweeder_data_dir, "easyweeder-checkouts.csv"), col_types = "cci")
-ezweeder_items     <- read_csv(paste0(ezweeder_data_dir, "easyweeder-items.csv"), col_types = "cccdccci")
-ezweeder_titles    <- read_csv(paste0(ezweeder_data_dir, "easyweeder-titles.csv"), col_types = "ccc")
+symphony_metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
 
-## Only consider books acquired over five years ago, i.e. in academic year 2012 or earlier.
-## acquired_before <- 2013
-## No, this isn't the right way to handle it.
-## But at some point acquisition year needs to be handled.
-## TODO: Handle acquisition year.
+easyweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
 
-## items_in_range <- ezweeder_items ## %>% filter(home_location == "BRONFMAN", item_type == "BRONF-BOOK", lc_letters == "HF")
-## items_in_range <- items_in_range %>% filter(acq_ayear < acquired_before)
+circ_metrics <- read_csv(paste0(symphony_metrics_data_dir, "circ-metrics.csv"))
 
-items_in_range <- ezweeder_items
-
-items_and_checkouts_in_range <- left_join(items_in_range, ezweeder_checkouts, by = "item_barcode")
-
-## Window for considering circ metrics, like circs per year.
-## 5 should mean "in the last five years before this year", e.g.
-## during a2017 that means a2012, a2013, a2014, a2015, a2016 and a2017
-## up to current.
 circ_window_years <- 5
-circ_window_ayear <- academic_year(Sys.Date()) - circ_window_years
-
-## Circ details for each item, grouped by year.  One row for each item each year it circed (and one row if it didn't).
-item_circ_history <- items_and_checkouts_in_range %>% mutate(has_circed = ! is.na(circ_ayear)) %>% group_by(item_barcode, control_number, call_number, home_location, item_type, circ_ayear) %>% summarise(circs = sum(has_circed))
-
-## Circ details for each item at a higher level: total circs and year last circed.  One row for each item.
-## Grouping in item_circ_history makes the mutation work.
-item_circ_summary <- item_circ_history %>% mutate(item_last_circed_ayear = max(circ_ayear)) %>% group_by(item_barcode, control_number, call_number, home_location, item_last_circed_ayear) %>% summarise(total_circs = sum(circs))
-item_circ_summary$item_last_circed_ayear[is.na(item_circ_summary$item_last_circed_ayear)] <- "0"
-
-## Create the circ metrics data frame, which we'll add to.
-## Here, for each control number, in each location, show the number of copies, total circs, and year of last circ.
-circ_metrics <- item_circ_summary %>% group_by(control_number, call_number, home_location) %>% summarise(copies = n(), total_circs = sum(total_circs), last_circed_ayear = max(item_last_circed_ayear))
-
-## Next, take a step aside to set up circs_per_copy data.  We will add this to circ_metrics.
-
-## First, count total number of circs (in the circ window) for all items with the same control number and call number
-## This lets us distinguish multiple volumes in a set (which each have different call numbers, ending e.g. in v1, v2, v3)
-## from multiple copies of the same edition (which all have the same call number)
-call_number_circs_in_window <- item_circ_history %>% filter(circ_ayear >= circ_window_ayear) %>% group_by(control_number, call_number, home_location) %>% summarise(circs_in_window = sum(circs))
-
-## Now, join the circ_metrics data frame we began with this information about circs in the year window.
-circ_metrics <- left_join(circ_metrics, call_number_circs_in_window, by = c("control_number", "call_number", "home_location"))
-
-## Minor fixes so the arithmetic works.
-circ_metrics$circs_in_window[is.na(circ_metrics$circs_in_window)] <- "0"
-circ_metrics$circs_in_window <- as.integer(circ_metrics$circs_in_window)
-
-## Calculate circs per copy in the window.
-circ_metrics <- circ_metrics %>% mutate(raw_circs_per_copy = circs_in_window / copies, circs_per_copy = round(raw_circs_per_copy, 1), busy = round(raw_circs_per_copy / circ_window_years, 1)) %>% select(-raw_circs_per_copy)
-
-write(circ_metrics, circ_metric_file)
 #+END_SRC
+
+#+RESULTS:
+|   |
+
+#+BEGIN_SRC R :session R:easyweeder :results values :colnames yes
+how_many_copies_should_we_have <- function(copies = NULL, circs = NULL) {
+    if (circs == 0) { return(1) }
+    ## Calculate a vector of all possible busy values
+    ## for all possible numbers of copies, and then
+    ## the first one where busy >= 0.5.  The index
+    ## of that leads to the number of copies we want.
+    possible_copies <- seq(copies, 1)
+    possible_busy <- circs / possible_copies / circ_window_years
+    possible_busy_in_range <- which(possible_busy >= 0.5)
+    if (length(possible_busy_in_range) > 0) {
+        index_of_recommended_copies <- max(possible_busy_in_range)
+        return(possible_copies[index_of_recommended_copies])
+    } else {
+        return(1)
+    }
+}
+
+## scott <- circ_metrics %>% filter(home_location == "SCOTT", copies > 1, busy <= 0.5)
+
+steacie_weedable <-  circ_metrics %>% filter(home_location == "STEACIE", copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
+
+bronfman_weedable <- circ_metrics %>% filter(home_location == "BRONFMAN", copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
+
+frost_weedable <- circ_metrics %>% filter(home_location == "BRONFMAN", copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
+
+scott_weedable <- circ_metrics %>% filter(home_location == "SCOTT", copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
+
+easily_weedable <-  circ_metrics %>% filter(copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
+
+write(easily_weedable, paste0(easyweeder_data_dir, "easily-weedable.csv"))
+#+END_SRC
+
+#+RESULTS:
+|   |
 
 * Examples
 
