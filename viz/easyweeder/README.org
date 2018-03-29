@@ -44,7 +44,7 @@ Some examples:
 |     2 |      1 |      5 |  0.4 |
 |     1 |      2 |      5 |  0.4 |
 |     2 |     19 |      5 | 0.02 |
-|     2 |    698 |      5 | 69.8 |
+|   698 |      2 |      5 | 69.8 |
 
 The last two are real examples: Francis Bacon's [[https://www.library.yorku.ca/find/Record/567179][Advancement of learning, and New Atlantis]] has a busy factor of 0.02, and [[https://www.library.yorku.ca/find/Record/2914459][Economics: Canada in the Global Environment]] is at 69.8, probably because it used to be on reserve but is now in the stacks).
 

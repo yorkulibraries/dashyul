@@ -1,4 +1,4 @@
-% Created 2018-03-29 Thu 16:17
+% Created 2018-03-29 Thu 16:24
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -32,12 +32,12 @@
 \maketitle
 
 \section*{About}
-\label{sec:orgceabbda}
+\label{sec:orgfb14b60}
 
 Easy Weeder is an algorithm that identifies little-used multiple copies of books and recommends how many copies we really need (minimum 1).
 
 \section*{Busy factor}
-\label{sec:org97d0c0d}
+\label{sec:orgc2836e7}
 
 The \emph{busy factor} will determine which books with multiple copies can be easily weeded.
 
@@ -56,7 +56,7 @@ We can combine these into a measure of ``circs per copy per year,'' or how many 
 Define the \emph{busy factor} to be number of circs divided by number of copies divided by length in years of the circ window.
 
 \begin{equation}
-\label{eq:org2d378fe}
+\label{eq:org41f9223}
 busy = \frac{\frac{circs}{copies}}{years}
 \end{equation}
 
@@ -72,7 +72,7 @@ circs & copies & window & busy\\
 2 & 1 & 5 & 0.4\\
 1 & 2 & 5 & 0.4\\
 2 & 19 & 5 & 0.02\\
-2 & 698 & 5 & 69.8\\
+698 & 2 & 5 & 69.8\\
 \end{tabular}
 \end{center}
 
@@ -81,7 +81,7 @@ The last two are real examples: Francis Bacon's \href{https://www.library.yorku.
 Further, let us set a \emph{target busy factor} of 1.  That means in an ideal situation, if we have more than one copy of a book, each is used once a year.  (If we only have one copy of a title then Easy Weeder is not used, so its busy factor is not used.)
 
 \section*{Assumptions}
-\label{sec:org869c4b3}
+\label{sec:orgd0aaa06}
 
 \begin{enumerate}
 \item We don't keep two copies of a book in the circulating collection just in case one gets lost.
@@ -90,16 +90,16 @@ Further, let us set a \emph{target busy factor} of 1.  That means in an ideal si
 \end{enumerate}
 
 \section*{How the logic and calculations work}
-\label{sec:org1edb5a5}
+\label{sec:org73ddf2d}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[height=3in]{logic-flow.png}
-\caption{\label{fig:org14a3b93}
+\caption{\label{fig:orgcfa04ca}
 Easy Weeder logic}
 \end{figure}
 
-To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:org14a3b93} shows the decisions made.
+To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:orgcfa04ca} shows the decisions made.
 
 For example, for the one with 19 copies, and 2 circs, the calculation goes:
 
@@ -137,7 +137,7 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 \end{itemize}
 
 \section*{Estimated easy weedables}
-\label{sec:org6bde7b9}
+\label{sec:org7d775b4}
 
 \begin{center}
 \begin{tabular}{lr}
@@ -152,7 +152,7 @@ STEACIE & 984\\
 \end{center}
 
 \section*{To note}
-\label{sec:org5fa3765}
+\label{sec:orgf0b8552}
 
 \begin{itemize}
 \item Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last 5 years may need a human decision.
@@ -160,7 +160,7 @@ STEACIE & 984\\
 \end{itemize}
 
 \section*{Commands}
-\label{sec:orge8fae04}
+\label{sec:org3ab3b3b}
 
 \begin{description}
 \item[{\texttt{make}}] ???
@@ -168,5 +168,5 @@ STEACIE & 984\\
 \end{description}
 
 \section*{Installation}
-\label{sec:org1eb3ad4}
+\label{sec:orgf3257aa}
 \end{document}
