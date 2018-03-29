@@ -96,12 +96,12 @@ To revisit the examples above, two are ignored because their busy factor is >= 1
 
 For example, for the one with 19 copies, and 2 circs, the calculation goes:
 
-+ 19 copies is too many.  What if we had 18? Busy factor: 0.022.
-+ 18 copies is too many.  What if we had 17? Busy factor: 0.024.
++ 19 copies is too many.  18 → busy = 0.022.
++ 18 copies is too many.  17 → busy = 0.024.
 + …
-+ 5 copies is too many.  What if we had 4?  Busy factor: 0.1.
-+ 4 copies is too many.  What if we had 3?  Busy factor: 0.133.
-+ 3 copies is too many.  What if we had 2?  Busy factor: 0.2.
++ 5 copies is too many.  4 → busy = 0.1.
++ 4 copies is too many.  3 → busy = 0.133.
++ 3 copies is too many.  2 → busy = 0.2.
 + 2 copies is too many. Keep 1 copy.
 
 As it happens, for all four we end up keeping just one copy.
@@ -113,12 +113,12 @@ As it happens, for all four we end up keeping just one copy.
 |     1 |      2 |      5 |  0.4 |           1 |
 |     2 |     19 |      5 | 0.02 |           1 |
 
-But, for example, let's say we had a book that had six copies and 12 circs over the last five years, for a busy factor of 0.4.  We would end up keeping 4 copies.
+But, for example, let's say we had a book that had 6 copies and 12 circs over the last 5 years, for a busy factor of 0.4.  We would keep 2 copies.
 
-+ 6 copies is too many.  What if we had 5? Busy factor: 0.48.
-+ 5 copies is too many.  What if we had 4? Busy factor: 0.6.
-+ 4 copies is too many.  What if we had 3? Busy factor: 0.8.
-+ 3 copies is too many.  What if we had 2? Busy factor: 1.2.
++ 6 copies is too many.  5 → busy = 0.48.
++ 5 copies is too many.  4 → busy = 0.6.
++ 4 copies is too many.  3 → busy = 0.8.
++ 3 copies is too many.  2 → busy = 1.2.
 + Keep 2 copies.  (2 is the largest number giving a busy factor >= 1.)
 
 * Estimated easy weedables
@@ -133,7 +133,7 @@ But, for example, let's say we had a book that had six copies and 12 circs over 
 
 * To note
 
-+ Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last five years may need a human decision.
++ Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last 5 years may need a human decision.
 + Easy Weeder does not remove duplicates across branches, but the same data can be used to do that. For example, [[https://www.library.yorku.ca/find/Record/1172][Captains of Consciousness: Advertising and the Social Roots of the Consumer Culture]] has ten copies at three branches: Bronfman (7), Frost (1) and Scott (2).  Circulation in the circ window is: Bronfman (13), Frost (0), Scott (15).  Therefore Easy Weeder recommends this number of copies: Bronfman (2), Frost (1) and Scott (2).  Even if it makes sense to have the book at both Bronfman and Scott (which would need 3 copies to get down to a busy factor of 1), Frost does not need a copy, because no one has used it there since 2010.
 
 # + [[https://www.library.yorku.ca/find/Record/1000076][A systolic array parallelizing compiler / Ping-Sheng Tseng]]: acquired in 1990, 0 circs.

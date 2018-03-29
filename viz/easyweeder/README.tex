@@ -1,4 +1,4 @@
-% Created 2018-03-29 Thu 16:04
+% Created 2018-03-29 Thu 16:17
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -32,12 +32,12 @@
 \maketitle
 
 \section*{About}
-\label{sec:org1c8db44}
+\label{sec:orgceabbda}
 
 Easy Weeder is an algorithm that identifies little-used multiple copies of books and recommends how many copies we really need (minimum 1).
 
 \section*{Busy factor}
-\label{sec:orgf6723f4}
+\label{sec:org97d0c0d}
 
 The \emph{busy factor} will determine which books with multiple copies can be easily weeded.
 
@@ -56,7 +56,7 @@ We can combine these into a measure of ``circs per copy per year,'' or how many 
 Define the \emph{busy factor} to be number of circs divided by number of copies divided by length in years of the circ window.
 
 \begin{equation}
-\label{eq:org3e61286}
+\label{eq:org2d378fe}
 busy = \frac{\frac{circs}{copies}}{years}
 \end{equation}
 
@@ -81,7 +81,7 @@ The last two are real examples: Francis Bacon's \href{https://www.library.yorku.
 Further, let us set a \emph{target busy factor} of 1.  That means in an ideal situation, if we have more than one copy of a book, each is used once a year.  (If we only have one copy of a title then Easy Weeder is not used, so its busy factor is not used.)
 
 \section*{Assumptions}
-\label{sec:orgc8e7b1a}
+\label{sec:org869c4b3}
 
 \begin{enumerate}
 \item We don't keep two copies of a book in the circulating collection just in case one gets lost.
@@ -90,26 +90,26 @@ Further, let us set a \emph{target busy factor} of 1.  That means in an ideal si
 \end{enumerate}
 
 \section*{How the logic and calculations work}
-\label{sec:orgaaef9dc}
+\label{sec:org1edb5a5}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[height=3in]{logic-flow.png}
-\caption{\label{fig:orgc61901c}
+\caption{\label{fig:org14a3b93}
 Easy Weeder logic}
 \end{figure}
 
-To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:orgc61901c} shows the decisions made.
+To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:org14a3b93} shows the decisions made.
 
 For example, for the one with 19 copies, and 2 circs, the calculation goes:
 
 \begin{itemize}
-\item 19 copies is too many.  What if we had 18? Busy factor: 0.022.
-\item 18 copies is too many.  What if we had 17? Busy factor: 0.024.
+\item 19 copies is too many.  18 → busy = 0.022.
+\item 18 copies is too many.  17 → busy = 0.024.
 \item …
-\item 5 copies is too many.  What if we had 4?  Busy factor: 0.1.
-\item 4 copies is too many.  What if we had 3?  Busy factor: 0.133.
-\item 3 copies is too many.  What if we had 2?  Busy factor: 0.2.
+\item 5 copies is too many.  4 → busy = 0.1.
+\item 4 copies is too many.  3 → busy = 0.133.
+\item 3 copies is too many.  2 → busy = 0.2.
 \item 2 copies is too many. Keep 1 copy.
 \end{itemize}
 
@@ -126,18 +126,18 @@ circs & copies & window & busy & rec\_copies\\
 \end{tabular}
 \end{center}
 
-But, for example, let's say we had a book that had six copies and 12 circs over the last five years, for a busy factor of 0.4.  We would end up keeping 4 copies.
+But, for example, let's say we had a book that had 6 copies and 12 circs over the last 5 years, for a busy factor of 0.4.  We would keep 2 copies.
 
 \begin{itemize}
-\item 6 copies is too many.  What if we had 5? Busy factor: 0.48.
-\item 5 copies is too many.  What if we had 4? Busy factor: 0.6.
-\item 4 copies is too many.  What if we had 3? Busy factor: 0.8.
-\item 3 copies is too many.  What if we had 2? Busy factor: 1.2.
+\item 6 copies is too many.  5 → busy = 0.48.
+\item 5 copies is too many.  4 → busy = 0.6.
+\item 4 copies is too many.  3 → busy = 0.8.
+\item 3 copies is too many.  2 → busy = 1.2.
 \item Keep 2 copies.  (2 is the largest number giving a busy factor >= 1.)
 \end{itemize}
 
 \section*{Estimated easy weedables}
-\label{sec:org8289fc4}
+\label{sec:org6bde7b9}
 
 \begin{center}
 \begin{tabular}{lr}
@@ -152,15 +152,15 @@ STEACIE & 984\\
 \end{center}
 
 \section*{To note}
-\label{sec:org531e42a}
+\label{sec:org5fa3765}
 
 \begin{itemize}
-\item Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last five years may need a human decision.
+\item Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last 5 years may need a human decision.
 \item Easy Weeder does not remove duplicates across branches, but the same data can be used to do that. For example, \href{https://www.library.yorku.ca/find/Record/1172}{Captains of Consciousness: Advertising and the Social Roots of the Consumer Culture} has ten copies at three branches: Bronfman (7), Frost (1) and Scott (2).  Circulation in the circ window is: Bronfman (13), Frost (0), Scott (15).  Therefore Easy Weeder recommends this number of copies: Bronfman (2), Frost (1) and Scott (2).  Even if it makes sense to have the book at both Bronfman and Scott (which would need 3 copies to get down to a busy factor of 1), Frost does not need a copy, because no one has used it there since 2010.
 \end{itemize}
 
 \section*{Commands}
-\label{sec:orgfa37426}
+\label{sec:orge8fae04}
 
 \begin{description}
 \item[{\texttt{make}}] ???
@@ -168,5 +168,5 @@ STEACIE & 984\\
 \end{description}
 
 \section*{Installation}
-\label{sec:org9a10d29}
+\label{sec:org1eb3ad4}
 \end{document}
