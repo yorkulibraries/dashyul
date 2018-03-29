@@ -17,15 +17,27 @@ ezp_source_lib_dir <- paste0(Sys.getenv("DASHYUL_HOME"), "/sources/ezproxy/lib/"
 source(paste0(ezp_source_lib_dir, "get-current-ezproxy-use.R"))
 
 ## EZP platform metrics
-ezp_users <- ezp %>% select(platform, user_barcode) %>% distinct %>% group_by(platform) %>% summarise(users = n())
-ezp_uses  <- ezp %>% select(platform, date) %>% group_by(platform) %>% summarise(uses = n())
+ezp_users <- ezp %>%
+    select(platform, user_barcode) %>%
+    distinct %>% group_by(platform) %>%
+    summarise(users = n())
+ezp_uses  <- ezp %>%
+    select(platform, date) %>%
+    group_by(platform) %>%
+    summarise(uses = n())
 
-platform_metrics <- ezp_users %>% left_join(ezp_uses, by = c("platform")) %>% mutate(interest_factor = round(uses / users, 1))
+platform_metrics <- ezp_users %>%
+    left_join(ezp_uses, by = c("platform")) %>%
+    mutate(interest_factor = round(uses / users, 1))
 
 write_csv(platform_metrics, platform_metrics_file)
 
 ## EZP daily users
-ezp_daily_users <- ezp %>% select(date, user_barcode) %>% distinct %>% group_by(date) %>% summarise(users = n())
+ezp_daily_users <- ezp %>%
+    select(date, user_barcode) %>%
+    distinct %>%
+    group_by(date) %>%
+    summarise(users = n())
 write_csv(ezp_daily_users, ezp_daily_users_file)
 
 write(paste("Finished: ", Sys.time()), stderr())

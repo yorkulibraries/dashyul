@@ -37,9 +37,9 @@ write("Calculating ...", stderr())
 
 easy_weedable <- circ_metrics %>%
     filter(copies > 1, busy < target_busy_factor) %>%
-        rowwise() %>%
-        mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies) %>%
-            select(-circs_per_copy)
+    rowwise() %>%
+    mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies) %>%
+    select(-circs_per_copy)
 
 write_csv(easy_weedable, paste0(easyweeder_data_dir, "easy-weedable.csv"))
 

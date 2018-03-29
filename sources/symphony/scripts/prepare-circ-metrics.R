@@ -67,7 +67,8 @@ catalogue_current_item_details <- read_csv(catalogue_current_item_details_file, 
 items <- catalogue_current_item_details %>% filter(home_location %in% c("SCOTT", "STEACIE", "FROST", "BRONFMAN", "LAW"))
 
 ## Filter to just item types we're interested in (not microform, etc.).
-items <- items %>% filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "LAW-BOOK")) %>% filter(class_scheme == "LC")
+items <- items %>% filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "LAW-BOOK")) %>%
+    filter(class_scheme == "LC")
 
 ## If no location is known, mark it X, don't leave it as NA.
 items$current_location[is.na(items$current_location)] <- "X"
@@ -97,27 +98,38 @@ items_and_checkouts <- left_join(items, checkouts, by = "item_barcode")
 ## each year it circed (and one row if it didn't).
 write("Calculating item circ history ...", stderr())
 
-item_circ_history <- items_and_checkouts %>% mutate(has_circed = ! is.na(circ_ayear)) %>% group_by(item_barcode, control_number, call_number, home_location, item_type, circ_ayear) %>% summarise(circs = sum(has_circed))
+item_circ_history <- items_and_checkouts %>%
+    mutate(has_circed = ! is.na(circ_ayear)) %>%
+    group_by(item_barcode, control_number, call_number, home_location, item_type, circ_ayear) %>%
+    summarise(circs = sum(has_circed))
 
 ## Circ details for each item at a higher level: total circs and year
 ## last circed. One row for each item. Grouping in item_circ_history
 ## makes the mutation work.
 write("Calculating item circ summary ...", stderr())
-item_circ_summary <- item_circ_history %>% mutate(item_last_circed_ayear = max(circ_ayear)) %>% group_by(item_barcode, control_number, call_number, home_location, item_last_circed_ayear) %>% summarise(total_circs = sum(circs))
+item_circ_summary <- item_circ_history %>%
+    mutate(item_last_circed_ayear = max(circ_ayear)) %>%
+    group_by(item_barcode, control_number, call_number, home_location, item_last_circed_ayear) %>%
+    summarise(total_circs = sum(circs))
 item_circ_summary$item_last_circed_ayear[is.na(item_circ_summary$item_last_circed_ayear)] <- "0"
 
 ## Create the circ metrics data frame, which we'll add to. Here, for
 ## each control number, in each location, show the number of copies,
 ## total circs, and year of last circ.
 write("Setting up circ metrics ...", stderr())
-circ_metrics <- item_circ_summary %>% group_by(control_number, call_number, home_location) %>% summarise(copies = n(), total_circs = sum(total_circs), last_circed_ayear = max(item_last_circed_ayear))
+circ_metrics <- item_circ_summary %>%
+    group_by(control_number, call_number, home_location) %>%
+    summarise(copies = n(), total_circs = sum(total_circs), last_circed_ayear = max(item_last_circed_ayear))
 
 ## Now, count total number of circs (in the circ window) for all items
 ## with the same control number and call number This lets us
 ## distinguish multiple volumes in a set (which each have different
 ## call numbers, ending e.g. in v1, v2, v3) from multiple copies of
 ## the same edition (which all have the same call number)
-call_number_circs_in_window <- item_circ_history %>% filter(circ_ayear >= circ_window_ayear) %>% group_by(control_number, call_number, home_location) %>% summarise(circs_in_window = sum(circs))
+call_number_circs_in_window <- item_circ_history %>%
+    filter(circ_ayear >= circ_window_ayear) %>%
+    group_by(control_number, call_number, home_location) %>%
+    summarise(circs_in_window = sum(circs))
 
 ## Join the circ_metrics data frame we began with this information
 ## about circs in the year window.
@@ -129,7 +141,11 @@ circ_metrics$circs_in_window <- as.integer(circ_metrics$circs_in_window)
 
 ## Calculate busy factor
 write("Calculating busy factor ...", stderr())
-circ_metrics <- circ_metrics %>% mutate(raw_circs_per_copy = circs_in_window / copies, circs_per_copy = round(raw_circs_per_copy, 1), busy = round(raw_circs_per_copy / circ_window_years, 1)) %>% select(-raw_circs_per_copy)
+circ_metrics <- circ_metrics %>%
+    mutate(raw_circs_per_copy = circs_in_window / copies,
+           circs_per_copy = round(raw_circs_per_copy, 1),
+           busy = round(raw_circs_per_copy / circ_window_years, 1)) %>%
+    select(-raw_circs_per_copy)
 
 ## Phew, finally, we can write it all out.
 write("Writing circ metrics ...", stderr())

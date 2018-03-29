@@ -22,7 +22,11 @@ checkouts <- do.call("rbind", lapply(files, read.csv)) %>% tbl_df() %>% filter(t
 
 write("Reading item details ...", stderr())
 
-item_details <- read_csv(catalogue_current_item_details_file, col_types = "ccccc_______cc______cc_c") %>% filter(library == "YORK", class_scheme == "LC", home_location %in% c("SCOTT", "STEACIE", "FROST", "BRONFMAN", "SCOTT-MAPS")) %>% filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "SCOTT-RESV", "SCORE", "MAP", "STEAC-RESV", "SCMAP-BOOK"))
+item_details <- read_csv(catalogue_current_item_details_file, col_types = "ccccc_______cc______cc_c") %>%
+    filter(library == "YORK") %>%
+    filter(class_scheme == "LC") %>%
+    filter(home_location %in% c("SCOTT", "STEACIE", "FROST", "BRONFMAN", "SCOTT-MAPS")) %>%
+    filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "SCOTT-RESV", "SCORE", "MAP", "STEAC-RESV", "SCMAP-BOOK"))
 
 circulated_item_details <- item_details %>% filter(item_barcode %in% checkouts$item_barcode)
 
