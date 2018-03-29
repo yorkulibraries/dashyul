@@ -2,5 +2,4 @@
 Gemfile.lock
 .Rhistory
 .RData
-data/libstats/*csv
-data/libstats/*csv.gz
+viz/easyweeder/ltximg

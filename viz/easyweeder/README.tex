@@ -1,0 +1,172 @@
+% Created 2018-03-29 Thu 16:04
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdfborder={0 0 0}}
+\usepackage[english]{babel} % English language/hyphenation
+\author{William Denton}
+\date{\today}
+\title{Easy Weeder}
+\hypersetup{
+ pdfauthor={William Denton},
+ pdftitle={Easy Weeder},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.0.50 (Org mode 9.1.6)},
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+
+\section*{About}
+\label{sec:org1c8db44}
+
+Easy Weeder is an algorithm that identifies little-used multiple copies of books and recommends how many copies we really need (minimum 1).
+
+\section*{Busy factor}
+\label{sec:orgf6723f4}
+
+The \emph{busy factor} will determine which books with multiple copies can be easily weeded.
+
+First note that our calculations will be based on circs in a ``circ window'' of five years: the last five full academic years, plus the current year to date (so near the end of an academic year this will be almost six years).  In April 2018 the circ window includes all of academic 2012, 2013, 2014, 2015, 2106 and also academic 2017 from September 2017 to March 2018.
+
+This means we know three things for each title:
+
+\begin{itemize}
+\item the  number of copies (this is actually ``number of items with the same call number,'' so multiple copies of the same title are counted together, but four separate volumes in a four-volume set are not);
+\item the number of circs of all those copies in the circ window; and
+\item the length of circ window (defined as 5 years).
+\end{itemize}
+
+We can combine these into a measure of ``circs per copy per year,'' or how many times a year (on average, over the last five years) each copy of a title circulates.
+
+Define the \emph{busy factor} to be number of circs divided by number of copies divided by length in years of the circ window.
+
+\begin{equation}
+\label{eq:org3e61286}
+busy = \frac{\frac{circs}{copies}}{years}
+\end{equation}
+
+Some examples:
+
+\begin{center}
+\begin{tabular}{rrrr}
+circs & copies & window & busy\\
+\hline
+10 & 1 & 5 & 2\\
+5 & 1 & 5 & 1\\
+7 & 2 & 5 & 0.7\\
+2 & 1 & 5 & 0.4\\
+1 & 2 & 5 & 0.4\\
+2 & 19 & 5 & 0.02\\
+2 & 698 & 5 & 69.8\\
+\end{tabular}
+\end{center}
+
+The last two are real examples: Francis Bacon's \href{https://www.library.yorku.ca/find/Record/567179}{Advancement of learning, and New Atlantis} has a busy factor of 0.02, and \href{https://www.library.yorku.ca/find/Record/2914459}{Economics: Canada in the Global Environment} is at 69.8, probably because it used to be on reserve but is now in the stacks).
+
+Further, let us set a \emph{target busy factor} of 1.  That means in an ideal situation, if we have more than one copy of a book, each is used once a year.  (If we only have one copy of a title then Easy Weeder is not used, so its busy factor is not used.)
+
+\section*{Assumptions}
+\label{sec:orgc8e7b1a}
+
+\begin{enumerate}
+\item We don't keep two copies of a book in the circulating collection just in case one gets lost.
+\item To minimize human oversight, we will always keep at least 1 copy of a title.  Weeding all copies of a title goes beyond Easy Weeder's scope.
+\item The inventory is accurate.  (If it is not, it can be corrected as weeding is done, and anyway that would rarely affect the number of copies that Easy Weeder will recommend: if we think we have four copies of something but only need one, it doesn't matter that really we only have three.)
+\end{enumerate}
+
+\section*{How the logic and calculations work}
+\label{sec:orgaaef9dc}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[height=3in]{logic-flow.png}
+\caption{\label{fig:orgc61901c}
+Easy Weeder logic}
+\end{figure}
+
+To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:orgc61901c} shows the decisions made.
+
+For example, for the one with 19 copies, and 2 circs, the calculation goes:
+
+\begin{itemize}
+\item 19 copies is too many.  What if we had 18? Busy factor: 0.022.
+\item 18 copies is too many.  What if we had 17? Busy factor: 0.024.
+\item …
+\item 5 copies is too many.  What if we had 4?  Busy factor: 0.1.
+\item 4 copies is too many.  What if we had 3?  Busy factor: 0.133.
+\item 3 copies is too many.  What if we had 2?  Busy factor: 0.2.
+\item 2 copies is too many. Keep 1 copy.
+\end{itemize}
+
+As it happens, for all four we end up keeping just one copy.
+
+\begin{center}
+\begin{tabular}{rrrrr}
+circs & copies & window & busy & rec\_copies\\
+\hline
+7 & 2 & 5 & 0.7 & 1\\
+2 & 1 & 5 & 0.4 & 1\\
+1 & 2 & 5 & 0.4 & 1\\
+2 & 19 & 5 & 0.02 & 1\\
+\end{tabular}
+\end{center}
+
+But, for example, let's say we had a book that had six copies and 12 circs over the last five years, for a busy factor of 0.4.  We would end up keeping 4 copies.
+
+\begin{itemize}
+\item 6 copies is too many.  What if we had 5? Busy factor: 0.48.
+\item 5 copies is too many.  What if we had 4? Busy factor: 0.6.
+\item 4 copies is too many.  What if we had 3? Busy factor: 0.8.
+\item 3 copies is too many.  What if we had 2? Busy factor: 1.2.
+\item Keep 2 copies.  (2 is the largest number giving a busy factor >= 1.)
+\end{itemize}
+
+\section*{Estimated easy weedables}
+\label{sec:org8289fc4}
+
+\begin{center}
+\begin{tabular}{lr}
+home\_location & n\\
+\hline
+BRONFMAN & 901\\
+FROST & 2074\\
+LAW & 556\\
+SCOTT & 120428\\
+STEACIE & 984\\
+\end{tabular}
+\end{center}
+
+\section*{To note}
+\label{sec:org531e42a}
+
+\begin{itemize}
+\item Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last five years may need a human decision.
+\item Easy Weeder does not remove duplicates across branches, but the same data can be used to do that. For example, \href{https://www.library.yorku.ca/find/Record/1172}{Captains of Consciousness: Advertising and the Social Roots of the Consumer Culture} has ten copies at three branches: Bronfman (7), Frost (1) and Scott (2).  Circulation in the circ window is: Bronfman (13), Frost (0), Scott (15).  Therefore Easy Weeder recommends this number of copies: Bronfman (2), Frost (1) and Scott (2).  Even if it makes sense to have the book at both Bronfman and Scott (which would need 3 copies to get down to a busy factor of 1), Frost does not need a copy, because no one has used it there since 2010.
+\end{itemize}
+
+\section*{Commands}
+\label{sec:orgfa37426}
+
+\begin{description}
+\item[{\texttt{make}}] ???
+\item[{\texttt{make push\_app}}] use locally to push the Shiny app up to production
+\end{description}
+
+\section*{Installation}
+\label{sec:org9a10d29}
+\end{document}

@@ -11,17 +11,19 @@
 
 * About
 
-TODO: Explain what this does.
+Easy Weeder is an algorithm that identifies little-used multiple copies of books and recommends how many copies we really need (minimum 1).
 
-* How it works
+*  Busy factor
 
-** "Busy factor"
+The /busy factor/ will determine which books with multiple copies can be easily weeded.
 
-What we know:
+First note that our calculations will be based on circs in a "circ window" of five years: the last five full academic years, plus the current year to date (so near the end of an academic year this will be almost six years).  In April 2018 the circ window includes all of academic 2012, 2013, 2014, 2015, 2106 and also academic 2017 from September 2017 to March 2018.
 
-+ number of copies
-+ number of circs of all those copies in the circ window
-+ length of circ window (5 years)
+This means we know three things for each title:
+
++ the  number of copies (this is actually "number of items with the same call number," so multiple copies of the same title are counted together, but four separate volumes in a four-volume set are not);
++ the number of circs of all those copies in the circ window; and
++ the length of circ window (defined as 5 years).
 
 We can combine these into a measure of "circs per copy per year," or how many times a year (on average, over the last five years) each copy of a title circulates.
 
@@ -36,29 +38,37 @@ Some examples:
 
 | circs | copies | window | busy |
 |-------+--------+--------+------|
-|     5 |      1 |      5 |    1 |
 |    10 |      1 |      5 |    2 |
+|     5 |      1 |      5 |    1 |
+|     7 |      2 |      5 |  0.7 |
 |     2 |      1 |      5 |  0.4 |
 |     1 |      2 |      5 |  0.4 |
 |     2 |     19 |      5 | 0.02 |
 |     2 |    698 |      5 | 69.8 |
 
-(The last two are real examples: Francis Bacon's [[https://www.library.yorku.ca/find/Record/567179][Advancement of learning, and New Atlantis]] has a busy factor of 0.02, and [[https://www.library.yorku.ca/find/Record/2914459][Economics: Canada in the Global Environment]] is at 69.8, probably because it used to be on reserve but is now in the stacks).
+The last two are real examples: Francis Bacon's [[https://www.library.yorku.ca/find/Record/567179][Advancement of learning, and New Atlantis]] has a busy factor of 0.02, and [[https://www.library.yorku.ca/find/Record/2914459][Economics: Canada in the Global Environment]] is at 69.8, probably because it used to be on reserve but is now in the stacks).
 
-** Logic
+Further, let us set a /target busy factor/ of 1.  That means in an ideal situation, if we have more than one copy of a book, each is used once a year.  (If we only have one copy of a title then Easy Weeder is not used, so its busy factor is not used.)
+
+* Assumptions
+
+1. We don't keep two copies of a book in the circulating collection just in case one gets lost.
+2. To minimize human oversight, we will always keep at least 1 copy of a title.  Weeding all copies of a title goes beyond Easy Weeder's scope.
+3. The inventory is accurate.  (If it is not, it can be corrected as weeding is done, and anyway that would rarely affect the number of copies that Easy Weeder will recommend: if we think we have four copies of something but only need one, it doesn't matter that really we only have three.)
+
+* How the logic and calculations work
 
 #+NAME: logic
 #+BEGIN_SRC ditaa :file logic-flow.png :cmdline -r
-
-+----------------+
-|                |   +---+   +-----------+
-|  busy ≥ 0.5?   +---+yes+---+do not weed|
-|                |   +---+   +-----------+
-+-----+----------+
++--------------+
+|              |   +-----+   +-------------+
+|  busy ≥ 1 ?  +---+ yes +---+ do not weed |
+|              |   +-----+   +-------------+
++-----+--------+
       |
-    +-++
-    |no|
-    ++-+
+   +--+-+
+   | no |
+   +-+--+
      |
 +----+-------------+
 |                  |
@@ -66,112 +76,67 @@ Some examples:
 |                  |
 +-+---+------------+
   |   |
-  | +-+-+   +----------+
-  | + 1 +---+do nothing|
-  | +---+   +----------+
+  | +-+-+   +----------------+
+  | + 1 +---+ leave it alone |
+  | +---+   +----------------+
   |
-+-+-+   +--------------------------------------+
-+ 2 +---+ calculate maximum number (≥ 1) of    |
-+---+   | copies to raise busy factor to ≥ 0.5 |
-        +--------------------------------------+
++-+-+   +-------------------------------------+
++ 2 +---+ calculate maximum number (≥ 1) of   |
++---+   | copies to raise busy factor to ≥ 1  |
+        +-------------------------------------+
 #+END_SRC
 
+#+ATTR_LATEX: :height 3in
 #+CAPTION: Easy Weeder logic
 #+LABEL: fig:logic
 #+RESULTS: logic
 [[file:logic-flow.png]]
 
-To revisit the examples above, three are ignored because their busy factor is >= 0.5.  For the remaining three we can calculate the recommended number of copies we should keep.
+To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure [[fig:logic]] shows the decisions made.
 
-For the one with 19 copies, and 2 circs, the calculation goes:
+For example, for the one with 19 copies, and 2 circs, the calculation goes:
 
 + 19 copies is too many.  What if we had 18? Busy factor: 0.022.
 + 18 copies is too many.  What if we had 17? Busy factor: 0.024.
 + …
-+ 6 copies is too many.  What if we had 5?  Busy factor: 0.08.
 + 5 copies is too many.  What if we had 4?  Busy factor: 0.1.
 + 4 copies is too many.  What if we had 3?  Busy factor: 0.133.
 + 3 copies is too many.  What if we had 2?  Busy factor: 0.2.
 + 2 copies is too many. Keep 1 copy.
 
-As it happens, for all three we end up keeping just one copy.
+As it happens, for all four we end up keeping just one copy.
 
-| circs | copies | window length | busy factor | recommended |
-|-------+--------+---------------+-------------+-------------|
-|     2 |      1 |             5 |         0.4 |           1 |
-|     1 |      2 |             5 |         0.4 |           1 |
-|     2 |     19 |             5 |        0.02 |           1 |
+| circs | copies | window | busy | rec_copies  |
+|-------+--------+--------+------+-------------|
+|     7 |      2 |      5 |  0.7 |           1 |
+|     2 |      1 |      5 |  0.4 |           1 |
+|     1 |      2 |      5 |  0.4 |           1 |
+|     2 |     19 |      5 | 0.02 |           1 |
 
 But, for example, let's say we had a book that had six copies and 12 circs over the last five years, for a busy factor of 0.4.  We would end up keeping 4 copies.
 
 + 6 copies is too many.  What if we had 5? Busy factor: 0.48.
-+ 5 copies is too many.  What if we had 4? Busy factor: 0.6
-+ Keep 4 copies.  (4 is the largest number leading to a busy factor >= 0.5.  Keeping 3 would lead to a busy factor of 0.8, but 3 < 4.)
++ 5 copies is too many.  What if we had 4? Busy factor: 0.6.
++ 4 copies is too many.  What if we had 3? Busy factor: 0.8.
++ 3 copies is too many.  What if we had 2? Busy factor: 1.2.
++ Keep 2 copies.  (2 is the largest number giving a busy factor >= 1.)
 
-* Generating all circ metrics, taking volumes into account
+* Estimated easy weedables
 
-#+BEGIN_SRC R :session R:easyweeder :results values :colnames yes
-library(tidyverse)
+| home_location |      n |
+|---------------+--------|
+| BRONFMAN      |    901 |
+| FROST         |   2074 |
+| LAW           |    556 |
+| SCOTT         | 120428 |
+| STEACIE       |    984 |
 
-symphony_metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
+* To note
 
-easyweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
++ Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last five years may need a human decision.
++ Easy Weeder does not remove duplicates across branches, but the same data can be used to do that. For example, [[https://www.library.yorku.ca/find/Record/1172][Captains of Consciousness: Advertising and the Social Roots of the Consumer Culture]] has ten copies at three branches: Bronfman (7), Frost (1) and Scott (2).  Circulation in the circ window is: Bronfman (13), Frost (0), Scott (15).  Therefore Easy Weeder recommends this number of copies: Bronfman (2), Frost (1) and Scott (2).  Even if it makes sense to have the book at both Bronfman and Scott (which would need 3 copies to get down to a busy factor of 1), Frost does not need a copy, because no one has used it there since 2010.
 
-circ_metrics <- read_csv(paste0(symphony_metrics_data_dir, "circ-metrics.csv"))
-
-circ_window_years <- 5
-#+END_SRC
-
-#+RESULTS:
-| x |
-|---|
-| 5 |
-
-#+BEGIN_SRC R :session R:easyweeder :results values :colnames yes
-how_many_copies_should_we_have <- function(copies = NULL, circs = NULL) {
-    if (circs == 0) { return(1) }
-    ## Calculate a vector of all possible busy values
-    ## for all possible numbers of copies, and then
-    ## the first one where busy >= 0.5.  The index
-    ## of that leads to the number of copies we want.
-    possible_copies <- seq(copies, 1)
-    possible_busy <- circs / possible_copies / circ_window_years
-    possible_busy_in_range <- which(possible_busy >= 0.5)
-    if (length(possible_busy_in_range) > 0) {
-        index_of_recommended_copies <- max(possible_busy_in_range)
-        return(possible_copies[index_of_recommended_copies])
-    } else {
-        return(1)
-    }
-}
-
-## scott <- circ_metrics %>% filter(home_location == "SCOTT", copies > 1, busy <= 0.5)
-
-steacie_weedable <-  circ_metrics %>% filter(home_location == "STEACIE", copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
-
-bronfman_weedable <- circ_metrics %>% filter(home_location == "BRONFMAN", copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
-
-frost_weedable <- circ_metrics %>% filter(home_location == "BRONFMAN", copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
-
-scott_weedable <- circ_metrics %>% filter(home_location == "SCOTT", copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
-
-easily_weedable <-  circ_metrics %>% filter(copies > 1, busy <= 0.5) %>% rowwise() %>% mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies)
-
-write_csv(easily_weedable, paste0(easyweeder_data_dir, "easily-weedable.csv"))
-#+END_SRC
-
-#+RESULTS:
-|   |
-
-* Examples
-
-+ [[https://www.library.yorku.ca/find/Record/1000076][A systolic array parallelizing compiler / Ping-Sheng Tseng]]: acquired in 1990, 0 circs.
-+ https://www.library.yorku.ca/find/Record/1438201 Two vols, neither circed, but it's not two copies of the same item.
-+ [[https://www.library.yorku.ca/find/Record/1172][Captains of consciousness : advertising and the social roots of the consumer culture]], copies at three branches
-
-The volumes problem.
-
-
+# + [[https://www.library.yorku.ca/find/Record/1000076][A systolic array parallelizing compiler / Ping-Sheng Tseng]]: acquired in 1990, 0 circs.
 
 * Commands
 
@@ -179,5 +144,3 @@ The volumes problem.
 + ~make push_app~ :: use locally to push the Shiny app up to production
 
 * Installation
-
-This is run locally once a year and pushed into production, so there is no cron job.
