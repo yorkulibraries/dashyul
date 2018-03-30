@@ -18,7 +18,10 @@ files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a(200
 
 write("Reading transaction logs ...", stderr())
 
-checkouts <- do.call("rbind", lapply(files, read.csv)) %>% tbl_df() %>% filter(transaction_command == "CV") %>% select(date, library, item_barcode)
+checkouts <- do.call("rbind", lapply(files, read.csv)) %>%
+    tbl_df() %>%
+    filter(transaction_command == "CV") %>%
+    select(date, library, item_barcode)
 
 write("Reading item details ...", stderr())
 
@@ -28,13 +31,15 @@ item_details <- read_csv(catalogue_current_item_details_file, col_types = "ccccc
     filter(home_location %in% c("SCOTT", "STEACIE", "FROST", "BRONFMAN", "SCOTT-MAPS")) %>%
     filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "SCOTT-RESV", "SCORE", "MAP", "STEAC-RESV", "SCMAP-BOOK"))
 
-circulated_item_details <- item_details %>% filter(item_barcode %in% checkouts$item_barcode)
+circulated_item_details <- item_details %>%
+    filter(item_barcode %in% checkouts$item_barcode)
 
 write("Reading title_metadata ...", stderr())
 
 title_metadata <- read_csv(catalogue_current_title_metadata_file)
 
-circulated_title_metadata <- title_metadata %>% filter(control_number %in% circulated_item_details$control_number)
+circulated_title_metadata <- title_metadata %>%
+    filter(control_number %in% circulated_item_details$control_number)
 
 write("Writing out ...", stderr())
 
