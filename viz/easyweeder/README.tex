@@ -1,4 +1,4 @@
-% Created 2018-03-29 Thu 21:17
+% Created 2018-03-29 Thu 21:32
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,12 +31,12 @@
 \maketitle
 
 \section*{About}
-\label{sec:org383d7ba}
+\label{sec:org49c4658}
 
 Easy Weeder is an algorithm that identifies little-used multiple copies of books and recommends how many copies we really need (minimum 1).
 
 \section*{Busy factor}
-\label{sec:org3f77dfe}
+\label{sec:orgf7b80b0}
 
 The \emph{busy factor} will determine which books with multiple copies can be easily weeded.
 
@@ -55,7 +55,7 @@ We can combine these into a measure of ``circs per copy per year,'' or how many 
 Define the \emph{busy factor} to be number of circs divided by number of copies divided by length in years of the circ window.
 
 \begin{equation}
-\label{eq:orged0936b}
+\label{eq:org764c51b}
 busy = \frac{\frac{circs}{copies}}{years}
 \end{equation}
 
@@ -80,7 +80,7 @@ The last two are real examples: Francis Bacon's \emph{\href{https://www.library.
 Further, let us set a \emph{target busy factor} of 1.  That means in an ideal situation, if we have more than one copy of a book, each is used once a year.  (If we only have one copy of a title then Easy Weeder is not used, so its busy factor is not used.)
 
 \section*{Assumptions}
-\label{sec:orgdbda080}
+\label{sec:org9abf04a}
 
 \begin{enumerate}
 \item We don't keep two copies of a book in the circulating collection just in case one gets lost.
@@ -89,16 +89,16 @@ Further, let us set a \emph{target busy factor} of 1.  That means in an ideal si
 \end{enumerate}
 
 \section*{How the logic and calculations work}
-\label{sec:org4b0f174}
+\label{sec:orga125d9f}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[height=3in]{logic-flow.png}
-\caption{\label{fig:orga3643d6}
+\caption{\label{fig:org78e909c}
 Easy Weeder logic}
 \end{figure}
 
-To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:orga3643d6} shows the decisions made.
+To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:org78e909c} shows the decisions made.
 
 For example, for the one with 19 copies, and 2 circs, the calculation goes:
 
@@ -136,10 +136,10 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 \end{itemize}
 
 \section*{Estimated easy weedables (March 2018)}
-\label{sec:orgc4edbf7}
+\label{sec:orgacb3c9c}
 
 \subsection*{By branch}
-\label{sec:org25d1884}
+\label{sec:orgc28f5a8}
 
 \begin{center}
 \begin{tabular}{lr}
@@ -154,7 +154,7 @@ STEACIE & 984\\
 \end{center}
 
 \subsection*{By branch and class letter}
-\label{sec:orgda63663}
+\label{sec:org05e8041}
 
 \begin{longtable}{lrrrrr}
 lc\_letter & BRONFMAN & FROST & LAW & SCOTT & STEACIE\\
@@ -197,15 +197,15 @@ Z &  & 2 & 9 & 598 & 10\\
 
 
 \section*{To note}
-\label{sec:org327e8bd}
+\label{sec:org18f449f}
 
 \begin{itemize}
 \item Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last 5 years may need a human decision.
-\item Easy Weeder does not remove duplicates across branches, but the same data can be used to do that. For example, \href{https://www.library.yorku.ca/find/Record/1172}{Captains of Consciousness: Advertising and the Social Roots of the Consumer Culture} has ten copies at three branches: Bronfman (7), Frost (1) and Scott (2).  Circulation in the circ window is: Bronfman (13), Frost (0), Scott (15).  Therefore Easy Weeder recommends this number of copies: Bronfman (2), Frost (1) and Scott (2).  Even if it makes sense to have the book at both Bronfman and Scott (which would need 3 copies to get down to a busy factor of 1), Frost does not need a copy, because no one has used it there since 2010.
+\item Easy Weeder does not remove duplicates across branches, but the same data can be used to do that. For example, \emph{\href{https://www.library.yorku.ca/find/Record/1172}{Captains of Consciousness: Advertising and the Social Roots of the Consumer Culture}} has ten copies at three branches: Bronfman (7), Frost (1) and Scott (2).  Circulation in the circ window is: Bronfman (13), Frost (0), Scott (15).  Therefore Easy Weeder recommends this number of copies: Bronfman (2), Frost (1) and Scott (2).  Even if it makes sense to have the book at both Bronfman and Scott (which would need 3 copies to get down to a busy factor of 1), Frost does not need a copy, because no one has used it there since 2010.
 \end{itemize}
 
 \section*{Commands}
-\label{sec:orge57671a}
+\label{sec:orgd81fb82}
 
 \begin{description}
 \item[{\texttt{make}}] prepare the Easy Weeder data
@@ -214,5 +214,5 @@ Z &  & 2 & 9 & 598 & 10\\
 \end{description}
 
 \section*{Installation}
-\label{sec:org3676bf2}
+\label{sec:org4c539ab}
 \end{document}

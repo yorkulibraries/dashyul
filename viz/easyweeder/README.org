@@ -183,7 +183,7 @@ easy_weedable %>%
 * To note
 
 + Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last 5 years may need a human decision.
-+ Easy Weeder does not remove duplicates across branches, but the same data can be used to do that. For example, [[https://www.library.yorku.ca/find/Record/1172][Captains of Consciousness: Advertising and the Social Roots of the Consumer Culture]] has ten copies at three branches: Bronfman (7), Frost (1) and Scott (2).  Circulation in the circ window is: Bronfman (13), Frost (0), Scott (15).  Therefore Easy Weeder recommends this number of copies: Bronfman (2), Frost (1) and Scott (2).  Even if it makes sense to have the book at both Bronfman and Scott (which would need 3 copies to get down to a busy factor of 1), Frost does not need a copy, because no one has used it there since 2010.
++ Easy Weeder does not remove duplicates across branches, but the same data can be used to do that. For example, /[[https://www.library.yorku.ca/find/Record/1172][Captains of Consciousness: Advertising and the Social Roots of the Consumer Culture]]/ has ten copies at three branches: Bronfman (7), Frost (1) and Scott (2).  Circulation in the circ window is: Bronfman (13), Frost (0), Scott (15).  Therefore Easy Weeder recommends this number of copies: Bronfman (2), Frost (1) and Scott (2).  Even if it makes sense to have the book at both Bronfman and Scott (which would need 3 copies to get down to a busy factor of 1), Frost does not need a copy, because no one has used it there since 2010.
 
 # + [[https://www.library.yorku.ca/find/Record/1000076][A systolic array parallelizing compiler / Ping-Sheng Tseng]]: acquired in 1990, 0 circs.
 
