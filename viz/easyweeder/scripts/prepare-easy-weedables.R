@@ -4,8 +4,12 @@ write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
 library(tidyverse)
+library(yulr)
 
 symphony_metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
+
+catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+catalogue_current_title_metadata_file <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.csv")
 
 easyweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
 
@@ -40,6 +44,13 @@ easy_weedable <- circ_metrics %>%
     rowwise() %>%
     mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window), weedable = copies - rec_copies) %>%
     select(-circs_per_copy)
+
+write("Adding title/author ...", stderr())
+catalogue_current_title_metadata <- read_csv(catalogue_current_title_metadata_file, col_types = "ccc")
+
+easy_weedable <- easy_weedable %>%
+    left_join(catalogue_current_title_metadata, by = c("control_number", "call_number")) %>%
+    mutate(title_author = readable_marc245(title_author))
 
 write_csv(easy_weedable, paste0(easyweeder_data_dir, "easy-weedable.csv"))
 

@@ -3,7 +3,6 @@
 
 #+OPTIONS: num:nil ^:{} toc:nil
 
-#+LATEX_HEADER: \usepackage[T1]{fontenc}
 #+LATEX_HEADER: \hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdfborder={0 0 0}}
 #+LATEX_HEADER: \usepackage[english]{babel} % English language/hyphenation
 
@@ -13,7 +12,7 @@
 
 Easy Weeder is an algorithm that identifies little-used multiple copies of books and recommends how many copies we really need (minimum 1).
 
-*  Busy factor
+* Busy factor
 
 The /busy factor/ will determine which books with multiple copies can be easily weeded.
 
@@ -29,7 +28,7 @@ We can combine these into a measure of "circs per copy per year," or how many ti
 
 Define the /busy factor/ to be number of circs divided by number of copies divided by length in years of the circ window.
 
-#+name: eqn:1
+#+name: eqn_1
 \begin{equation}
 busy = \frac{\frac{circs}{copies}}{years}
 \end{equation}
@@ -46,7 +45,7 @@ Some examples:
 |     2 |     19 |      5 | 0.02 |
 |   698 |      2 |      5 | 69.8 |
 
-The last two are real examples: Francis Bacon's [[https://www.library.yorku.ca/find/Record/567179][Advancement of learning, and New Atlantis]] has a busy factor of 0.02, and [[https://www.library.yorku.ca/find/Record/2914459][Economics: Canada in the Global Environment]] is at 69.8, probably because it used to be on reserve but is now in the stacks).
+The last two are real examples: Francis Bacon's /[[https://www.library.yorku.ca/find/Record/567179][Advancement of Learning, and New Atlantis]]/ has a busy factor of 0.02, and /[[https://www.library.yorku.ca/find/Record/2914459][Economics: Canada in the Global Environment]]/ is at 69.8, probably because it used to be on reserve but is now in the stacks.
 
 Further, let us set a /target busy factor/ of 1.  That means in an ideal situation, if we have more than one copy of a book, each is used once a year.  (If we only have one copy of a title then Easy Weeder is not used, so its busy factor is not used.)
 
@@ -88,11 +87,11 @@ Further, let us set a /target busy factor/ of 1.  That means in an ideal situati
 
 #+ATTR_LATEX: :height 3in
 #+CAPTION: Easy Weeder logic
-#+LABEL: fig:logic
+#+NAME: fig_logic
 #+RESULTS: logic
 [[file:logic-flow.png]]
 
-To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure [[fig:logic]] shows the decisions made.
+To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure [[fig_logic]] shows the decisions made.
 
 For example, for the one with 19 copies, and 2 circs, the calculation goes:
 
@@ -121,8 +120,21 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 + 3 copies is too many.  2 → busy = 1.2.
 + Keep 2 copies.  (2 is the largest number giving a busy factor >= 1.)
 
-* Estimated easy weedables
+* Estimated easy weedables (March 2018)
 
+** By branch
+
+#+BEGIN_SRC R :session R:easyweeder :results silent :exports none
+library(tidyverse)
+easyweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
+easy_weedable <- read_csv(paste0(easyweeder_data_dir, "easy-weedable.csv"))
+#+END_SRC
+
+#+BEGIN_SRC R :session R:easyweeder :results value :exports results :colnames yes
+easy_weedable %>% count(home_location, wt = weedable)
+#+END_SRC
+
+#+RESULTS:
 | home_location |      n |
 |---------------+--------|
 | BRONFMAN      |    901 |
@@ -130,6 +142,43 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 | LAW           |    556 |
 | SCOTT         | 120428 |
 | STEACIE       |    984 |
+
+** By branch and class letter
+
+#+BEGIN_SRC R :session R:easyweeder :results value :exports results :colnames yes
+easy_weedable %>%
+    mutate(lc_letter = substr(call_number, 0, 1)) %>%
+    count(home_location, lc_letter, wt = weedable) %>%
+    spread(home_location, n, fill = "")
+#+END_SRC
+
+#+ATTR_LATEX: :environment longtable
+#+RESULTS:
+| lc_letter | BRONFMAN | FROST | LAW | SCOTT | STEACIE |
+|-----------+----------+-------+-----+-------+---------|
+| A         |          |       |     |   308 |         |
+| B         |          |    92 |   2 | 14979 |         |
+| C         |          |     2 |     |  1118 |       2 |
+| D         |          |    85 |   1 | 10068 |       1 |
+| E         |          |    43 |   3 |  4498 |         |
+| F         |          |   384 |   5 |  8724 |         |
+| G         |        1 |    12 |     |  5427 |      16 |
+| H         |      876 |   434 |  78 | 21268 |      32 |
+| J         |        1 |   157 |  16 |  2805 |         |
+| K         |        2 |    14 | 378 |  1410 |       3 |
+| L         |          |    11 |   3 |  2410 |       1 |
+| M         |          |     1 |     |  1578 |       1 |
+| N         |        3 |    14 |   2 |  6688 |         |
+| P         |        2 |   769 |   5 | 30872 |       1 |
+| Q         |        1 |    21 |     |   780 |     655 |
+| R         |        2 |    17 |   6 |  5183 |     156 |
+| S         |          |     2 |     |   158 |      19 |
+| T         |       13 |     5 |   2 |   774 |      86 |
+| U         |          |     9 |     |   739 |       1 |
+| V         |          |       |     |    43 |         |
+| X         |          |       |  46 |       |         |
+| Z         |          |     2 |   9 |   598 |      10 |
+
 
 * To note
 
@@ -140,7 +189,8 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 
 * Commands
 
-+ ~make~ :: ???
++ ~make~ :: prepare the Easy Weeder data
++ ~make get_data~ :: use locally to pull down production Easy Weeder data
 + ~make push_app~ :: use locally to push the Shiny app up to production
 
 * Installation

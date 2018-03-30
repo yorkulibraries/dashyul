@@ -1,4 +1,4 @@
-% Created 2018-03-29 Thu 16:24
+% Created 2018-03-29 Thu 21:17
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -14,7 +14,6 @@
 \usepackage{amssymb}
 \usepackage{capt-of}
 \usepackage{hyperref}
-\usepackage[T1]{fontenc}
 \hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdfborder={0 0 0}}
 \usepackage[english]{babel} % English language/hyphenation
 \author{William Denton}
@@ -32,12 +31,12 @@
 \maketitle
 
 \section*{About}
-\label{sec:orgfb14b60}
+\label{sec:org383d7ba}
 
 Easy Weeder is an algorithm that identifies little-used multiple copies of books and recommends how many copies we really need (minimum 1).
 
 \section*{Busy factor}
-\label{sec:orgc2836e7}
+\label{sec:org3f77dfe}
 
 The \emph{busy factor} will determine which books with multiple copies can be easily weeded.
 
@@ -56,7 +55,7 @@ We can combine these into a measure of ``circs per copy per year,'' or how many 
 Define the \emph{busy factor} to be number of circs divided by number of copies divided by length in years of the circ window.
 
 \begin{equation}
-\label{eq:org41f9223}
+\label{eq:orged0936b}
 busy = \frac{\frac{circs}{copies}}{years}
 \end{equation}
 
@@ -76,12 +75,12 @@ circs & copies & window & busy\\
 \end{tabular}
 \end{center}
 
-The last two are real examples: Francis Bacon's \href{https://www.library.yorku.ca/find/Record/567179}{Advancement of learning, and New Atlantis} has a busy factor of 0.02, and \href{https://www.library.yorku.ca/find/Record/2914459}{Economics: Canada in the Global Environment} is at 69.8, probably because it used to be on reserve but is now in the stacks).
+The last two are real examples: Francis Bacon's \emph{\href{https://www.library.yorku.ca/find/Record/567179}{Advancement of Learning, and New Atlantis}} has a busy factor of 0.02, and \emph{\href{https://www.library.yorku.ca/find/Record/2914459}{Economics: Canada in the Global Environment}} is at 69.8, probably because it used to be on reserve but is now in the stacks.
 
 Further, let us set a \emph{target busy factor} of 1.  That means in an ideal situation, if we have more than one copy of a book, each is used once a year.  (If we only have one copy of a title then Easy Weeder is not used, so its busy factor is not used.)
 
 \section*{Assumptions}
-\label{sec:orgd0aaa06}
+\label{sec:orgdbda080}
 
 \begin{enumerate}
 \item We don't keep two copies of a book in the circulating collection just in case one gets lost.
@@ -90,16 +89,16 @@ Further, let us set a \emph{target busy factor} of 1.  That means in an ideal si
 \end{enumerate}
 
 \section*{How the logic and calculations work}
-\label{sec:org73ddf2d}
+\label{sec:org4b0f174}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[height=3in]{logic-flow.png}
-\caption{\label{fig:orgcfa04ca}
+\caption{\label{fig:orga3643d6}
 Easy Weeder logic}
 \end{figure}
 
-To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:orgcfa04ca} shows the decisions made.
+To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:orga3643d6} shows the decisions made.
 
 For example, for the one with 19 copies, and 2 circs, the calculation goes:
 
@@ -136,8 +135,11 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 \item Keep 2 copies.  (2 is the largest number giving a busy factor >= 1.)
 \end{itemize}
 
-\section*{Estimated easy weedables}
-\label{sec:org7d775b4}
+\section*{Estimated easy weedables (March 2018)}
+\label{sec:orgc4edbf7}
+
+\subsection*{By branch}
+\label{sec:org25d1884}
 
 \begin{center}
 \begin{tabular}{lr}
@@ -151,8 +153,51 @@ STEACIE & 984\\
 \end{tabular}
 \end{center}
 
+\subsection*{By branch and class letter}
+\label{sec:orgda63663}
+
+\begin{longtable}{lrrrrr}
+lc\_letter & BRONFMAN & FROST & LAW & SCOTT & STEACIE\\
+\hline
+\endfirsthead
+\multicolumn{6}{l}{Continued from previous page} \\
+\hline
+
+lc\_letter & BRONFMAN & FROST & LAW & SCOTT & STEACIE \\
+
+\hline
+\endhead
+\hline\multicolumn{6}{r}{Continued on next page} \\
+\endfoot
+\endlastfoot
+\hline
+A &  &  &  & 308 & \\
+B &  & 92 & 2 & 14979 & \\
+C &  & 2 &  & 1118 & 2\\
+D &  & 85 & 1 & 10068 & 1\\
+E &  & 43 & 3 & 4498 & \\
+F &  & 384 & 5 & 8724 & \\
+G & 1 & 12 &  & 5427 & 16\\
+H & 876 & 434 & 78 & 21268 & 32\\
+J & 1 & 157 & 16 & 2805 & \\
+K & 2 & 14 & 378 & 1410 & 3\\
+L &  & 11 & 3 & 2410 & 1\\
+M &  & 1 &  & 1578 & 1\\
+N & 3 & 14 & 2 & 6688 & \\
+P & 2 & 769 & 5 & 30872 & 1\\
+Q & 1 & 21 &  & 780 & 655\\
+R & 2 & 17 & 6 & 5183 & 156\\
+S &  & 2 &  & 158 & 19\\
+T & 13 & 5 & 2 & 774 & 86\\
+U &  & 9 &  & 739 & 1\\
+V &  &  &  & 43 & \\
+X &  &  & 46 &  & \\
+Z &  & 2 & 9 & 598 & 10\\
+\end{longtable}
+
+
 \section*{To note}
-\label{sec:orgf0b8552}
+\label{sec:org327e8bd}
 
 \begin{itemize}
 \item Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last 5 years may need a human decision.
@@ -160,13 +205,14 @@ STEACIE & 984\\
 \end{itemize}
 
 \section*{Commands}
-\label{sec:org3ab3b3b}
+\label{sec:orge57671a}
 
 \begin{description}
-\item[{\texttt{make}}] ???
+\item[{\texttt{make}}] prepare the Easy Weeder data
+\item[{\texttt{make get\_data}}] use locally to pull down production Easy Weeder data
 \item[{\texttt{make push\_app}}] use locally to push the Shiny app up to production
 \end{description}
 
 \section*{Installation}
-\label{sec:orgf3257aa}
+\label{sec:org3676bf2}
 \end{document}
