@@ -35,7 +35,7 @@ shinyServer(function(input, output, session) {
 
     output$downloadData <- downloadHandler(
     filename = function() {
-        paste("weedable-", input$home_location, "-", input$lc_letters, ".csv", sep = "")
+        paste("easy-weedable-", input$home_location, "-", input$lc_letters, ".csv", sep = "")
     },
     content = function(file) {
         write.csv(weedable_data(), file, row.names = FALSE)
