@@ -97,9 +97,9 @@ symphony_items_so_far <- scan(paste0(dashboard_data_dir, "symphony-items-so-far.
 Row
 -------------------------------------
 
-### AskUs questions tions today
+### AskUs questions today
 
-```{r}
+ ```{r}
 question_count_today_box("AskUs")
 ```
 
@@ -197,7 +197,7 @@ gauge(libstats_summary_res_qs, min = 0, max = libstats_summary_all_qs)
 Row
 -------------------------------------
 
-### people have used EZProxy since Sep 1
+### EZProxy users since Sep 1
 
 ```{r}
 renderValueBox({
