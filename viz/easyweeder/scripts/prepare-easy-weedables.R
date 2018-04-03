@@ -31,7 +31,7 @@ how_many_copies_should_we_have <- function(copies = NULL, circs = NULL) {
     possible_busy <- circs / possible_copies / circ_window_years
     possible_busy_in_range <- which(possible_busy >= target_busy_factor)
     if (length(possible_busy_in_range) > 0) {
-        index_of_recommended_copies <- max(possible_busy_in_range)
+        index_of_recommended_copies <- min(possible_busy_in_range)
         return(possible_copies[index_of_recommended_copies])
     } else {
         return(1)
