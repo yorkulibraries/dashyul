@@ -1,4 +1,4 @@
-% Created 2018-03-29 Thu 21:32
+% Created 2018-04-03 Tue 15:13
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -31,12 +31,12 @@
 \maketitle
 
 \section*{About}
-\label{sec:org49c4658}
+\label{sec:orgb44fd4d}
 
 Easy Weeder is an algorithm that identifies little-used multiple copies of books and recommends how many copies we really need (minimum 1).
 
 \section*{Busy factor}
-\label{sec:orgf7b80b0}
+\label{sec:org85ef196}
 
 The \emph{busy factor} will determine which books with multiple copies can be easily weeded.
 
@@ -45,7 +45,7 @@ First note that our calculations will be based on circs in a ``circ window'' of 
 This means we know three things for each title:
 
 \begin{itemize}
-\item the  number of copies (this is actually ``number of items with the same call number,'' so multiple copies of the same title are counted together, but four separate volumes in a four-volume set are not);
+\item the number of copies (this is actually ``number of items with the same call number,'' so multiple copies of the same title are counted together, but four separate volumes in a four-volume set are not);
 \item the number of circs of all those copies in the circ window; and
 \item the length of circ window (defined as 5 years).
 \end{itemize}
@@ -55,7 +55,7 @@ We can combine these into a measure of ``circs per copy per year,'' or how many 
 Define the \emph{busy factor} to be number of circs divided by number of copies divided by length in years of the circ window.
 
 \begin{equation}
-\label{eq:org764c51b}
+\label{eq:orgb3a49d3}
 busy = \frac{\frac{circs}{copies}}{years}
 \end{equation}
 
@@ -80,7 +80,7 @@ The last two are real examples: Francis Bacon's \emph{\href{https://www.library.
 Further, let us set a \emph{target busy factor} of 1.  That means in an ideal situation, if we have more than one copy of a book, each is used once a year.  (If we only have one copy of a title then Easy Weeder is not used, so its busy factor is not used.)
 
 \section*{Assumptions}
-\label{sec:org9abf04a}
+\label{sec:org3a2634b}
 
 \begin{enumerate}
 \item We don't keep two copies of a book in the circulating collection just in case one gets lost.
@@ -89,16 +89,16 @@ Further, let us set a \emph{target busy factor} of 1.  That means in an ideal si
 \end{enumerate}
 
 \section*{How the logic and calculations work}
-\label{sec:orga125d9f}
+\label{sec:orgfe08403}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[height=3in]{logic-flow.png}
-\caption{\label{fig:org78e909c}
+\caption{\label{fig:org20e02cb}
 Easy Weeder logic}
 \end{figure}
 
-To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:org78e909c} shows the decisions made.
+To revisit the examples above, two are ignored because their busy factor is >= 1.  For the remaining four we can calculate the recommended number of copies we should keep.  Figure \ref{fig:org20e02cb} shows the decisions made.
 
 For example, for the one with 19 copies, and 2 circs, the calculation goes:
 
@@ -135,26 +135,42 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 \item Keep 2 copies.  (2 is the largest number giving a busy factor >= 1.)
 \end{itemize}
 
-\section*{Estimated easy weedables (March 2018)}
-\label{sec:orgacb3c9c}
+\section*{Estimated easy weedables (April 2018)}
+\label{sec:orga991bc7}
 
-\subsection*{By branch}
-\label{sec:orgc28f5a8}
+\subsection*{Space measurements}
+\label{sec:orged14aeb}
+
+Rules of thumb for how many books fit into a space:
 
 \begin{center}
-\begin{tabular}{lr}
-home\_location & n\\
+\begin{tabular}{lll}
+30 books & is & 1  shelf\\
+7 shelves & is & 1 stack\\
+10 stacks & is & 1 range\\
+2 ranges & is & 1 row\\
+\end{tabular}
+\end{center}
+
+Therefore, one stack holds \(30 \times 7 = 210\) books, one range holds \(210 \times 10 = 2100\) books and one row holds \(2100 \times 2 = 4200\) books.  Some ranges have fewer stacks, and some shelves hold more books, but these are good enough for estimates.
+
+\subsection*{By branch}
+\label{sec:orgbff9867}
+
+\begin{center}
+\begin{tabular}{lrrr}
+home\_location & n & stacks & rows\\
 \hline
-BRONFMAN & 901\\
-FROST & 2074\\
-LAW & 556\\
-SCOTT & 120428\\
-STEACIE & 984\\
+BRONFMAN & 873 & 4 & 0\\
+FROST & 2072 & 10 & 0\\
+LAW & 555 & 3 & 0\\
+SCOTT & 117226 & 558 & 28\\
+STEACIE & 946 & 5 & 0\\
 \end{tabular}
 \end{center}
 
 \subsection*{By branch and class letter}
-\label{sec:org05e8041}
+\label{sec:org034542a}
 
 \begin{longtable}{lrrrrr}
 lc\_letter & BRONFMAN & FROST & LAW & SCOTT & STEACIE\\
@@ -172,32 +188,31 @@ lc\_letter & BRONFMAN & FROST & LAW & SCOTT & STEACIE \\
 \endlastfoot
 \hline
 A &  &  &  & 308 & \\
-B &  & 92 & 2 & 14979 & \\
-C &  & 2 &  & 1118 & 2\\
-D &  & 85 & 1 & 10068 & 1\\
-E &  & 43 & 3 & 4498 & \\
-F &  & 384 & 5 & 8724 & \\
-G & 1 & 12 &  & 5427 & 16\\
-H & 876 & 434 & 78 & 21268 & 32\\
-J & 1 & 157 & 16 & 2805 & \\
-K & 2 & 14 & 378 & 1410 & 3\\
-L &  & 11 & 3 & 2410 & 1\\
-M &  & 1 &  & 1578 & 1\\
-N & 3 & 14 & 2 & 6688 & \\
-P & 2 & 769 & 5 & 30872 & 1\\
-Q & 1 & 21 &  & 780 & 655\\
-R & 2 & 17 & 6 & 5183 & 156\\
-S &  & 2 &  & 158 & 19\\
-T & 13 & 5 & 2 & 774 & 86\\
-U &  & 9 &  & 739 & 1\\
+B &  & 92 & 2 & 14670 & \\
+C &  & 2 &  & 1089 & 2\\
+D &  & 85 & 1 & 9968 & 1\\
+E &  & 43 & 3 & 4391 & \\
+F &  & 384 & 5 & 8301 & \\
+G & 1 & 12 &  & 5295 & 16\\
+H & 847 & 434 & 78 & 20489 & 32\\
+J & 1 & 156 & 16 & 2659 & \\
+K & 2 & 14 & 377 & 1373 & 3\\
+L & 1 & 11 & 3 & 2335 & 1\\
+M &  & 1 &  & 1462 & 1\\
+N & 3 & 14 & 2 & 6601 & \\
+P & 2 & 768 & 5 & 30193 & 1\\
+Q & 1 & 21 &  & 748 & 620\\
+R & 2 & 17 & 6 & 5049 & 153\\
+S &  & 2 &  & 157 & 19\\
+T & 13 & 5 & 2 & 768 & 86\\
+U &  & 9 &  & 737 & 1\\
 V &  &  &  & 43 & \\
 X &  &  & 46 &  & \\
-Z &  & 2 & 9 & 598 & 10\\
+Z &  & 2 & 9 & 590 & 10\\
 \end{longtable}
 
-
 \section*{To note}
-\label{sec:org18f449f}
+\label{sec:org0d60521}
 
 \begin{itemize}
 \item Easy Weeder does not use acquisition year.  Low-circing multiple copies acquired within the last 5 years may need a human decision.
@@ -205,7 +220,7 @@ Z &  & 2 & 9 & 598 & 10\\
 \end{itemize}
 
 \section*{Commands}
-\label{sec:orgd81fb82}
+\label{sec:orgfc1f352}
 
 \begin{description}
 \item[{\texttt{make}}] prepare the Easy Weeder data
@@ -214,5 +229,5 @@ Z &  & 2 & 9 & 598 & 10\\
 \end{description}
 
 \section*{Installation}
-\label{sec:org4c539ab}
+\label{sec:orgdbd69d6}
 \end{document}

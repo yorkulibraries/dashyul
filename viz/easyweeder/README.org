@@ -120,7 +120,18 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 + 3 copies is too many.  2 → busy = 1.2.
 + Keep 2 copies.  (2 is the largest number giving a busy factor >= 1.)
 
-* Estimated easy weedables (March 2018)
+* Estimated easy weedables (April 2018)
+
+** Space measurements
+
+Rules of thumb for how many books fit into a space:
+
+| 30 books  | is | 1  shelf  |
+| 7 shelves | is | 1 stack  |
+| 10 stacks | is | 1 range  |
+| 2 ranges  | is | 1 row    |
+
+Therefore, one stack holds \(30 \times 7 = 210\) books, one range holds \(210 \times 10 = 2100\) books and one row holds \(2100 \times 2 = 4200\) books.  Some ranges have fewer stacks, and some shelves hold more books, but these are good enough for estimates.
 
 ** By branch
 
@@ -131,17 +142,17 @@ easy_weedable <- read_csv(paste0(easyweeder_data_dir, "easy-weedable.csv"))
 #+END_SRC
 
 #+BEGIN_SRC R :session R:easyweeder :results value :exports results :colnames yes
-easy_weedable %>% count(home_location, wt = weedable)
+easy_weedable %>% count(home_location, wt = weedable) %>% mutate(stacks = round(n / 210), rows = round(n / 4200))
 #+END_SRC
 
 #+RESULTS:
-| home_location |      n |
-|---------------+--------|
-| BRONFMAN      |    873 |
-| FROST         |   2072 |
-| LAW           |    555 |
-| SCOTT         | 117226 |
-| STEACIE       |    946 |
+| home_location |      n | stacks | rows |
+|---------------+--------+--------+------|
+| BRONFMAN      |    873 |      4 |    0 |
+| FROST         |   2072 |     10 |    0 |
+| LAW           |    555 |      3 |    0 |
+| SCOTT         | 117226 |    558 |   28 |
+| STEACIE       |    946 |      5 |    0 |
 
 ** By branch and class letter
 
