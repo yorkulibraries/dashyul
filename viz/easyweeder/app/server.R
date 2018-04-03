@@ -1,65 +1,45 @@
 library(tidyverse)
-library(scales)
 library(shiny)
+library(yulr)
 
 ## TODO: Fix the hardcoding of the data directory.
 
 ## ezweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/ezweeder/")
-ezweeder_data_dir <- "/dashyul/data/viz/ezweeder/"
+ezweeder_data_dir <- "/dashyul/data/viz/easyweeder/"
 
-ezweeder_checkouts <- read_csv(paste0(ezweeder_data_dir, "ezweeder-checkouts.csv"))
-ezweeder_items     <- read_csv(paste0(ezweeder_data_dir, "ezweeder-items.csv"))
-ezweeder_titles    <- read_csv(paste0(ezweeder_data_dir, "ezweeder-titles.csv"))
+easy_weedable <- read_csv(paste0(ezweeder_data_dir, "easy-weedable.csv"))
 
-types <- list("BRONFMAN" = c("BRONF-BOOK"),
-             "FROST" = c("FROST-BOOK"),
-             "LAW" = c("LAW-BOOK"),
-             "SCOTT" = c("SCOTT-BOOK", "SCORE"),
-             "SCOTT-MAPS" = c("MAP", "SCMAP-BOOK"),
-             "STEACIE" = c("STEAC-BOOK")
-             )
+locations = c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
 
 shinyServer(function(input, output, session) {
 
     output$home_locations <- renderUI({
-        selectInput("home_location", "Home location", names(types), selected = "SCOTT")
+        selectInput("home_location", "Home location", locations, selected = "SCOTT")
     })
 
-    output$item_types <- renderUI({
-        selectInput("item_type", "Item type", types[[input$home_location]])
+    weedable_data <- reactive({
+        easy_weedable %>%
+            filter(home_location == input$home_location,
+                   lc_letters == toupper(input$lc_letters))
     })
 
-    output$digits_low <- renderUI({
-        textInput("lc_digit_low", "Lowest number", value = 0)
+    weedable_readable <- reactive({
+        weedable_data() %>%
+            mutate(link = link_to_vufind(control_number, title_author)) %>%
+            select(link, call_number, copies, circs_in_window, busy, rec_copies, weedable)
     })
 
-    output$digits_high <- renderUI({
-        textInput("lc_digit_high", "Highest number", value = 10000)
-    })
+    output$weedable_table <- renderDataTable(
+        weedable_readable(), escape = FALSE
+    )
 
-    items_in_range <- reactive({
-        items %>%
-        filter(home_location == input$home_location,
-               item_type == input$item_type,
-               lc_letters == toupper(input$lc_letters),
-               lc_digits >= as.numeric(input$lc_digit_low),
-               lc_digits <= as.numeric(input$lc_digit_high)
-               )
-    })
-
-    checkouts_in_range <- reactive({
-        checkouts %>% filter(item_barcode) %in% items_in_range()$item_barcode)
-    })
-
-    output$acqs_table <- renderTable({
-        growth <- j() %>%
-        rename(year = acq_ayear) %>%
-        mutate(acquired = total_circed + total_uncirced) %>%
-        rename(uncirced = total_uncirced) %>%
-        select(year, acquired, uncirced, pct_uncirced)
-        ## growth$year <- substring(as.character(growth$year), 0, 4)
-        ## print(growth)
-        growth
-    })
+    output$downloadData <- downloadHandler(
+    filename = function() {
+        paste("weedable-", input$home_location, "-", input$lc_letters, ".csv", sep = "")
+    },
+    content = function(file) {
+        write.csv(weedable_data(), file, row.names = FALSE)
+    }
+  )
 
 })

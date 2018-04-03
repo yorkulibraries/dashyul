@@ -20,7 +20,7 @@ First note that our calculations will be based on circs in a "circ window" of fi
 
 This means we know three things for each title:
 
-+ the  number of copies (this is actually "number of items with the same call number," so multiple copies of the same title are counted together, but four separate volumes in a four-volume set are not);
++ the number of copies (this is actually "number of items with the same call number," so multiple copies of the same title are counted together, but four separate volumes in a four-volume set are not);
 + the number of circs of all those copies in the circ window; and
 + the length of circ window (defined as 5 years).
 
@@ -137,13 +137,16 @@ easy_weedable %>% count(home_location, wt = weedable)
 #+RESULTS:
 | home_location |      n |
 |---------------+--------|
-| BRONFMAN      |    901 |
-| FROST         |   2074 |
-| LAW           |    556 |
-| SCOTT         | 120428 |
-| STEACIE       |    984 |
+| BRONFMAN      |    873 |
+| FROST         |   2072 |
+| LAW           |    555 |
+| SCOTT         | 117226 |
+| STEACIE       |    946 |
 
 ** By branch and class letter
+
+# circ_metrics %>% filter(control_number == "a1351697")
+# Ken McR's book
 
 #+BEGIN_SRC R :session R:easyweeder :results value :exports results :colnames yes
 easy_weedable %>%
@@ -157,28 +160,27 @@ easy_weedable %>%
 | lc_letter | BRONFMAN | FROST | LAW | SCOTT | STEACIE |
 |-----------+----------+-------+-----+-------+---------|
 | A         |          |       |     |   308 |         |
-| B         |          |    92 |   2 | 14979 |         |
-| C         |          |     2 |     |  1118 |       2 |
-| D         |          |    85 |   1 | 10068 |       1 |
-| E         |          |    43 |   3 |  4498 |         |
-| F         |          |   384 |   5 |  8724 |         |
-| G         |        1 |    12 |     |  5427 |      16 |
-| H         |      876 |   434 |  78 | 21268 |      32 |
-| J         |        1 |   157 |  16 |  2805 |         |
-| K         |        2 |    14 | 378 |  1410 |       3 |
-| L         |          |    11 |   3 |  2410 |       1 |
-| M         |          |     1 |     |  1578 |       1 |
-| N         |        3 |    14 |   2 |  6688 |         |
-| P         |        2 |   769 |   5 | 30872 |       1 |
-| Q         |        1 |    21 |     |   780 |     655 |
-| R         |        2 |    17 |   6 |  5183 |     156 |
-| S         |          |     2 |     |   158 |      19 |
-| T         |       13 |     5 |   2 |   774 |      86 |
-| U         |          |     9 |     |   739 |       1 |
+| B         |          |    92 |   2 | 14670 |         |
+| C         |          |     2 |     |  1089 |       2 |
+| D         |          |    85 |   1 |  9968 |       1 |
+| E         |          |    43 |   3 |  4391 |         |
+| F         |          |   384 |   5 |  8301 |         |
+| G         |        1 |    12 |     |  5295 |      16 |
+| H         |      847 |   434 |  78 | 20489 |      32 |
+| J         |        1 |   156 |  16 |  2659 |         |
+| K         |        2 |    14 | 377 |  1373 |       3 |
+| L         |        1 |    11 |   3 |  2335 |       1 |
+| M         |          |     1 |     |  1462 |       1 |
+| N         |        3 |    14 |   2 |  6601 |         |
+| P         |        2 |   768 |   5 | 30193 |       1 |
+| Q         |        1 |    21 |     |   748 |     620 |
+| R         |        2 |    17 |   6 |  5049 |     153 |
+| S         |          |     2 |     |   157 |      19 |
+| T         |       13 |     5 |   2 |   768 |      86 |
+| U         |          |     9 |     |   737 |       1 |
 | V         |          |       |     |    43 |         |
 | X         |          |       |  46 |       |         |
-| Z         |          |     2 |   9 |   598 |      10 |
-
+| Z         |          |     2 |   9 |   590 |      10 |
 
 * To note
 

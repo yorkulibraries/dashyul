@@ -1,30 +1,22 @@
 library(shiny)
 
 shinyUI(
-
     fluidPage(
-
-        titlePanel("Easy Weeder!"),
-
+        titlePanel("Easy Weeder"),
         sidebarLayout(
-
             sidebarPanel(
-
                 uiOutput("home_locations"),
                 uiOutput("item_types"),
                 textInput("lc_letters", label = "LC class letter(s)", value = "B"),
-                uiOutput("digits_low"),
-                uiOutput("digits_high"),
-
+                downloadButton("downloadData", "Download data"),
                 tags$p("William Denton (wdenton@yorku.ca)"),
-                tags$p("Updated 28 March 2018.")
-
+                tags$p("Updated 03 April 2018."),
+                width = 2
             ),
 
             mainPanel(
-                tableOutput("acqs_table")
+                dataTableOutput("weedable_table")
             )
-
         )
     )
 )
