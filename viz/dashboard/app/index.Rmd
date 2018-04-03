@@ -92,14 +92,12 @@ symphony_items_so_far <- scan(paste0(dashboard_data_dir, "symphony-items-so-far.
 ## ## OJS
 ## ojs_total_downloads <- scan(paste0(dashboard_data_dir, "ojs-total-downloads.txt"))
 
-
 ```
-
 
 Row
 -------------------------------------
 
-### AskUs questions today
+### AskUs questions tions today
 
 ```{r}
 question_count_today_box("AskUs")
@@ -309,27 +307,6 @@ ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) + geom_col(width = 
 
 Sidebar {.sidebar}
 -------------------------------------
+Explanatory text here.  To be expanded.
 
-#### Étude
-
-* [Étude](/etude/): student-centred view of collection use
-
-#### Collections
-
-* [ezproxy.interactive](/ezproxy.interactive/): details on EZProxy eresource use
-* [CircYUL](/circyul/): circ histories (A2006–A2016)
-* [YuColl](/yucoll/): growth and usage of the collection (A2005–A2016)
-* [YuRang](/yurang/): compare p and e editions
-
-#### Moodle
-
-* [moodleviz](/moodleviz/): Library Resources Box impressions and clickthroughs
-
-#### Desks
-
-* [YuDesk2](/yudesk2/): desk analytics
-
-#### Elsewhere
-
-* [Google Analytics at York](http://analytics.info.yorku.ca/)
-* [LibGuides usage statistics](http://researchguides.library.yorku.ca/admin_stats.php)
+Contact William Denton for information.
