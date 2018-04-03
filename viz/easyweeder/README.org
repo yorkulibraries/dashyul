@@ -6,7 +6,7 @@
 #+LATEX_HEADER: \hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdfborder={0 0 0}}
 #+LATEX_HEADER: \usepackage[english]{babel} % English language/hyphenation
 
-#+STARTUP: latexpreview
+#+STARTUP: latexpreview showall
 
 * About
 
