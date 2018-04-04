@@ -63,12 +63,15 @@ checkouts <- bind_rows(past_simple_checkouts, current_simple_checkouts)
 write("2.  Reading catalogue item data ...", stderr())
 catalogue_current_item_details <- read_csv(catalogue_current_item_details_file, col_types = "")
 
-## First, pick out just items from the libraries we're interested in.
-items <- catalogue_current_item_details %>% filter(home_location %in% c("SCOTT", "STEACIE", "FROST", "BRONFMAN", "LAW"))
+## First, pick out just items that are in LC and have the item type we're interested in.
+items <- catalogue_current_item_details %>%
+    filter(class_scheme == "LC",
+           home_location %in% c("BRONFMAN", "FR-OVERSZ", "FROST", "LAW", "LAW-OVSZ", "SCOTT", "SC-OVERSZ", "STEACIE"),
+           item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "LAW-BOOK"))
 
-## Filter to just item types we're interested in (not microform, etc.).
-items <- items %>% filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "LAW-BOOK")) %>%
-    filter(class_scheme == "LC")
+items$home_location[items$home_location == "FR-OVERSZ"] <- "FROST"
+items$home_location[items$home_location == "LAW-OVSZ"]  <- "LAW"
+items$home_location[items$home_location == "SC-OVERSZ"] <- "SCOTT"
 
 ## If no location is known, mark it X, don't leave it as NA.
 items$current_location[is.na(items$current_location)] <- "X"
