@@ -19,7 +19,7 @@ circ_metrics_file <- paste0(metrics_data_dir, "circ-metrics.csv")
 
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
-symphony_catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+symphony_catalogue_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
 catalogue_current_item_details_file <- paste0(symphony_catalogue_data_dir, "catalogue-current-item-details.csv")
 catalogue_current_title_metadata_file <- paste0(symphony_catalogue_data_dir, "catalogue-current-title-metadata.csv")
 
@@ -36,10 +36,6 @@ library(yulr)
 ###
 ### Checkouts
 ###
-
-## First, get checkout data.  This includes all checkouts, including many
-## we don't care about (like laptop chargers), but we'll filter all that
-## out later.
 write("1.  Reading checkouts ...", stderr())
 
 ## Get simple data on checkouts from this current year.
@@ -53,20 +49,19 @@ source(paste0(symphony_source_lib_dir, "get-past-simple-checkouts.R"))
 ## Combine, and we've got them all.
 checkouts <- bind_rows(past_simple_checkouts, current_simple_checkouts)
 
-## write("Writing checkouts ...", stderr())
-## write_csv(checkouts, ezweeder_checkout_file)
-
 ###
 ### Catalogue data
 ###
-
 write("2.  Reading catalogue item data ...", stderr())
+
 catalogue_current_item_details <- read_csv(catalogue_current_item_details_file, col_types = "")
 
-## First, pick out just items that are in LC and have the item type we're interested in.
+## First, pick out just items that are in LC and have the item type
+## we're interested in.  Ignore copies that are lost or missing.
 items <- catalogue_current_item_details %>%
     filter(class_scheme == "LC",
            home_location %in% c("BRONFMAN", "FR-OVERSZ", "FROST", "LAW", "LAW-OVSZ", "SCOTT", "SC-OVERSZ", "STEACIE"),
+           ! current_location %in% c("LOST", "MISSING", "DISCARD"),
            item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "LAW-BOOK"))
 
 items$home_location[items$home_location == "FR-OVERSZ"] <- "FROST"
@@ -75,9 +70,6 @@ items$home_location[items$home_location == "SC-OVERSZ"] <- "SCOTT"
 
 ## If no location is known, mark it X, don't leave it as NA.
 items$current_location[is.na(items$current_location)] <- "X"
-
-## Ignore discards.
-items <- items %>% filter(current_location != "DISCARD")
 
 ## Set the academic year for the acquisition.
 items <- items %>% mutate(acq_ayear = academic_year(acq_date))
@@ -122,7 +114,9 @@ item_circ_summary$item_last_circed_ayear[is.na(item_circ_summary$item_last_circe
 write("Setting up circ metrics ...", stderr())
 circ_metrics <- item_circ_summary %>%
     group_by(control_number, call_number, home_location) %>%
-    summarise(copies = n(), total_circs = sum(total_circs), last_circed_ayear = max(item_last_circed_ayear))
+    summarise(copies = n(),
+              total_circs = sum(total_circs),
+              last_circed_ayear = max(item_last_circed_ayear))
 
 ## Now, count total number of circs (in the circ window) for all items
 ## with the same control number and call number This lets us
@@ -136,7 +130,8 @@ call_number_circs_in_window <- item_circ_history %>%
 
 ## Join the circ_metrics data frame we began with this information
 ## about circs in the year window.
-circ_metrics <- left_join(circ_metrics, call_number_circs_in_window, by = c("control_number", "call_number", "home_location"))
+circ_metrics <- left_join(circ_metrics, call_number_circs_in_window,
+                         by = c("control_number", "call_number", "home_location"))
 
 ## Minor fixes so the arithmetic works.
 circ_metrics$circs_in_window[is.na(circ_metrics$circs_in_window)] <- "0"
