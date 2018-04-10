@@ -126,10 +126,10 @@ But, for example, let's say we had a book that had 6 copies and 12 circs over th
 
 Rules of thumb for how many books fit into a space:
 
-| 30 books  | is | 1  shelf  |
-| 7 shelves | is | 1 stack  |
-| 10 stacks | is | 1 range  |
-| 2 ranges  | is | 1 row    |
+| 30 books  | is | 1 shelf  |
+| 7 shelves | is | 1 bay    |
+| 10 bays   | is | 1 row    |
+| 2 rows    | is | 1 range  |
 
 Therefore, one stack holds \(30 \times 7 = 210\) books, one range holds \(210 \times 10 = 2100\) books and one row holds \(2100 \times 2 = 4200\) books.  Some ranges have fewer stacks, and some shelves hold more books, but these are good enough for estimates.
 
@@ -192,6 +192,32 @@ easy_weedable %>%
 | V         |          |       |     |    44 |         |
 | X         |          |       |  46 |       |         |
 | Z         |          |     2 |  11 |   593 |       9 |
+
+** Scott spreadsheet                                                                                                   :noexport:
+
+#+BEGIN_SRC R :session R:easyweeder :results value :exports results :colnames yes
+library(openxlsx)
+scott_first_letters <- easy_weedable %>%
+    select(call_number) %>%
+    mutate(first_letter = substr(call_number, 0, 1)) %>%
+    select(first_letter) %>%
+    distinct() %>%
+    pull()
+
+scott_xl <- createWorkbook("Scott Easy Weedables")
+for (i in scott_first_letters) {
+   addWorksheet(scott_xl, i)
+   weedable_in_letter <- easy_weedable %>% filter(home_location == "SCOTT", grepl(paste0("^", i), call_number)) %>% select(-lc_letters, -title_author)
+   writeData(scott_xl, sheet = i, weedable_in_letter)
+}
+saveWorkbook(scott_xl, "/tmp/scott.xlsx", overwrite = TRUE)
+#+END_SRC
+
+#+RESULTS:
+| x |
+|---|
+| 1 |
+
 
 * To note
 

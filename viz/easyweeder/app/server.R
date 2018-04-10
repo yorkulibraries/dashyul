@@ -1,3 +1,4 @@
+library(gtools)
 library(tidyverse)
 library(shiny)
 library(yulr)
@@ -18,9 +19,11 @@ shinyServer(function(input, output, session) {
     })
 
     weedable_data <- reactive({
-        easy_weedable %>%
+        weedable <- easy_weedable %>%
             filter(home_location == input$home_location,
                    lc_letters == toupper(input$lc_letters))
+        ## Sort by call number
+        weedable[mixedorder(weedable$call_number), ]
     })
 
     weedable_readable <- reactive({
