@@ -195,8 +195,9 @@ easy_weedable %>%
 
 ** Scott spreadsheet                                                                                                   :noexport:
 
-#+BEGIN_SRC R :session R:easyweeder :results value :exports results :colnames yes
+#+BEGIN_SRC R :session R:easyweeder :results none :exports results :colnames yes
 library(openxlsx)
+library(gtools)
 scott_first_letters <- easy_weedable %>%
     select(call_number) %>%
     mutate(first_letter = substr(call_number, 0, 1)) %>%
@@ -204,14 +205,23 @@ scott_first_letters <- easy_weedable %>%
     distinct() %>%
     pull()
 
+easy_weedable <- easy_weedable[mixedorder(easy_weedable$call_number), ]
+#+END_SRC
+
+#+BEGIN_SRC R :session R:easyweeder :results value :exports results :colnames yes
 scott_xl <- createWorkbook("Scott Easy Weedables")
 for (i in scott_first_letters) {
    addWorksheet(scott_xl, i)
-   weedable_in_letter <- easy_weedable %>% filter(home_location == "SCOTT", grepl(paste0("^", i), call_number)) %>% select(-lc_letters, -title_author)
+   weedable_in_letter <- easy_weedable %>%
+       filter(home_location == "SCOTT", grepl(paste0("^", i), call_number)) %>%
+       select(-lc_letters) %>%
+       ## For some reason using the whole string corrupts the export
+       mutate(title_author = substr(title_author, 0, 50))
    writeData(scott_xl, sheet = i, weedable_in_letter)
 }
-saveWorkbook(scott_xl, "/tmp/scott.xlsx", overwrite = TRUE)
+saveWorkbook(scott_xl, "/tmp/scott-easy-weedable.xlsx", overwrite = TRUE)
 #+END_SRC
+
 
 #+RESULTS:
 | x |
