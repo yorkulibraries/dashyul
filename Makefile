@@ -7,6 +7,7 @@ setup_directories:
 	mkdir -p ${DASHYUL_DATA}/ebooks/scholarsportal
 	mkdir -p ${DASHYUL_DATA}/ezproxy
 	mkdir -p ${DASHYUL_DATA}/libstats
+	mkdir -p ${DASHYUL_DATA}/prism
 	mkdir -p ${DASHYUL_DATA}/symphony/catalogue
 	mkdir -p ${DASHYUL_DATA}/symphony/metrics
 	mkdir -p ${DASHYUL_DATA}/symphony/transactions
