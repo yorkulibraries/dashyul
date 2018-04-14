@@ -16,6 +16,7 @@ setup_directories:
 	mkdir -p ${DASHYUL_DATA}/viz/circyul
 	mkdir -p ${DASHYUL_DATA}/viz/dashboard
 	mkdir -p ${DASHYUL_DATA}/viz/easyweeder
+	mkdir -p ${DASHYUL_DATA}/viz/estutte
 	mkdir -p ${DASHYUL_DATA}/viz/etude
 	mkdir -p ${DASHYUL_DATA}/viz/ezpz
 	mkdir -p ${DASHYUL_DATA}/viz/yucoll

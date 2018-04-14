@@ -1,0 +1,13 @@
+#+TITLE: EStuTTe
+#+AUTHOR: William Denton
+
+* About
+
+
+
+* Make targets
+
++ ~make~ ::
++ ~make push_app~ :: use locally to push the Shiny app up to production
+
+* Installation
