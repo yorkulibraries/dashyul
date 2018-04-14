@@ -12,7 +12,7 @@ args <- commandArgs(trailingOnly = TRUE)
 current_ayear <- args[1]
 if (length(args) == 0) {
     current_ayear <- academic_year(Sys.Date())
-    write(paste("Using year", current_ayear))
+    write(paste("Using year:", current_ayear), stderr())
 }
 
 ###

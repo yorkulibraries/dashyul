@@ -2,10 +2,13 @@ library(dplyr)
 library(readr)
 library(shiny)
 
+## prism_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/estutte/")
+prism_data_dir <- "/dashyul/data/prism/"
+
 ## estutte_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/estutte/")
 estutte_data_dir <- "/dashyul/data/viz/estutte/"
 
-prism <- read_csv(paste0(estutte_data_dir, "prism-a2017.csv"))
+prism <- read_csv(paste0(prism_data_dir, "prism-a2017.csv"))
 prism_item_circs <- read_csv(paste0(estutte_data_dir, "prism-item-circs-a2017.csv"), col_types = "ci")
 prism_item_details <- read_csv(paste0(estutte_data_dir, "prism-item-details-a2017.csv"), col_types = "ccccc_______cc______cc_c")
 prism_isbn_item_map <- read_csv(paste0(estutte_data_dir, "prism-isbn-item-a2017.csv"), col_types = "cc")
@@ -49,29 +52,29 @@ generate_buying_list <- function(min_student_threshold,
 
     buying_list <- buying_list %>% left_join(isbns_owned_with_circs, by = "isbn") %>% rename(circs = total_circs)
     buying_list$owned[is.na(buying_list$owned)] <- 0
-                                   buying_list$circs[is.na(buying_list$circs)] <- ""
-                                   buying_list <- buying_list %>% mutate(buy = max(required - owned, 0), cost = retail_cost * buy)
+    buying_list$circs[is.na(buying_list$circs)] <- ""
+    buying_list <- buying_list %>% mutate(buy = max(required - owned, 0), cost = retail_cost * buy)
 
-                                   ## Reorder for readability
-                                   buying_list %>% select(stitle, isbn, max_students, circs, required, owned, buy, retail_cost, cost)
-                               }
+    ## Reorder for readability
+    buying_list %>% select(stitle, isbn, max_students, circs, required, owned, buy, retail_cost, cost)
+}
 
-                               shinyServer(function(input, output, session) {
+shinyServer(function(input, output, session) {
 
-                                   buying_list <- reactive({
-                                       generate_buying_list(min_student_threshold = as.integer(input$min_student_threshold),
-                                                            students_per_textbook = as.integer(input$students_per_textbook),
-                                                            textbook_holdings_limit = as.integer(input$textbook_holdings_limit),
-                                                            max_courselevel = as.integer(input$max_courselevel),
-                                                            min_price_threshold = as.integer(input$min_price_threshold))
-                                   })
+    buying_list <- reactive({
+        generate_buying_list(min_student_threshold = as.integer(input$min_student_threshold),
+                             students_per_textbook = as.integer(input$students_per_textbook),
+                             textbook_holdings_limit = as.integer(input$textbook_holdings_limit),
+                             max_courselevel = as.integer(input$max_courselevel),
+                             min_price_threshold = as.integer(input$min_price_threshold))
+    })
 
-                                   output$buying_list_table <- renderTable({
-                                       buying_list()
-                                   })
+    output$buying_list_table <- renderTable({
+        buying_list()
+    })
 
-                                   output$buying_list_cost <- renderText ({
-                                       sum(buying_list()$cost)
-                                   })
+    output$buying_list_cost <- renderText ({
+        sum(buying_list()$cost)
+    })
 
-                               })
+})
