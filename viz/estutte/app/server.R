@@ -9,9 +9,9 @@ prism_data_dir <- "/dashyul/data/prism/"
 estutte_data_dir <- "/dashyul/data/viz/estutte/"
 
 prism <- read_csv(paste0(prism_data_dir, "prism-a2017.csv"))
-prism_item_circs <- read_csv(paste0(estutte_data_dir, "prism-item-circs-a2017.csv"), col_types = "ci")
-prism_item_details <- read_csv(paste0(estutte_data_dir, "prism-item-details-a2017.csv"), col_types = "ccccc_______cc______cc_c")
-prism_isbn_item_map <- read_csv(paste0(estutte_data_dir, "prism-isbn-item-a2017.csv"), col_types = "cc")
+estutte_item_circs <- read_csv(paste0(estutte_data_dir, "estutte-item-circs-a2017.csv"), col_types = "ci")
+estutte_item_details <- read_csv(paste0(estutte_data_dir, "estutte-item-details-a2017.csv"), col_types = "ccccc_______cc______cc_c")
+estutte_isbn_item_map <- read_csv(paste0(estutte_data_dir, "estutte-isbn-item-a2017.csv"), col_types = "cc")
 
 generate_buying_list <- function(min_student_threshold,
                                 students_per_textbook,
@@ -42,11 +42,11 @@ generate_buying_list <- function(min_student_threshold,
     isbns_and_items <- students_per_isbn %>%
         ungroup() %>%
         select(isbn) %>%
-        left_join(textbook_isbn_item_map, by = "isbn") %>%
-        left_join(textbook_item_circs, by = "item_barcode")
+        left_join(estutte_isbn_item_map, by = "isbn") %>%
+        left_join(estutte_item_circs, by = "item_barcode")
 
     isbns_owned_with_circs <- isbns_and_items %>%
-        inner_join(textbook_item_details, by = "item_barcode") %>%
+        inner_join(estutte_item_details, by = "item_barcode") %>%
         group_by(isbn) %>%
         summarise(owned = n(), total_circs = sum(circs, na.rm = TRUE))
 

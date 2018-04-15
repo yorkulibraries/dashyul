@@ -3,28 +3,32 @@
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
-args <- commandArgs(trailingOnly = TRUE)
-
-current_ayear <- args[1]
-
-## library(lubridate)
 library(tidyverse)
-## library(yulr)
+library(readxl)
+library(yulr)
+
+## Default to the current academic year unless one is specified
+args <- commandArgs(trailingOnly = TRUE)
+current_ayear <- args[1]
+if (length(args) == 0) {
+    current_ayear <- academic_year(Sys.Date())
+    write(paste("Using year:", current_ayear), stderr())
+}
 
 prism_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/prism/")
 
-raw_prism_data_file <- paste0(prism_data_dir, "prism-data-raw-a", current_ayear, ".csv")
+raw_prism_data_file <- paste0(prism_data_dir, "prism-data-raw-a", current_ayear, ".xlsx")
 prism_data_file <- paste0(prism_data_dir, "prism-data-a", current_ayear, ".csv")
 
-prism_raw <- read_csv(raw_prism_data_file,
-                     col_names = c("title", "author",
-                                   "isbn", "course",
-                                   "comment", "retail_cost",
-                                   "ed", "coursename",
-                                   "retail_used_cost", "binding",
-                                   "request_type", "cr_enrolment_act",
-                                   "cr_enrolment_est","term_name"),
-                     skip = 1
+prism_raw <- read_excel(raw_prism_data_file,
+                       col_names = c("title", "author",
+                                     "isbn", "course",
+                                     "comment", "retail_cost",
+                                     "ed", "coursename",
+                                     "retail_used_cost", "binding",
+                                     "request_type", "cr_enrolment_act",
+                                     "cr_enrolment_est","term_name"),
+                       skip = 1
                  )
 
 ## Set up the map from the bookstore's term names to ours.
