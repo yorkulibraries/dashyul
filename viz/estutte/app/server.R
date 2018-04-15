@@ -8,7 +8,7 @@ prism_data_dir <- "/dashyul/data/prism/"
 ## estutte_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/estutte/")
 estutte_data_dir <- "/dashyul/data/viz/estutte/"
 
-prism <- read_csv(paste0(prism_data_dir, "prism-a2017.csv"))
+prism <- read_csv(paste0(prism_data_dir, "prism-data-a2017.csv"))
 estutte_item_circs <- read_csv(paste0(estutte_data_dir, "estutte-item-circs-a2017.csv"), col_types = "ci")
 estutte_item_details <- read_csv(paste0(estutte_data_dir, "estutte-item-details-a2017.csv"), col_types = "ccccc_______cc______cc_c")
 estutte_isbn_item_map <- read_csv(paste0(estutte_data_dir, "estutte-isbn-item-a2017.csv"), col_types = "cc")
@@ -30,10 +30,11 @@ generate_buying_list <- function(min_student_threshold,
         summarise(term_students = sum(students)) %>%
         group_by(stitle, isbn) %>%
         mutate(max_students = max(term_students)) %>%
-        select(stitle, isbn, max_students) %>% distinct %>%
+        select(stitle, isbn, max_students) %>%
+        distinct() %>%
         filter(max_students >= min_student_threshold)
 
-    costs <- textbooks %>% select(stitle, isbn, retail_cost) %>% distinct
+    costs <- prism %>% select(stitle, isbn, retail_cost) %>% distinct()
 
     buying_list <- students_per_isbn %>%
         inner_join(costs) %>%
@@ -69,7 +70,7 @@ shinyServer(function(input, output, session) {
                              min_price_threshold = as.integer(input$min_price_threshold))
     })
 
-    output$buying_list_table <- renderTable({
+    output$buying_list_table <- renderDataTable ({
         buying_list()
     })
 
