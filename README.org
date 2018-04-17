@@ -6,9 +6,9 @@
 
 * About
 
-Data dashboard for York University Libraries, and other interactive assessment and evaluation tools for library resources and services.
+DashYUL is a data visualization package built for York University Libraries, combining a data dashboard and other interactive assessment and evaluation tools for library resources and services.
 
-This is built and used by a devoted user of [[https://en.wikipedia.org/wiki/GNU_Emacs][Emacs]] and [[https://orgmode.org/][Org]]. Everything will work even if you don't use them, but it will all work /better/ if you do.
+DashYUL is built and used by a devoted user of [[https://en.wikipedia.org/wiki/GNU_Emacs][Emacs]] and [[https://orgmode.org/][Org]]. Everything will work even if you don't use them, but it will all work /better/ if you do.
 
 * Installation
 
@@ -30,7 +30,6 @@ Packages required.
 
 + [[https://github.com/r-lib/devtools][devtools]]
 + [[https://rmarkdown.rstudio.com/flexdashboard/index.html][flexdashboard]]
-+ +ggvis+
 + [[https://yihui.name/knitr/][knitr]]
 + [[https://cran.r-project.org/web/packages/RCurl/index.html][RCurl]]
 + [[https://cran.r-project.org/web/packages/roxygen2/index.html][roxygen2]]
@@ -59,8 +58,6 @@ Some gems are required:
 
 + [[https://github.com/ruby-marc/ruby-marc][marc]], for reading MARC records
 + [[http://www.nokogiri.org/][nokogiri]], for reading XML and HTML
-+ +sqlite3+
-+ +bundler+
 + [[https://github.com/kubo/ruby-oci8][ruby-oci8]], for talking to Oracle (requires Oracle libraries, follow [[https://help.ubuntu.com/community/Oracle%2520Instant%2520Client][Oracle Instant Client]] instructions for how to get it working)
 + [[https://github.com/yorkulibraries/rubyul][rubyul]] is the Ruby parallel to [[https://github.com/yorkulibraries/yulr][yulr]], and offers small useful YUL-related helper functions in Ruby
 
@@ -80,7 +77,7 @@ Two environment variables are used to control where things are.
 
 + ~DASHYUL_HOME~ :: where this source tree is, locally
 + ~DASHYUL_DATA~ :: where the data is, locally
-+ DASHYUL_LOGS :: where logfiles go
++ =DASHYUL_LOGS= :: where logfiles go
 + ~DASHYUL_SERVER_NAME~ :: hostname of the server
 + ~DASHYUL_SERVER_HOME~ :: where the data is, in production
 + ~DASHYUL_SERVER_DATA~ :: where the data is, in production
@@ -133,10 +130,10 @@ To set things up on your local machine, get this source tree and create your loc
 cd ~/src
 git pull https://github.com/yorkulibraries/dashyul.git
 cd dashyul
-make setup_data_directories
+make setup_directories
 #+END_SRC
 
-To set things up on your production server, do something like:
+To set things up in production, do something like:
 
 #+BEGIN_SRC shell :eval no
 sudo mkdir -p /dashyul/src/
@@ -144,7 +141,7 @@ sudo chown -R ${USER}:${USER} /dashyul/
 cd /dashyul/src
 git clone https://github.com/yorkulibraries/dashyul.git
 cd dashyul
-make setup_data_directories
+make setup_directories
 #+END_SRC
 
 ** Crontabs
@@ -154,25 +151,18 @@ make setup_data_directories
 
 ** Shiny
 
-
-
 * Guidelines
 
 Notes to myself as I work on this.
 
 + Makefiles
   + ~make~ should work anywhere and do whatever is necessary to prepare data for use
-  + ~make copydata~ is for production, and copies data to a Shiny app's ~data~ folder
   + ~make push_app~ is for local use, and pushes a Shiny app up to production
 + sources and viz here; data separate
 + sources and viz both have scripts/
 + Rely on ~DASHYUL_HOME~ and ~DASHYUL_DATA~.
 + Use ~_file~ and ~_dir~ suffixes when storing file and directory names in variables.
 + Have a README.org for every source and viz to explain what they are.  Need to explain all the data somewhere, too.
-
-TODO:
-
-+ [ ] Log cron job output better.
 
 * License
 

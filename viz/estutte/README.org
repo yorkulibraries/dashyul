@@ -3,11 +3,15 @@
 
 * About
 
+EStuTTe (Every Student, Their Textbook) is an interactive web tool to help us estimate the costs of providing textbooks to students.  There are options for course level, number of students per copy, etc.
 
+* Dependencies
+
+EStuTTe depends on Prism data (=sources/prism=) provided by the bookstore.
 
 * Make targets
 
-+ ~make~ ::
++ ~make~ :: generate data files
 + ~make push_app~ :: use locally to push the Shiny app up to production
 
 * Installation

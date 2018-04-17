@@ -5,15 +5,17 @@
 
 * About
 
-Textbook listings from the bookstore.
+The York University Bookstore has given us access to a limited view in Prism (their inventory management system) where we can pull a list of all course textbooks and required readings.  This can be exported to an Excel file, and a script here will convert that into a more usable CSV file.
+
+* Make targets
+
++ ~make~ :: process the raw bookstore Prism file.
++ =make push_data= :: push the CSV data file up to production (so the EStuTTe script can be run there)
 
 * Scripts
 
-** ~process-weekly-user-dump.rb~
+** ~process-prism-data.R~
 
 Uses:
 
-Crontab:
-
-#+BEGIN_EXAMPLE
-#+END_EXAMPLE
+This is run manually as needed, so there is no cron job.
