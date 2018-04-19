@@ -5,7 +5,7 @@ shinyUI(
         titlePanel("EStuTTe: Every Student, Their Textbook estimator"),
         sidebarLayout(
             sidebarPanel(
-                textInput("min_student_threshold", label = "Minimum student threshold", value = "100", width = "200px"),
+                textInput("min_student_threshold", label = "Minimum student threshold", value = "10", width = "200px"),
                 textInput("students_per_textbook", label = "Students per textbook", value = "50", width = "200px"),
                 textInput("textbook_holdings_limit", label = "Maximum textbook holdings", value = "4", width = "200px"),
                 textInput("max_courselevel", label = "Maximum course level", value = "1", width = "200px"),

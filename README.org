@@ -48,7 +48,7 @@ for PKG in $PACKAGE_LIST; do Rscript --vanilla -e "install.packages('$PKG', repo
 Rscript --vanilla -e "devtools::install_github('yorkulibraries/yulr')"
 #+END_SRC
 
-R and the packages need to be available system-wide to all users, including shiny.
+R and the packages need to be available system-wide to all users, including Shiny.
 
 *** Ruby
 
@@ -77,10 +77,11 @@ Two environment variables are used to control where things are.
 
 + ~DASHYUL_HOME~ :: where this source tree is, locally
 + ~DASHYUL_DATA~ :: where the data is, locally
-+ =DASHYUL_LOGS= :: where logfiles go
-+ ~DASHYUL_SERVER_NAME~ :: hostname of the server
-+ ~DASHYUL_SERVER_HOME~ :: where the data is, in production
++ ~DASHYUL_LOGS~ :: where logfiles are, locally
++ ~DASHYUL_SERVER_NAME~ :: hostname of the production server
++ ~DASHYUL_SERVER_HOME~ :: where the source tree is, in production
 + ~DASHYUL_SERVER_DATA~ :: where the data is, in production
++ ~DASHYUL_SERVER_LOGS~ ::  where the logfiles are, in production
 
 I have this in my ~.bashrc~:
 
@@ -159,10 +160,14 @@ Notes to myself as I work on this.
   + ~make~ should work anywhere and do whatever is necessary to prepare data for use
   + ~make push_app~ is for local use, and pushes a Shiny app up to production
 + sources and viz here; data separate
-+ sources and viz both have scripts/
++ sources and viz both have ~scripts/~
 + Rely on ~DASHYUL_HOME~ and ~DASHYUL_DATA~.
 + Use ~_file~ and ~_dir~ suffixes when storing file and directory names in variables.
 + Have a README.org for every source and viz to explain what they are.  Need to explain all the data somewhere, too.
+
+TODO:
+
++ Use ~DASHYUL_SERVER_LOGS~ in makefiles when copying log files down from production.
 
 * License
 
