@@ -5,6 +5,7 @@ write(paste("Started: ", Sys.time()), stderr())
 
 library(tidyverse)
 library(readxl)
+library(stringr)
 library(yulr)
 
 ## Default to the current academic year unless one is specified

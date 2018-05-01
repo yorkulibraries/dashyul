@@ -40,6 +40,11 @@ isbn_item_map <- read_csv(isbn_item_map_file, col_types = "cc")
 ###
 prism <- read_csv(prism_data_file)
 
+## Filter out things we don't want
+prism <- prism %>%
+    filter(! grepl("^CK ", stitle)) %>% ## Course kits
+    filter(faculty != "LW") ## Law courses
+
 ###
 ### Mix in with our holdings.
 ###

@@ -78,4 +78,11 @@ shinyServer(function(input, output, session) {
         sum(buying_list()$cost)
     })
 
+    output$downloadData <- downloadHandler(
+    filename = "estutte.csv",
+    content = function(file) {
+        write.csv(buying_list(), file, row.names = FALSE)
+    }
+  )
+
 })

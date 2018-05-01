@@ -10,6 +10,7 @@ shinyUI(
                 textInput("textbook_holdings_limit", label = "Maximum textbook holdings", value = "4", width = "200px"),
                 textInput("max_courselevel", label = "Maximum course level", value = "1", width = "200px"),
                 textInput("min_price_threshold", label = "Minimum price threshold", value = "25", width = "200px"),
+                downloadButton("downloadData", "Download data"),
                 tags$p("All data is from A2017."),
                 tags$p("William Denton (wdenton@yorku.ca)"),
                 tags$p("Updated 15 April 2018."),

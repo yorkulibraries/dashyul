@@ -10,7 +10,7 @@ The York University Bookstore has given us access to a limited view in Prism (th
 * Make targets
 
 + ~make~ :: process the raw bookstore Prism file.
-+ =make push_data= :: push the CSV data file up to production (so the EStuTTe script can be run there)
++ ~make push_data~ :: push the CSV data file up to production (so the EStuTTe script can be run there)
 
 * Scripts
 
