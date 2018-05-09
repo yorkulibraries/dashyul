@@ -1,0 +1,10 @@
+#+TITLE: Gardener
+#+AUTHOR: William Denton
+
+#+OPTIONS: num:nil ^:{} toc:nil
+
+#+STARTUP: latexpreview showall
+
+* About
+
+Gardener is to help grow and manage the collection.

@@ -169,6 +169,11 @@ TODO:
 
 + Use ~DASHYUL_SERVER_LOGS~ in makefiles when copying log files down from production.
 
+See also:
+
++ https://github.com/dmarx/make_for_datascience
++ https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
+
 * License
 
 GPL v3.  See [[file:LICENSE][LICENSE]].

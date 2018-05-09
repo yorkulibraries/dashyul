@@ -19,6 +19,7 @@ setup_directories:
 	mkdir -p ${DASHYUL_DATA}/viz/estutte
 	mkdir -p ${DASHYUL_DATA}/viz/etude
 	mkdir -p ${DASHYUL_DATA}/viz/ezpz
+	mkdir -p ${DASHYUL_DATA}/viz/gardener
 	mkdir -p ${DASHYUL_DATA}/viz/yucoll
 	mkdir -p ${DASHYUL_DATA}/viz/yudesk
 	test -n "$(DASHYUL_LOGS)" # Is $$DASHYUL_DATA set?
