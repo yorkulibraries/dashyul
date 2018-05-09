@@ -95,7 +95,7 @@ write("Calculating item circ history ...", stderr())
 
 item_circ_history <- items_and_checkouts %>%
     mutate(has_circed = ! is.na(circ_ayear)) %>%
-    group_by(item_barcode, control_number, call_number, home_location, item_type, circ_ayear) %>%
+    group_by(item_barcode, control_number, lc_letters, lc_digits, call_number, home_location, item_type, circ_ayear) %>%
     summarise(circs = sum(has_circed))
 
 ## Circ details for each item at a higher level: total circs and year
@@ -104,7 +104,7 @@ item_circ_history <- items_and_checkouts %>%
 write("Calculating item circ summary ...", stderr())
 item_circ_summary <- item_circ_history %>%
     mutate(item_last_circed_ayear = max(circ_ayear)) %>%
-    group_by(item_barcode, control_number, call_number, home_location, item_last_circed_ayear) %>%
+    group_by(item_barcode, control_number, lc_letters, lc_digits, call_number, home_location, item_last_circed_ayear) %>%
     summarise(total_circs = sum(circs))
 item_circ_summary$item_last_circed_ayear[is.na(item_circ_summary$item_last_circed_ayear)] <- "0"
 
@@ -113,7 +113,7 @@ item_circ_summary$item_last_circed_ayear[is.na(item_circ_summary$item_last_circe
 ## total circs, and year of last circ.
 write("Setting up circ metrics ...", stderr())
 circ_metrics <- item_circ_summary %>%
-    group_by(control_number, call_number, home_location) %>%
+    group_by(control_number, lc_letters, lc_digits, call_number, home_location) %>%
     summarise(copies = n(),
               total_circs = sum(total_circs),
               last_circed_ayear = max(item_last_circed_ayear))
