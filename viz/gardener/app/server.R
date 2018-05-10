@@ -12,6 +12,11 @@ item_circ_history <- read_csv(paste0(metrics_data_dir, "item-circ-history.csv"))
 
 item_circ_history$circ_ayear[is.na(item_circ_history$circ_ayear)] <- 0
 
+## gardener_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/sources/viz/gardener/")
+gardener_data_dir <- "/dashyul/data/viz/gardener/"
+
+gardener_titles <- read_csv(paste0(gardener_data_dir, "gardener-titles.csv"))
+
 locations = c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
 
 current_academic_year <- academic_year(Sys.Date())
@@ -20,7 +25,7 @@ shinyServer(function(input, output, session) {
 
     output$home_locations <- renderUI({
         selectInput("home_location", "Home location", locations, selected = "STEACIE")
-    })
+                               })
 
     ## output$digits_low <- renderUI({
     ##     textInput("min_lc_digits", "Min LC digits", value = 0)
@@ -60,11 +65,14 @@ shinyServer(function(input, output, session) {
         gardener_data() %>%
             ## mutate(link = link_to_vufind(control_number, title_author)) %>%
             ## select link
-            select(call_number, copies, total_circs, last_circed)
+            select(control_number, call_number, copies, total_circs, last_circed) %>%
+            left_join(gardener_titles, by = "control_number")
     })
 
     output$gardener_table <- renderDataTable(
-        gardener_readable(), escape = FALSE
+        gardener_readable() %>%
+        mutate(link = link_to_vufind(control_number, title_author)) %>%
+        select(link, call_number, copies, total_circs, last_circed), escape = FALSE
     )
 
     output$results_count <- renderUI({

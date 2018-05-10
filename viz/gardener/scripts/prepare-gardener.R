@@ -20,8 +20,8 @@ item_circ_history <- read_csv(paste0(symphony_metrics_data_dir, "item-circ-histo
 write("Reading title/author ...", stderr())
 catalogue_current_title_metadata <- read_csv(catalogue_current_title_metadata_file, col_types = "ccc")
 
-gardener_titles <- item_circ_history %>%
-    left_join(catalogue_current_title_metadata, by = c("control_number", "call_number")) %>%
+gardener_titles <- catalogue_current_title_metadata %>%
+    filter(control_number %in% item_circ_history$control_number) %>%
     mutate(title_author = readable_marc245(title_author)) %>%
     select(control_number, title_author)
 
