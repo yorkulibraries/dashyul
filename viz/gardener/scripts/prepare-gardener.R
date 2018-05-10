@@ -17,7 +17,7 @@ gardener_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/gardener/")
 write("Reading item circ history ...", stderr())
 item_circ_history <- read_csv(paste0(symphony_metrics_data_dir, "item-circ-history.csv"))
 
-write("Reading title/author ...", stderr())
+write("Reading title metadata ...", stderr())
 catalogue_current_title_metadata <- read_csv(catalogue_current_title_metadata_file, col_types = "ccc")
 
 gardener_titles <- catalogue_current_title_metadata %>%
@@ -25,6 +25,7 @@ gardener_titles <- catalogue_current_title_metadata %>%
     mutate(title_author = readable_marc245(title_author)) %>%
     select(control_number, title_author)
 
+write("Writing title/author ...", stderr())
 write_csv(gardener_titles, paste0(gardener_data_dir, "gardener-titles.csv"))
 
 write(paste("Finished: ", Sys.time()), stderr())

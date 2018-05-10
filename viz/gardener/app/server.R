@@ -25,7 +25,7 @@ shinyServer(function(input, output, session) {
 
     output$home_locations <- renderUI({
         selectInput("home_location", "Home location", locations, selected = "STEACIE")
-                               })
+    })
 
     ## output$digits_low <- renderUI({
     ##     textInput("min_lc_digits", "Min LC digits", value = 0)
@@ -52,7 +52,7 @@ shinyServer(function(input, output, session) {
                    copies <= input$num_copies[2],
                    total_circs >= as.numeric(input$min_total_circs),
                    total_circs <= as.numeric(input$max_total_circs),
-                   last_circed <= (current_academic_year - as.numeric(input$not_circed_within_years))
+                   last_circed <= input$last_circed_in_or_before
                    ) %>%
             ungroup() %>%
             select(-lc_letters, -lc_digits)
@@ -82,12 +82,11 @@ shinyServer(function(input, output, session) {
     output$readable_query <- renderText({
         paste0("Query in words: ", input$home_location, " books, ",
                input$lc_letters, " ", input$min_lc_digits, " to ", input$max_lc_digits,
-               ", where we have from ", input$num_copies[1], " to ", input$num_copies[2], " copies.  Circs counted from ",
+               ", where we have from ", input$num_copies[1], " to ", input$num_copies[2], " copies.  Circ data goes from ",
                input$min_circ_ayear, " to ", input$max_circ_ayear,
-               ", filtered to show only books that have not circed in ", input$not_circed_within_years,
-               " years, where the total number of circs is between ",
-               input$min_total_circs, " and ", input$max_total_circs,
-               ".  (Last circed in year 0 means it has never circed (data goes back to 1996); circs 'not within 0 years' means it did circ this year.)")
+               ", filtered to show only books that last circed in or before ", input$last_circed_in_or_before,
+               ", where the total number of circs is from ",
+               input$min_total_circs, " to ", input$max_total_circs, ".")
     })
 
     output$downloadData <- downloadHandler(

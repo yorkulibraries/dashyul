@@ -23,7 +23,7 @@ shinyUI(
                 ## textInput("max_copies", label = "Max copies", value = "20"),
                 textInput("min_circ_ayear", label = "Min circ year", value = "0"),
                 textInput("max_circ_ayear", label = "Max circ year", value = "2017"),
-                selectInput("not_circed_within_years", "Not circed within last", choices = seq(0, 22)),
+                selectInput("last_circed_in_or_before", "Last circed in or before", choices = seq(1995, 2017, by = 1), selected = 2017),
                 textInput("min_total_circs", label = "Min total circs", value = "0"),
                 textInput("max_total_circs", label = "Max total circs", value = "10000"),
                 downloadButton("downloadData", "Download data"),
