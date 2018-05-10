@@ -8,7 +8,9 @@ library(yulr)
 ## metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/sources/symphony/metrics/")
 metrics_data_dir <- "/dashyul/data/symphony/metrics/"
 
-circ_metrics <- read_csv(paste0(metrics_data_dir, "circ-metrics.csv"))
+item_circ_history <- read_csv(paste0(metrics_data_dir, "item-circ-history.csv"))
+
+item_circ_history$circ_ayear[is.na(item_circ_history$circ_ayear)] <- "0"
 
 locations = c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
 
@@ -29,18 +31,25 @@ shinyServer(function(input, output, session) {
     })
 
     gardener_data <- reactive({
-        gardener <- circ_metrics %>%
+        gardener <- item_circ_history %>%
             filter(home_location == input$home_location,
                    lc_letters == toupper(input$lc_letters),
                    lc_digits >= as.numeric(input$lc_digit_low),
                    lc_digits <= as.numeric(input$lc_digit_high),
-                   copies >= as.numeric(input$min_copies),
+                   circ_ayear >= as.numeric(input$min_circ_ayear),
+                   circ_ayear <= as.numeric(input$max_circ_ayear),
+                   ) %>%
+            group_by(control_number, lc_letters, lc_digits, call_number) %>%
+            summarise(copies = n(),
+                      total_circs = sum(circs),
+                      max_circ_ayear = max(circ_ayear)) %>%
+            filter(copies >= as.numeric(input$min_copies),
                    copies <= as.numeric(input$max_copies),
-                   last_circed_ayear >= as.numeric(input$min_last_circed_ayear),
-                   last_circed_ayear <= as.numeric(input$max_last_circed_ayear),
                    total_circs >= as.numeric(input$min_total_circs),
                    total_circs <= as.numeric(input$max_total_circs)
-                   )
+                   ) %>%
+            select(-lc_letters, -lc_digits)
+
         ## Sort by call number
         gardener[mixedorder(gardener$call_number), ]
     })
@@ -49,7 +58,7 @@ shinyServer(function(input, output, session) {
         gardener_data() %>%
             ## mutate(link = link_to_vufind(control_number, title_author)) %>%
             ## select link
-            select(call_number, copies, total_circs, last_circed_ayear)
+            select(call_number, copies, total_circs, max_circ_ayear)
     })
 
     output$gardener_table <- renderDataTable(
