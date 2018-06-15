@@ -60,13 +60,33 @@ catalogue_current_item_details <- read_csv(catalogue_current_item_details_file, 
 ## we're interested in.  Ignore copies that are lost or missing.
 items <- catalogue_current_item_details %>%
     filter(class_scheme == "LC",
-           home_location %in% c("BRONFMAN", "FR-OVERSZ", "FROST", "LAW", "LAW-OVSZ", "SCOTT", "SC-OVERSZ", "STEACIE"),
+           home_location %in% c("BRONFMAN",
+                                "FROST", "FR-OVERSZ",
+                                "LAW", "LAW-CD", "LAW-CORE", "LAW-FICT", "LAW-GRNDFL",
+                                "LAW-MICRO", "LAW-OVSZ", "LAW-REF", "LAW-REFDESK", "LAW-SC-REF", "LAW-STOR",
+                                "SCOTT", "SC-OVERSZ",
+                                "STEACIE"),
            ! current_location %in% c("LOST", "MISSING", "DISCARD"),
-           item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "LAW-BOOK"))
+           item_type %in% c("BRONF-BOOK",
+                            "FROST-BOOK",
+                            "LAW-BOOK", "LAW-CORE", "BOOK",
+                            "SCOTT-BOOK",
+                            "STEAC-BOOK")
+           )
 
 items$home_location[items$home_location == "FR-OVERSZ"] <- "FROST"
-items$home_location[items$home_location == "LAW-OVSZ"]  <- "LAW"
 items$home_location[items$home_location == "SC-OVERSZ"] <- "SCOTT"
+
+items$home_location[items$home_location == "LAW-CD"]      <- "LAW"
+items$home_location[items$home_location == "LAW-CORE"]    <- "LAW"
+items$home_location[items$home_location == "LAW-FICT"]    <- "LAW"
+items$home_location[items$home_location == "LAW-GRNDFL"]  <- "LAW"
+items$home_location[items$home_location == "LAW-MICRO"]   <- "LAW"
+items$home_location[items$home_location == "LAW-OVSZ"]    <- "LAW"
+items$home_location[items$home_location == "LAW-REF"]     <- "LAW"
+items$home_location[items$home_location == "LAW-REFDESK"] <- "LAW"
+items$home_location[items$home_location == "LAW-SC-REF"]  <- "LAW"
+items$home_location[items$home_location == "LAW-STOR"]    <- "LAW"
 
 ## If no location is known, mark it X, don't leave it as NA.
 items$current_location[is.na(items$current_location)] <- "X"
