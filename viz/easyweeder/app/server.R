@@ -4,13 +4,12 @@ library(shiny)
 library(yulr)
 
 ## TODO: Fix the hardcoding of the data directory.
+## easyweeder_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
+easyweeder_data_dir <- "/dashyul/data/viz/easyweeder/"
 
-## ezweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/ezweeder/")
-ezweeder_data_dir <- "/dashyul/data/viz/easyweeder/"
+easy_weedable <- read_csv(paste0(easyweeder_data_dir, "easy-weedable.csv"))
 
-easy_weedable <- read_csv(paste0(ezweeder_data_dir, "easy-weedable.csv"))
-
-locations = c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
+locations <- c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
 
 shinyServer(function(input, output, session) {
 

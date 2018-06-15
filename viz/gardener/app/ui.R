@@ -27,6 +27,7 @@ shinyUI(
                 textInput("min_total_circs", label = "Min total circs", value = "0"),
                 textInput("max_total_circs", label = "Max total circs", value = "10000"),
                 downloadButton("downloadData", "Download data"),
+                tags$hr(),
                 tags$p("William Denton (wdenton@yorku.ca)"),
                 tags$p("Updated 09 May 2018."),
                 width = 2

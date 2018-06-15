@@ -12,8 +12,9 @@ shinyUI(
                 textInput("min_price_threshold", label = "Minimum price threshold", value = "25", width = "200px"),
                 downloadButton("downloadData", "Download data"),
                 tags$p("All data is from A2017."),
+                tags$hr(),
                 tags$p("William Denton (wdenton@yorku.ca)"),
-                tags$p("Updated 15 April 2018."),
+                tags$p("Updated 16 May 2018."),
                 width = 2
             ),
             mainPanel(

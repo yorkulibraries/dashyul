@@ -9,8 +9,10 @@ shinyUI(
                 uiOutput("item_types"),
                 textInput("lc_letters", label = "LC class letter(s)", value = "B"),
                 downloadButton("downloadData", "Download data"),
+                tags$hr(),
                 tags$p("William Denton (wdenton@yorku.ca)"),
-                tags$p("Updated 09 May 2018."),
+                tags$p("Updated 16 May 2018."),
+                tags$a(href="https://www.youtube.com/watch?v=g9eX2ajK3A4", "See also Easy Reader."),
                 width = 2
             ),
 
