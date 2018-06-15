@@ -17,7 +17,7 @@ gardener_data_dir <- "/dashyul/data/viz/gardener/"
 
 gardener_titles <- read_csv(paste0(gardener_data_dir, "gardener-titles.csv"))
 
-locations = c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
+locations <- c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
 
 current_academic_year <- academic_year(Sys.Date())
 
@@ -82,7 +82,8 @@ shinyServer(function(input, output, session) {
     output$readable_query <- renderText({
         paste0("Query in words: ", input$home_location, " books, ",
                input$lc_letters, " ", input$min_lc_digits, " to ", input$max_lc_digits,
-               ", where we have from ", input$num_copies[1], " to ", input$num_copies[2], " copies.  Circ data goes from ",
+               ", where we have from ", input$num_copies[1], " to ", input$num_copies[2],
+               " copies.  Circ data goes from ",
                input$min_circ_ayear, " to ", input$max_circ_ayear,
                ", filtered to show only books that last circed in or before ", input$last_circed_in_or_before,
                ", where the total number of circs is from ",
@@ -94,7 +95,7 @@ shinyServer(function(input, output, session) {
         paste("gardener-", input$home_location, "-", input$lc_letters, ".csv", sep = "")
     },
     content = function(file) {
-        write.csv(gardener_data(), file, row.names = FALSE)
+        write.csv(gardener_readable(), file, row.names = FALSE)
     }
   )
 
