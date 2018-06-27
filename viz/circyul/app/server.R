@@ -16,6 +16,13 @@ circyul_checkouts         <- read_csv(circyul_checkouts_file, col_types = "Dcc")
 circulated_item_details   <- read_csv(circulated_item_details_file, col_types = "ccccccccDc")
 circulated_title_metadata <- read_csv(circulated_title_metadata_file, col_types = "ccc")
 
+## Some items have never circulated, which causes an error when the
+## circ history chart is being made. This creates an empty tibble that
+## has all the right column headings with the right formats, which
+## we'll use when we set up record_item_history, below.
+empty_record_item_history <- circulated_item_details %>%
+    filter(control_number == "DOES NOT EXIST")
+
 shinyServer(function(input, output, session) {
 
     record_control_number <- reactive({
@@ -28,26 +35,47 @@ shinyServer(function(input, output, session) {
     })
 
     record_item_history <- reactive({
-        items <- circulated_item_details %>% filter(control_number == record_control_number())
-        circyul_checkouts %>% filter(item_barcode %in% items$item_barcode) %>% select(date, item_barcode) %>% mutate(date = as.Date(date))
+        items <- circulated_item_details %>%
+            filter(control_number == record_control_number())
+        ## Now force the tibble to look right, by matching it up with
+        ## an empty tibble.  If this tibble is empty, the circ history
+        ## chart be empty, but it will still work.
+        items <- full_join(items, empty_record_item_history)
+        circyul_checkouts %>%
+            filter(item_barcode %in% items$item_barcode) %>%
+            select(date, item_barcode) %>%
+            mutate(date = as.Date(date))
     })
 
     output$title_information <- renderText({
-        record_metadata <- circulated_title_metadata %>% filter(control_number == record_control_number())
+        record_metadata <- circulated_title_metadata %>%
+            filter(control_number == record_control_number())
         readable_marc245(record_metadata$title_author)
     })
 
     output$circ_history_plot <- renderPlot({
-        checkouts_by_ayear <- record_item_history() %>% mutate(ayear = academic_year(date))
-        ggplot(checkouts_by_ayear, aes(x = ayear)) + geom_bar(width = 0.8) + labs(title = paste("Circs per academic year"), x = "", y = "") + scale_y_continuous(breaks = pretty_breaks()) + scale_x_continuous(breaks = pretty_breaks())
+        checkouts_by_ayear <- record_item_history() %>%
+            mutate(ayear = academic_year(date))
+        ggplot(checkouts_by_ayear, aes(x = ayear)) + geom_bar(width = 0.8) +
+            labs(title = paste("Circs per academic year"), x = "", y = "") +
+            scale_y_continuous(breaks = pretty_breaks()) +
+            scale_x_continuous(breaks = pretty_breaks())
     })
 
     output$item_history_table <- renderTable({
-        item_circ_summary <- record_item_history() %>% count(item_barcode)
-        item_details <- circulated_item_details %>% filter(item_barcode %in% item_circ_summary$item_barcode) %>% select(item_barcode, item_type, acq_date)
-        last_circs <- record_item_history() %>% group_by(item_barcode) %>% mutate(last_circ = max(date)) %>% select(item_barcode, last_circ) %>% distinct
-        item_history_table <- merge(item_circ_summary, item_details) %>% merge(last_circs) %>% mutate(acq_date = as.character(acq_date), last_circ = as.character(last_circ))
-        ## print(item_history_table)
+        item_circ_summary <- record_item_history() %>%
+            count(item_barcode)
+        item_details <- circulated_item_details %>%
+            filter(item_barcode %in% item_circ_summary$item_barcode) %>%
+            select(item_barcode, item_type, acq_date)
+        last_circs <- record_item_history() %>%
+            group_by(item_barcode) %>%
+            mutate(last_circ = max(date)) %>%
+            select(item_barcode, last_circ) %>%
+            distinct()
+        item_history_table <- merge(item_circ_summary, item_details) %>%
+            merge(last_circs) %>%
+            mutate(acq_date = as.character(acq_date), last_circ = as.character(last_circ))
         item_history_table
     })
 
