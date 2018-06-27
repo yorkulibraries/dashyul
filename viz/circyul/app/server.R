@@ -79,4 +79,9 @@ shinyServer(function(input, output, session) {
         item_history_table
     })
 
+    output$total_circ_count <- renderUI({
+        tags$p(paste("Total circs in time range: ", nrow(record_item_history())))
+    })
+
+
 })

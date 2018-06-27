@@ -20,6 +20,7 @@ shinyUI(
 
             mainPanel(
                 tags$h2(textOutput("title_information")),
+                htmlOutput("total_circ_count"),
                 plotOutput("circ_history_plot"),
                 tableOutput("item_history_table")
             )
