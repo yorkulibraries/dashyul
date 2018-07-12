@@ -26,7 +26,23 @@ empty_record_item_history <- circulated_item_details %>%
 shinyServer(function(input, output, session) {
 
     record_control_number <- reactive({
-        record_control_number <- gsub(".*/", "", input$raw_control_number)
+        ## It's OK to paste in a VuFind URL
+        ## e.g. https://www.library.yorku.ca/find/Record/2184579
+        ## where then everything up to the last / is stripped
+        record_control_number <- gsub(".*/", "", input$raw_control_number_or_barcode)
+        ## It's also OK to paste in an item barcode, in which case we need to
+        ## look up the control number.
+        if (substr(record_control_number, 0, 4) == "3900") {
+            record_control_number <- circulated_item_details %>%
+                filter(item_barcode == record_control_number) %>%
+                pull(control_number)
+            ## If there's no data about it we get character(0),
+            ## which will fail, but an empty string works.
+            ## I know this is not neat, but it works.
+            if (length(record_control_number) == 0) {
+                record_control_number <- ""
+            }
+        }
         ## Need a leading a to get Sirsi control number, so paste if needed
         if (substr(record_control_number, 0, 1) != "a") {
             record_control_number <- paste0("a", record_control_number)
