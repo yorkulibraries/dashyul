@@ -86,11 +86,11 @@ shinyServer(function(input, output, session) {
             ## acquired after the deadline, if other items part of
             ## the same record were acquired before it).
             left_join(record_min_acq_year) %>%
-            filter(min_acq_year <= input$acquired_in_or_before) %>%
+            filter(min_acq_ayear <= input$acquired_in_or_before) %>%
             ## And now filter all that to shows just the circs in the
             ## given range
-            filter(circ_ayear >= as.numeric(input$min_circ_ayear),
-                   circ_ayear <= as.numeric(input$max_circ_ayear)) %>%
+            ## filter(circ_ayear >= as.numeric(input$min_circ_ayear),
+            ##        circ_ayear <= as.numeric(input$max_circ_ayear)) %>%
             group_by(control_number, lc_letters, lc_digits, call_number) %>%
             summarise(copies = n(),
                       total_circs = sum(circs),
