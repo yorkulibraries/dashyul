@@ -14,7 +14,7 @@ shinyUI(
                 tags$p("The control number is the number at the end",
                        "of the URL in VuFind. Enter it alone, or just paste in the entire URL.",
                        "Or, use a barcode reader to scan the item's barcode."),
-                tags$p("Circulation records cover A2006-A2016."),
+                tags$p("Circulation records cover A2001-A2016."),
                 tags$p("William Denton (wdenton@yorku.ca)")
             ),
             mainPanel(
