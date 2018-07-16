@@ -10,6 +10,7 @@ write(paste("Started: ", Sys.time()), stderr())
 ## All these file paths should just work and don't require tweaking
 metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
 item_circ_history_file <- paste0(metrics_data_dir, "item-circ-history.csv")
+record_min_acq_year_file <- paste0(metrics_data_dir, "record-min-acquisition-year.csv")
 
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
@@ -108,5 +109,14 @@ item_circ_history <- items_and_checkouts %>%
 ## Phew, finally, we can write it all out.
 write("Writing item circ history ...", stderr())
 write_csv(item_circ_history, item_circ_history_file)
+
+## And now write out the minimum acquisition year among all
+## the items belonging to a record
+write("Writing mininum acquistion year for records ...", stderr())
+record_min_acq_year <- items %>%
+    group_by(control_number) %>%
+    mutate(min_acq_ayear = min(acq_ayear)) %>%
+    distinct(control_number, min_acq_ayear)
+write_csv(record_min_acq_year, record_min_acq_year_file)
 
 write(paste("Finished: ", Sys.time()), stderr())

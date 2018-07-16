@@ -5,14 +5,15 @@ library(yulr)
 
 ## TODO: Fix the hardcoding of the data directory.
 
-## metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/sources/symphony/metrics/")
+## metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
 metrics_data_dir <- "/dashyul/data/symphony/metrics/"
 
 item_circ_history <- read_csv(paste0(metrics_data_dir, "item-circ-history.csv"))
-
 item_circ_history$circ_ayear[is.na(item_circ_history$circ_ayear)] <- 0
 
-## gardener_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/sources/viz/gardener/")
+record_min_acq_year <- read_csv(paste0(metrics_data_dir, "record-min-acquisition-year.csv"))
+
+## gardener_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/gardener/")
 gardener_data_dir <- "/dashyul/data/viz/gardener/"
 
 gardener_titles <- read_csv(paste0(gardener_data_dir, "gardener-titles.csv"))
@@ -36,14 +37,60 @@ shinyServer(function(input, output, session) {
     ## })
 
     gardener_data <- reactive({
-        gardener <- item_circ_history %>%
+        ## gardener <- item_circ_history %>%
+        ##     filter(home_location == input$home_location,
+        ##            lc_letters == toupper(input$lc_letters),
+        ##            lc_digits >= as.numeric(input$min_lc_digits),
+        ##            lc_digits <= as.numeric(input$max_lc_digits),
+        ##            circ_ayear >= as.numeric(input$min_circ_ayear),
+        ##            circ_ayear <= as.numeric(input$max_circ_ayear),
+        ##            ) %>%
+        ##     group_by(control_number, lc_letters, lc_digits, call_number) %>%
+        ##     summarise(copies = n(),
+        ##               total_circs = sum(circs),
+        ##               last_circed = max(circ_ayear)) %>%
+        ##     filter(copies >= input$num_copies[1],
+        ##            copies <= input$num_copies[2],
+        ##            total_circs >= as.numeric(input$min_total_circs),
+        ##            total_circs <= as.numeric(input$max_total_circs),
+        ##            last_circed <= input$last_circed_in_or_before
+        ##            ) %>%
+        ##     ungroup() %>%
+        ##     select(-lc_letters, -lc_digits)
+
+        ## First, get all the items in the right location
+        ## that are in the right LC range.
+        all_items_in_range <- item_circ_history %>%
             filter(home_location == input$home_location,
                    lc_letters == toupper(input$lc_letters),
                    lc_digits >= as.numeric(input$min_lc_digits),
-                   lc_digits <= as.numeric(input$max_lc_digits),
-                   circ_ayear >= as.numeric(input$min_circ_ayear),
-                   circ_ayear <= as.numeric(input$max_circ_ayear),
-                   ) %>%
+                   lc_digits <= as.numeric(input$max_lc_digits))
+
+        ## Make a list of all of the control_numbers that have
+        ## circed ONLY before or in the deadline year.
+        ## I.e., if we say "Last circ was in or before" 2005,
+        ## then filter to only control_numbers where the last circ
+        ## year was 2005 or less.
+        uncirced_after_deadline <- all_items_in_range %>%
+            group_by(control_number) %>%
+            mutate(last_circed = max(circ_ayear)) %>%
+            distinct(control_number, last_circed) %>%
+            filter(last_circed <= input$last_circed_in_or_before)
+
+        gardener <- all_items_in_range %>%
+            ## Filter all the items we have to just ones where the
+            ## most recent circ is before the deadline year.
+            filter(control_number %in% uncirced_after_deadline$control_number) %>%
+            ## Filter to items where the record's minimum acq year
+            ## is before the deadline (so this could include items
+            ## acquired after the deadline, if other items part of
+            ## the same record were acquired before it).
+            left_join(record_min_acq_year) %>%
+            filter(min_acq_year <= input$acquired_in_or_before) %>%
+            ## And now filter all that to shows just the circs in the
+            ## given range
+            filter(circ_ayear >= as.numeric(input$min_circ_ayear),
+                   circ_ayear <= as.numeric(input$max_circ_ayear)) %>%
             group_by(control_number, lc_letters, lc_digits, call_number) %>%
             summarise(copies = n(),
                       total_circs = sum(circs),
@@ -51,9 +98,7 @@ shinyServer(function(input, output, session) {
             filter(copies >= input$num_copies[1],
                    copies <= input$num_copies[2],
                    total_circs >= as.numeric(input$min_total_circs),
-                   total_circs <= as.numeric(input$max_total_circs),
-                   last_circed <= input$last_circed_in_or_before
-                   ) %>%
+                   total_circs <= as.numeric(input$max_total_circs)) %>%
             ungroup() %>%
             select(-lc_letters, -lc_digits)
 
@@ -82,10 +127,10 @@ shinyServer(function(input, output, session) {
     output$readable_query <- renderText({
         paste0("Query in words: ", input$home_location, " books, ",
                input$lc_letters, " ", input$min_lc_digits, " to ", input$max_lc_digits,
+               ", filtered to include only books that last circed in or before ", input$last_circed_in_or_before,
                ", where we have from ", input$num_copies[1], " to ", input$num_copies[2],
                " copies.  Circ data goes from ",
                input$min_circ_ayear, " to ", input$max_circ_ayear,
-               ", filtered to show only books that last circed in or before ", input$last_circed_in_or_before,
                ", where the total number of circs is from ",
                input$min_total_circs, " to ", input$max_total_circs, ".")
     })
