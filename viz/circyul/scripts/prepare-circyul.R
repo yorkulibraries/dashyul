@@ -14,7 +14,7 @@ catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/
 catalogue_current_item_details_file <- paste0(catalogue_data_dir, "catalogue-current-item-details.csv")
 catalogue_current_title_metadata_file <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.csv")
 
-files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a(200[6789]|201[0123456]).csv.gz$", full.names = TRUE)
+files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a(200[123456789]|201[0123456]).csv.gz$", full.names = TRUE)
 
 write("Reading transaction logs ...", stderr())
 
