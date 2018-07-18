@@ -15,7 +15,7 @@ catalogue_current_title_metadata_file <- paste0(catalogue_data_dir, "catalogue-c
 gardener_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/gardener/")
 
 write("Reading item circ history ...", stderr())
-item_circ_history <- read_csv(paste0(symphony_metrics_data_dir, "item-circ-history.csv"))
+item_circ_history <- readRDS(paste0(symphony_metrics_data_dir, "item-circ-history.rds"))
 
 write("Reading title metadata ...", stderr())
 catalogue_current_title_metadata <- read_csv(catalogue_current_title_metadata_file, col_types = "ccc")
@@ -27,5 +27,6 @@ gardener_titles <- catalogue_current_title_metadata %>%
 
 write("Writing title/author ...", stderr())
 write_csv(gardener_titles, paste0(gardener_data_dir, "gardener-titles.csv"))
+saveRDS(gardener_titles, paste0(gardener_data_dir, "gardener-titles.rds"))
 
 write(paste("Finished: ", Sys.time()), stderr())

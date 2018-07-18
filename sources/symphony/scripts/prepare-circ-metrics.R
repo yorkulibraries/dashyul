@@ -16,6 +16,7 @@ circ_window_years <- 5
 ## All these file paths should just work and don't require tweaking
 metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
 circ_metrics_file <- paste0(metrics_data_dir, "circ-metrics.csv")
+circ_metrics_rds <- paste0(metrics_data_dir, "circ-metrics.rds")
 
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
@@ -168,5 +169,6 @@ circ_metrics <- circ_metrics %>%
 ## Phew, finally, we can write it all out.
 write("Writing circ metrics ...", stderr())
 write_csv(circ_metrics, circ_metrics_file)
+saveRDS(circ_metrics, circ_metrics_rds)
 
 write(paste("Finished: ", Sys.time()), stderr())

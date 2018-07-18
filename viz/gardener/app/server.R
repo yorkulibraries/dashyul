@@ -8,7 +8,7 @@ library(yulr)
 ## metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
 metrics_data_dir <- "/dashyul/data/symphony/metrics/"
 
-item_circ_history <- read_csv(paste0(metrics_data_dir, "item-circ-history.csv"))
+item_circ_history <- readRDS(paste0(metrics_data_dir, "item-circ-history.rds"))
 item_circ_history$circ_ayear[is.na(item_circ_history$circ_ayear)] <- 0
 
 record_min_acq_year <- read_csv(paste0(metrics_data_dir, "record-min-acquisition-year.csv"))
@@ -16,7 +16,7 @@ record_min_acq_year <- read_csv(paste0(metrics_data_dir, "record-min-acquisition
 ## gardener_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/gardener/")
 gardener_data_dir <- "/dashyul/data/viz/gardener/"
 
-gardener_titles <- read_csv(paste0(gardener_data_dir, "gardener-titles.csv"))
+gardener_titles <- readRDS(paste0(gardener_data_dir, "gardener-titles.rds"))
 
 locations <- c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
 
