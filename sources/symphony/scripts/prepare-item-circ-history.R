@@ -14,6 +14,7 @@ item_circ_history_file <- paste0(metrics_data_dir, "item-circ-history.csv")
 item_circ_history_rds <- paste0(metrics_data_dir, "item-circ-history.rds")
 
 record_min_acq_year_file <- paste0(metrics_data_dir, "record-min-acquisition-year.csv")
+record_min_acq_year_rds <- paste0(metrics_data_dir, "record-min-acquisition-year.rds")
 
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
@@ -122,5 +123,6 @@ record_min_acq_year <- items %>%
     mutate(min_acq_ayear = min(acq_ayear)) %>%
     distinct(control_number, min_acq_ayear)
 write_csv(record_min_acq_year, record_min_acq_year_file)
+saveRDS(record_min_acq_year, record_min_acq_year_rds)
 
 write(paste("Finished: ", Sys.time()), stderr())
