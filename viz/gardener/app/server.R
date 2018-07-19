@@ -129,10 +129,12 @@ shinyServer(function(input, output, session) {
         paste0("Query in words: ", input$home_location, " books, ",
                input$lc_letters, " ", input$min_lc_digits, " to ", input$max_lc_digits,
                ", filtered to include only books that last circed in or before ", input$last_circed_in_or_before,
+               ", that were acquired in or before ", input$acquired_in_or_before,
                ", where we have from ", input$num_copies[1], " to ", input$num_copies[2],
-               " copies.  Circ data goes from ",
-               input$min_circ_ayear, " to ", input$max_circ_ayear,
-               ", where the total number of circs is from ",
+               " copies, ",
+               ## "Circ data goes from ",
+               ## input$min_circ_ayear, " to ", input$max_circ_ayear,
+               "where the total number of circs is from ",
                input$min_total_circs, " to ", input$max_total_circs, ".")
     })
 
