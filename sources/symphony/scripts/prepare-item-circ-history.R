@@ -39,14 +39,15 @@ write("1.  Reading checkouts ...", stderr())
 
 ## Get simple data on checkouts from this current year.
 ## Result is data frame: current_simple_checkouts
-source(paste0(symphony_source_lib_dir, "get-current-year-simple-checkouts.R"))
+## source(paste0(symphony_source_lib_dir, "get-current-year-simple-checkouts.R"))
 
 ## Get all checkouts from past yearss.
 ## Result is data frame: past_simple_checkouts
-source(paste0(symphony_source_lib_dir, "get-past-simple-checkouts.R"))
+## source(paste0(symphony_source_lib_dir, "get-past-simple-checkouts.R"))
 
 ## Combine, and we've got them all.
-checkouts <- bind_rows(past_simple_checkouts, current_simple_checkouts)
+## checkouts <- bind_rows(past_simple_checkouts, current_simple_checkouts)
+checkouts <- readRDS(paste0(symphony_transactions_data_dir, "simple-checkouts-all.rds"))
 
 ###
 ### Catalogue data
