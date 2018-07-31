@@ -113,6 +113,8 @@ TODO:
 
 + [ ] Document the Symphony report?
 
+** ~extract-catalogue-item-details.rb~
+
 ** ~extract-catalogue-title-metadata.rb~
 
-** ~extract-catalogue-item-details.rb~
+** ~extract-catalogue-isbn-item-number-map.sh~
