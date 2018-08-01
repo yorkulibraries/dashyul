@@ -24,7 +24,7 @@ reader.each do |record|
     next unless sirsi_number["a"]
     control_number = sirsi_number["a"].gsub(/.* /, "")
 
-    STDERR.print "#{control_number}\r"
+    ## STDERR.print "#{control_number}\r"
 
     # MARC 020 fields can be full of non-ISBN nonsense!
     # Ugh! https://loc.gov/marc/bibliographic/bd020.html

@@ -7,10 +7,10 @@
 ## define the column types (character, integer, etc.) and then
 ## save it as an RDS file.
 
-"usage: extract-catalogue-title-metadata.R --dump-file <prefix>
+"usage: extract-catalogue-title-metadata.R --prefix <prefix>
 
 options:
- --dump-file <prefix>     Basename prefix to use, e.g. catalogue-201801
+ --prefix <prefix>     Basename prefix to use, e.g. catalogue-201801
 " -> doc
 
 library(docopt)
@@ -18,12 +18,12 @@ library(tidyverse)
 
 opts <- docopt(doc)
 
-dump_file <- opts["dump-file"]
+prefix <- opts["prefix"]
 
 catalogue_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
 
-title_metadata_csv <- paste0(catalogue_data_dir, dump_file, "-title-metadata.csv")
-title_metadata_rds <- paste0(catalogue_data_dir, dump_file, "-title-metadata.rds")
+title_metadata_csv <- paste0(catalogue_data_dir, prefix, "-title-metadata.csv")
+title_metadata_rds <- paste0(catalogue_data_dir, prefix, "-title-metadata.rds")
 
 title_metadata <- read_csv(title_metadata_csv, col_types = "ccc")
 saveRDS(title_metadata, file = title_metadata_rds)

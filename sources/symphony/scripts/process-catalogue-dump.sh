@@ -13,30 +13,34 @@ if [ -z "$MARC_DUMP" ]
 then
     MARC_DUMP=$(ls -rt /sirsilogs/catalogue*mrc | tail -1)
 fi
-DUMP_FILE=$(basename -s .mrc "$MARC_DUMP")
+
+# PREFIX will be catalogue-20180630 or some other YYYYMMDD.
+PREFIX=$(basename -s .mrc "$MARC_DUMP")
 
 cd ${SYMPHONY_CATALOGUE_DATA}
 
-echo -n "$DUMP_FILE:  item details (~ 25 mins) ... "
-${SYMPHONY_SCRIPTS}/extract-catalogue-item-details.rb $MARC_DUMP > ${DUMP_FILE}-item-details.csv
-${SYMPHONY_SCRIPTS}/extract-catalogue-item-details.R --dump-file ${DUMP_FILE}
+echo -n "$PREFIX:  item details (~ 25 mins) ... "
+${SYMPHONY_SCRIPTS}/extract-catalogue-item-details.rb $MARC_DUMP > ${PREFIX}-item-details.csv
+${SYMPHONY_SCRIPTS}/extract-catalogue-item-details.R --prefix ${PREFIX}
 
 echo -n "title metadata ... (~ 20 mins) ... "
-${SYMPHONY_SCRIPTS}/extract-catalogue-title-metadata.rb $MARC_DUMP > ${DUMP_FILE}-title-metadata.csv
-${SYMPHONY_SCRIPTS}/extract-catalogue-title-metadata.R --dump-file ${DUMP_FILE}
+${SYMPHONY_SCRIPTS}/extract-catalogue-title-metadata.rb $MARC_DUMP > ${PREFIX}-title-metadata.csv
+${SYMPHONY_SCRIPTS}/extract-catalogue-title-metadata.R --prefix ${PREFIX}
+
+echo -n "ISBNs and item numbers ... (~ 20 mins) ... "
+${SYMPHONY_SCRIPTS}/extract-catalogue-isbn-item-number-map.rb $MARC_DUMP > ${PREFIX}-isbn-item-number.csv
+${SYMPHONY_SCRIPTS}/extract-catalogue-isbn-item-number-map.R --prefix ${PREFIX}
 
 echo -n "to text ... (~ 1 mins) "
-yaz-marcdump "$MARC_DUMP" > "${DUMP_FILE}.txt"
+yaz-marcdump "$MARC_DUMP" > "${PREFIX}.txt"
 
 echo -n "linking ..."
-rm -f catalogue-current-item-details.csv
-rm -f catalogue-current-item-details.rds
-ln -s ${DUMP_FILE}-item-details.csv catalogue-current-item-details.csv
-ln -s ${DUMP_FILE}-item-details.rds catalogue-current-item-details.rds
-
-rm -f catalogue-current-title-metadata.csv
-rm -f catalogue-current-title-metadata.rds
-ln -s ${DUMP_FILE}-title-metadata.csv catalogue-current-title-metadata.csv
-ln -s ${DUMP_FILE}-title-metadata.rds catalogue-current-title-metadata.rds
+FILENAME_PIECES="item-details title-metadata isbn-item-number"
+for PIECE in $FILENAME_PIECES
+do
+    rm -f catalogue-current-${PIECE}.{csv,rds}
+    ln -s ${PREFIX}-${PIECE}.csv catalogue-current-${PIECE}.csv
+    ln -s ${PREFIX}-${PIECE}.rds catalogue-current-${PIECE}.rds
+done
 
 echo "Finished: $(date)"
