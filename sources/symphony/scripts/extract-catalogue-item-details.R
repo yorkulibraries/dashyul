@@ -10,17 +10,17 @@
 "usage: extract-catalogue-item-details.R --dump-file <prefix>
 
 options:
- --dump-file <prefix>        Basename prefix to use
+ --dump-file <prefix>     Basename prefix to use
 " -> doc
 
 library(docopt)
-library(readr)
+library(tidyverse)
 
 opts <- docopt(doc)
 
 dump_file <- opts["dump-file"]
 
-catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+catalogue_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
 
 item_details_csv <- paste0(catalogue_data_dir, dump_file, "-item-details.csv")
 item_details_rds <- paste0(catalogue_data_dir, dump_file, "-item-details.rds")
