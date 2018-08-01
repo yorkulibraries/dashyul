@@ -16,7 +16,7 @@ library(yulr)
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
 months_to_read <- format(seq(from = as.Date("2017-09-01"),
-                             to = floor_date(Sys.Date(), "month") - months(1),
+                             to = floor_date(Sys.Date(), "month") - months(2),
                              by = "month"),
                          "%Y%m")
 
@@ -32,10 +32,8 @@ for (month in months_to_read) {
 
 current_simple_checkouts <- current_simple_transactions %>%
     filter(transaction_command == "CV") %>%
-    select(item_barcode, library)
-
-current_simple_checkouts <- current_simple_checkouts %>%
-    mutate(circ_ayear = academic_year(Sys.Date()))  ## I.e., the current academic year.
+    mutate(circ_ayear = academic_year(date)) %>% ## Always the current academic year.
+    select(circ_ayear, date, library, item_barcode)
 
 write("Writing out ...", stderr())
 saveRDS(current_simple_checkouts, paste0(symphony_transactions_data_dir, "simple-checkouts-current.rds"))

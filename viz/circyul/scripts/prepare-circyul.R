@@ -1,42 +1,49 @@
 #!/usr/bin/env Rscript
-library(dplyr)
-library(readr)
+library(tidyverse)
 library(lubridate)
 
-circyul_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
+transaction_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
+catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+catalogue_item_details_rds <- paste0(catalogue_data_dir, "catalogue-current-item-details.rds")
+catalogue_title_metadata_rds <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.rds")
+
+circyul_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
 circyul_checkouts_file <- paste0(circyul_data_dir, "checkouts.csv")
 circulated_item_details_file <- paste0(circyul_data_dir, "circulated_item_details.csv")
 circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata.csv")
 
-transaction_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
-catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-
-catalogue_current_item_details_file <- paste0(catalogue_data_dir, "catalogue-current-item-details.csv")
-catalogue_current_title_metadata_file <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.csv")
-
-files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a[[:digit:]]{4}.csv.gz$", full.names = TRUE)
-
-write("Reading transaction logs ...", stderr())
-
-checkouts <- do.call("rbind", lapply(files, read.csv)) %>%
-    tbl_df() %>%
-    filter(transaction_command == "CV") %>%
-    select(date, library, item_barcode)
+write("Reading checkouts ...", stderr())
+checkouts <- readRDS(paste0(transaction_data_dir, "simple-checkouts-all.rds"))
 
 write("Reading item details ...", stderr())
-
-item_details <- read_csv(catalogue_current_item_details_file, col_types = "ccccc_______cc______cc_c") %>%
+item_details <- readRDS(catalogue_item_details_rds) %>%
     filter(library == "YORK") %>%
     filter(class_scheme == "LC") %>%
-    filter(home_location %in% c("SCOTT", "STEACIE", "FROST", "BRONFMAN", "SCOTT-MAPS")) %>%
-    filter(item_type %in% c("SCOTT-BOOK", "STEAC-BOOK", "FROST-BOOK", "BRONF-BOOK", "SCOTT-RESV", "SCORE", "MAP", "STEAC-RESV", "SCMAP-BOOK"))
+    filter(home_location %in% c("BRONFMAN",
+                                "FROST",
+                                "SCOTT",
+                                "SCOTT-MAPS",
+                                "STEACIE"
+                                )
+           ) %>%
+    filter(item_type %in% c("BRONF-BOOK",
+                            "FROST-BOOK",
+                            "MAP", "SCMAP-BOOK",
+                            "SCORE",
+                            "SCOTT-BOOK", "SCOTT-RESV",
+                            "STEAC-BOOK", "STEAC-RESV"
+                            )
+           ) %>%
+    select(item_barcode, control_number, call_number,
+           lc_letters, lc_digits,
+           home_location, library, item_type,
+           acq_date, class_scheme)
 
 circulated_item_details <- item_details %>%
     filter(item_barcode %in% checkouts$item_barcode)
 
 write("Reading title_metadata ...", stderr())
-
-title_metadata <- read_csv(catalogue_current_title_metadata_file)
+title_metadata <- readRDS(catalogue_title_metadata_rds)
 
 circulated_title_metadata <- title_metadata %>%
     filter(control_number %in% circulated_item_details$control_number)

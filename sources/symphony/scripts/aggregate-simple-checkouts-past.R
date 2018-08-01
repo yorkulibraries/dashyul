@@ -25,7 +25,7 @@ files <- list.files(symphony_transactions_data_dir,
 past_simple_checkouts <- do.call("rbind", lapply(files, read_csv, col_types = "Dcccc")) %>%
     filter(transaction_command == "CV") %>%
     mutate(circ_ayear = academic_year(date)) %>%
-    select(item_barcode, library, circ_ayear)
+    select(circ_ayear, date, library, item_barcode)
 
 write("Writing out ...", stderr())
 saveRDS(past_simple_checkouts, paste0(symphony_transactions_data_dir, "simple-checkouts-past.rds"))
