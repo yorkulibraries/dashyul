@@ -16,7 +16,7 @@ library(yulr)
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
 months_to_read <- format(seq(from = as.Date("2017-09-01"),
-                             to = floor_date(Sys.Date(), "month") - months(2),
+                             to = floor_date(Sys.Date(), "month") - months(1),
                              by = "month"),
                          "%Y%m")
 
