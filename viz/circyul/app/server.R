@@ -12,7 +12,7 @@ circyul_checkouts_file         <- paste0(circyul_data_dir, "checkouts.csv.gz")
 circulated_item_details_file   <- paste0(circyul_data_dir, "circulated_item_details.csv.gz")
 circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata.csv.gz")
 
-circyul_checkouts         <- read_csv(circyul_checkouts_file, col_types = "Dcc")
+circyul_checkouts         <- read_csv(circyul_checkouts_file, col_types = "iDcc")
 circulated_item_details   <- read_csv(circulated_item_details_file, col_types = "ccccccccDc")
 circulated_title_metadata <- read_csv(circulated_title_metadata_file, col_types = "ccc")
 
