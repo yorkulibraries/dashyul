@@ -8,17 +8,14 @@ library(stringr)
 library(yulr)
 
 symphony_metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
-
 catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-catalogue_current_title_metadata_file <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.csv")
-
 gardener_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/gardener/")
 
 write("Reading item circ history ...", stderr())
 item_circ_history <- readRDS(paste0(symphony_metrics_data_dir, "item-circ-history.rds"))
 
 write("Reading title metadata ...", stderr())
-catalogue_current_title_metadata <- read_csv(catalogue_current_title_metadata_file, col_types = "ccc")
+catalogue_current_title_metadata <- readRDS(paste0(catalogue_data_dir, "catalogue-current-title-metadata.rds"))
 
 gardener_titles <- catalogue_current_title_metadata %>%
     filter(control_number %in% item_circ_history$control_number) %>%

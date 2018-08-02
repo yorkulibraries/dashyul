@@ -1,5 +1,8 @@
 all:
 
+circ_metrics:
+	./scripts/prepare-circ-metrics.R
+
 simple_checkouts:
 	./scripts/aggregate-simple-checkouts-past.R
 	./scripts/aggregate-simple-checkouts-current.R

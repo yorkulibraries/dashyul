@@ -21,10 +21,7 @@ circ_metrics_rds <- paste0(metrics_data_dir, "circ-metrics.rds")
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
 symphony_catalogue_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-catalogue_current_item_details_file <- paste0(symphony_catalogue_data_dir, "catalogue-current-item-details.csv")
-catalogue_current_title_metadata_file <- paste0(symphony_catalogue_data_dir, "catalogue-current-title-metadata.csv")
-
-symphony_source_lib_dir <- paste0(Sys.getenv("DASHYUL_HOME"), "/sources/symphony/lib/")
+catalogue_current_item_details_file <- paste0(symphony_catalogue_data_dir, "catalogue-current-item-details.rds")
 
 ###
 ### Libraries
@@ -38,24 +35,14 @@ library(yulr)
 ### Checkouts
 ###
 write("1.  Reading checkouts ...", stderr())
-
-## Get simple data on checkouts from this current year.
-## Result is data frame: current_simple_checkouts
-## source(paste0(symphony_source_lib_dir, "get-current-year-simple-checkouts.R"))
-
-## Get all checkouts from past yearss.
-## Result is data frame: past_simple_checkouts
-## source(paste0(symphony_source_lib_dir, "get-past-simple-checkouts.R"))
-
-## Combine, and we've got them all.
-## checkouts <- bind_rows(past_simple_checkouts, current_simple_checkouts)
 checkouts <- readRDS(paste0(symphony_transactions_data_dir, "simple-checkouts-all.rds"))
+
 ###
 ### Catalogue data
 ###
 write("2.  Reading catalogue item data ...", stderr())
 
-catalogue_current_item_details <- read_csv(catalogue_current_item_details_file, col_types = "")
+catalogue_current_item_details <- readRDS(catalogue_current_item_details_file)
 
 ## First, pick out just items that are in LC and have the item type
 ## we're interested in.  Ignore copies that are lost or missing.
@@ -169,6 +156,6 @@ circ_metrics <- circ_metrics %>%
 ## Phew, finally, we can write it all out.
 write("Writing circ metrics ...", stderr())
 write_csv(circ_metrics, circ_metrics_file)
-saveRDS(circ_metrics, circ_metrics_rds)
+saveRDS(circ_metrics, circ_metrics_rds %>% ungroup())
 
 write(paste("Finished: ", Sys.time()), stderr())

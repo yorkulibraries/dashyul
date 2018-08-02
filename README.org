@@ -152,6 +152,12 @@ make setup_directories
 
 ** Shiny
 
+* TODO
+
++ Symphony scripts ~prepare-circ-metrics.R~ and ~prepare-item-circ-history.R~ are almost identical.  Make it simpler, and document it, and then set up cron jobs.
++ Use ~DASHYUL_SERVER_LOGS~ in makefiles when copying log files down from production.
++ Set up the environment variables in the server, or, failing that, set them as variables in a script that every viz and script can load, so they are all defined in a single place, not hard-coded.
+
 * Guidelines
 
 Notes to myself as I work on this.
@@ -164,11 +170,6 @@ Notes to myself as I work on this.
 + Rely on ~DASHYUL_HOME~ and ~DASHYUL_DATA~.
 + Use ~_file~ and ~_dir~ suffixes when storing file and directory names in variables.
 + Have a README.org for every source and viz to explain what they are.  Need to explain all the data somewhere, too.
-
-TODO:
-
-+ Use ~DASHYUL_SERVER_LOGS~ in makefiles when copying log files down from production.
-+ Set up the environment variables in the server, or, failing that, set them as variables in a script that every viz and script can load, so they are all defined in a single place, not hard-coded.
 
 See also:
 
