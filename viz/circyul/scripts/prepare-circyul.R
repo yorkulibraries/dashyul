@@ -1,6 +1,5 @@
 #!/usr/bin/env Rscript
 library(tidyverse)
-library(lubridate)
 
 transaction_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
@@ -8,9 +7,10 @@ catalogue_item_details_rds <- paste0(catalogue_data_dir, "catalogue-current-item
 catalogue_title_metadata_rds <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.rds")
 
 circyul_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
-circyul_checkouts_file <- paste0(circyul_data_dir, "checkouts.csv")
-circulated_item_details_file <- paste0(circyul_data_dir, "circulated_item_details.csv")
-circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata.csv")
+## Append appropriate suffix when saving.
+circyul_checkouts_file <- paste0(circyul_data_dir, "checkouts")
+circulated_item_details_file <- paste0(circyul_data_dir, "circulated_item_details")
+circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata")
 
 write("Reading checkouts ...", stderr())
 checkouts <- readRDS(paste0(transaction_data_dir, "simple-checkouts-all.rds"))
@@ -50,6 +50,11 @@ circulated_title_metadata <- title_metadata %>%
 
 write("Writing out ...", stderr())
 
-write_csv(checkouts, circyul_checkouts_file)
-write_csv(circulated_item_details, circulated_item_details_file)
-write_csv(circulated_title_metadata, circulated_title_metadata_file)
+write_csv(checkouts, paste0(circyul_checkouts_file, ".csv"))
+saveRDS(checkouts,   paste0(circyul_checkouts_file, ".rds"))
+
+write_csv(circulated_item_details, paste0(circulated_item_details_file, ".csv"))
+saveRDS(circulated_item_details,   paste0(circulated_item_details_file, ".rds"))
+
+write_csv(circulated_title_metadata, paste0(circulated_title_metadata_file, ".csv"))
+saveRDS(circulated_title_metadata,   paste0(circulated_title_metadata_file, ".rds"))

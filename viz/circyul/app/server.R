@@ -8,18 +8,14 @@ library(yulr)
 
 ## circyul_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
 circyul_data_dir <- "/dashyul/data/viz/circyul/"
-circyul_checkouts_file         <- paste0(circyul_data_dir, "checkouts.csv.gz")
-circulated_item_details_file   <- paste0(circyul_data_dir, "circulated_item_details.csv.gz")
-circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata.csv.gz")
-
-circyul_checkouts         <- read_csv(circyul_checkouts_file, col_types = "iDcc")
-circulated_item_details   <- read_csv(circulated_item_details_file, col_types = "ccccccccDc")
-circulated_title_metadata <- read_csv(circulated_title_metadata_file, col_types = "ccc")
+circyul_checkouts         <- readRDS(paste0(circyul_data_dir, "checkouts.rds"))
+circulated_item_details   <- readRDS(paste0(circyul_data_dir, "circulated_item_details.rds"))
+circulated_title_metadata <- readRDS(paste0(circyul_data_dir, "circulated_title_metadata.rds"))
 
 ## Some items have never circulated, which causes an error when the
-## circ history chart is being made. This creates an empty tibble that
-## has all the right column headings with the right formats, which
-## we'll use when we set up record_item_history, below.
+## circ history chart is being made. This line creates an empty tibble
+## that has all the right column headings with the right formats,
+## which we'll use when we set up record_item_history, below.
 empty_record_item_history <- circulated_item_details %>%
     filter(control_number == "DOES NOT EXIST")
 
@@ -63,17 +59,21 @@ shinyServer(function(input, output, session) {
             mutate(date = as.Date(date))
     })
 
-    output$title_information <- renderText({
+    title_author <- reactive({
         record_metadata <- circulated_title_metadata %>%
             filter(control_number == record_control_number())
         readable_marc245(record_metadata$title_author)
+    })
+
+    output$title_information <- renderText({
+        title_author()
     })
 
     output$circ_history_plot <- renderPlot({
         checkouts_by_ayear <- record_item_history() %>%
             mutate(ayear = academic_year(date))
         ggplot(checkouts_by_ayear, aes(x = ayear)) + geom_bar(width = 0.8) +
-            labs(title = paste("Circs per academic year"), x = "", y = "") +
+            labs(title = paste("Circ history:", title_author()), x = "Academic year", y = "") +
             scale_y_continuous(breaks = pretty_breaks()) +
             scale_x_continuous(breaks = pretty_breaks())
     })
