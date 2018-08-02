@@ -156,6 +156,6 @@ circ_metrics <- circ_metrics %>%
 ## Phew, finally, we can write it all out.
 write("Writing circ metrics ...", stderr())
 write_csv(circ_metrics, circ_metrics_file)
-saveRDS(circ_metrics, circ_metrics_rds %>% ungroup())
+saveRDS(circ_metrics %>% ungroup(), circ_metrics_rds)
 
 write(paste("Finished: ", Sys.time()), stderr())

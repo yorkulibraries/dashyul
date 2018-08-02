@@ -102,7 +102,7 @@ item_circ_history <- items_and_checkouts %>%
 ## Phew, finally, we can write it all out.
 write("Writing item circ history ...", stderr())
 write_csv(item_circ_history, item_circ_history_file)
-saveRDS(item_circ_history, item_circ_history_rds %>% ungroup())
+saveRDS(item_circ_history %>% ungroup(), item_circ_history_rds)
 
 ## And now write out the minimum acquisition year among all
 ## the items belonging to a record
