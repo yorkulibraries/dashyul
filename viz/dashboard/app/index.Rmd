@@ -38,8 +38,10 @@ question_count_today_box <- function(library_name) {
   renderValueBox ({valueBox(libstats_today %>%
                             filter(library.name == library_name) %>%
                             summarise(count = n()) %>%
-                            select(count),
-                            icon = "fa-question") })
+                            select(count)
+                            ## icon = icon("question")
+							)
+							})
 }
 
 ## LibStats summary
@@ -50,8 +52,9 @@ question_count_summary_box <- function(library_name) {
   renderValueBox ({valueBox(libstats_summary %>%
                             filter(library.name == library_name) %>%
                             summarise(total = sum(count)) %>%
-                            select(total),
-                            icon = "fa-question") })
+                            select(total)
+                            ## icon = icon("question")
+							) })
 }
 
 libstats_summary_all_qs <- sum(libstats_summary$count)
@@ -179,7 +182,7 @@ Row
 ### questions asked since Sep 1
 
 ```{r}
-renderValueBox ({valueBox(libstats_summary %>% summarise(total = sum(count)) %>% select(total), icon = "fa-question") })
+renderValueBox ({valueBox(libstats_summary %>% summarise(total = sum(count)) %>% select(total)) })
 ```
 
 ### nonresearch questions
@@ -201,7 +204,7 @@ Row
 
 ```{r}
 renderValueBox({
-    valueBox(ezp_users_today, icon = "fa-database")
+    valueBox(ezp_users_today)
 })
 ```
 
@@ -209,7 +212,7 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    valueBox(new_ezp_users, icon = "fa-database")
+    valueBox(new_ezp_users)
 })
 ```
 
@@ -217,7 +220,7 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    valueBox(symphony_users_so_far, icon = "glyphicon glyphicon-book")
+    valueBox(symphony_users_so_far)
  })
  ```
 
@@ -225,7 +228,7 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    valueBox(symphony_items_so_far, icon = "glyphicon glyphicon-book")
+    valueBox(symphony_items_so_far)
  })
  ```
 
@@ -245,7 +248,7 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    valueBox(yorkspace_numbers$items_added, icon = "fa-database")
+    valueBox(yorkspace_numbers$items_added)
 })
 ```
 
