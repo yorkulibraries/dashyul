@@ -28,33 +28,36 @@ question.types <- c("1. Non-Resource",
 nonresearch.questions <- question.types[1:3]
 research.questions <- question.types[4:5]
 
-desk_questions <- libstats_today %>% filter(location.name %in% c("Reference Desk", "Drop-in Desk"))
+desk_questions <- libstats_today %>%
+    filter(location.name %in% c("Reference Desk", "Drop-in Desk"))
 research_at_desk_count <- nrow(desk_questions %>% filter(question.type %in% research.questions))
 
-office_questions <- libstats_today %>% filter(location.name == "Office")
+office_questions <- libstats_today %>%
+    filter(location.name == "Office")
 research_in_office_count <- nrow(office_questions %>% filter(question.type %in% research.questions))
 
 question_count_today_box <- function(library_name) {
-  renderValueBox ({valueBox(libstats_today %>%
-                            filter(library.name == library_name) %>%
-                            summarise(count = n()) %>%
-                            select(count)
-                            ## icon = icon("question")
-							)
-							})
+    renderValueBox ({
+        valueBox(libstats_today %>%
+                 filter(library.name == library_name) %>%
+                 summarise(count = n()) %>%
+                 select(count)
+                 )
+    })
 }
 
 ## LibStats summary
 
-libstats_summary = read_csv(paste0(dashboard_data_dir, "libstats-daily-summary.csv"))
+libstats_summary <- read_csv(paste0(dashboard_data_dir, "libstats-daily-summary.csv"))
 
 question_count_summary_box <- function(library_name) {
-  renderValueBox ({valueBox(libstats_summary %>%
-                            filter(library.name == library_name) %>%
-                            summarise(total = sum(count)) %>%
-                            select(total)
-                            ## icon = icon("question")
-							) })
+    renderValueBox ({
+        valueBox(libstats_summary %>%
+                 filter(library.name == library_name) %>%
+                 summarise(total = sum(count)) %>%
+                 select(total)
+                 )
+    })
 }
 
 libstats_summary_all_qs <- sum(libstats_summary$count)
@@ -182,7 +185,12 @@ Row
 ### questions asked since Sep 1
 
 ```{r}
-renderValueBox ({valueBox(libstats_summary %>% summarise(total = sum(count)) %>% select(total)) })
+renderValueBox ({
+    valueBox(libstats_summary %>%
+             summarise(total = sum(count)) %>%
+             select(total)
+             )
+})
 ```
 
 ### nonresearch questions
@@ -236,8 +244,8 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    valueBox(c(27342), icon = "glyphicon glyphicon-book")
- })
+    valueBox(c(27342))
+})
 ```
 -->
 
@@ -256,7 +264,7 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    valueBox(yorkspace_numbers$author_downloads, icon = "fa-database")
+    valueBox(yorkspace_numbers$author_downloads)
 })
 ```
 
@@ -264,7 +272,7 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    valueBox(ojs_total_downloads, icon = "fa-database")
+    valueBox(ojs_total_downloads)
 })
 ```
 
@@ -272,7 +280,7 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    valueBox(yudl_objects, icon = "fa-database")
+    valueBox(yudl_objects)
 })
 ```
 -->
@@ -289,7 +297,9 @@ DT::renderDataTable(platform_metrics %>% arrange(desc(users)), rownames = FALSE)
 ### EZProxy users per day
 
 ```{r}
-ggplot(ezp_daily_users, aes(x = date, y = users)) + geom_col(width = 0.6) + labs(title = "EZProxy users per day", x = "", y = "")
+ggplot(ezp_daily_users, aes(x = date, y = users)) +
+    geom_col(width = 0.6) +
+    labs(title = "EZProxy users per day", x = "", y = "")
 ```
 
 Row
@@ -298,14 +308,19 @@ Row
 ### most borrowed since Sep 1 2017
 
 ```{r}
-DT::renderDataTable(symphony_most_borrowed_titles %>% arrange(desc(borrows)), escape = FALSE, rownames = FALSE)
-## , include.rownames = FALSE, sanitize.text.function = function(x) x)
+DT::renderDataTable(symphony_most_borrowed_titles %>%
+                    arrange(desc(borrows)),
+                    escape = FALSE,
+                    rownames = FALSE
+                    )
 ```
 
 ### items borrowed per day (not including accessories)
 
 ```{r}
-ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) + geom_col(width = 0.6) + labs(title = "Items borrowed per day", x = "", y = "")
+ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) +
+    geom_col(width = 0.6) +
+    labs(title = "Items borrowed per day", x = "", y = "")
 ```
 
 Sidebar {.sidebar}
