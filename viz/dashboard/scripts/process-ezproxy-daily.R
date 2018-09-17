@@ -4,6 +4,7 @@ write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
 library(tidyverse)
+library(yulr)
 
 dashboard_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/dashboard/")
 

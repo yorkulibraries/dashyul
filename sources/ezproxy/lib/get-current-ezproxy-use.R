@@ -13,7 +13,7 @@ ezp <- do.call("rbind", lapply(files,
                                }
                                )
                ) %>%
-    filter(date >= as.Date("2017-09-01")) %>%
+    filter(date >= start_of_academic_year(academic_year(Sys.Date()))) %>%
     filter(! is.na(faculty))
 
 ## Filter out raw hostnames
