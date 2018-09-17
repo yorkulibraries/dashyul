@@ -1,11 +1,5 @@
 #!/usr/bin/env Rscript
 
-## In e.g. December we want September--November, so floor the month,
-## subtract a month, and that gives the previous month.
-
-## TODO Update this so it rolls over nicely in October without human
-## intervention. Or solve the September problem somehow.
-
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
@@ -15,7 +9,18 @@ library(yulr)
 
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
-months_to_read <- format(seq(from = as.Date("2017-09-01"),
+## The September problem:  in September we don't yet have any
+## date for the current academic year, so use use last year's
+## data.  That is, in Septepmber 2018, start from 2017-09-01.
+start_date <- start_of_academic_year(academic_year(Sys.Date()))
+if (format(Sys.Date(), "%m") == "09") {
+    start_date <- start_of_academic_year(academic_year(Sys.Date()) - 1)
+}
+
+## But in later months, e.g. December, we want September--November, so
+## floor the month, subtract a month, and that gives the previous
+## month.
+months_to_read <- format(seq(from = start_date,
                              to = floor_date(Sys.Date(), "month") - months(1),
                              by = "month"),
                          "%Y%m")
