@@ -157,6 +157,8 @@ make setup_directories
 + Symphony scripts ~prepare-circ-metrics.R~ and ~prepare-item-circ-history.R~ are almost identical.  Make it simpler, and document it, and then set up cron jobs.
 + Use ~DASHYUL_SERVER_LOGS~ in makefiles when copying log files down from production.
 + Set up the environment variables in the server, or, failing that, set them as variables in a script that every viz and script can load, so they are all defined in a single place, not hard-coded.
++ Try [[https://cran.r-project.org/web/packages/shinyFeedback/vignettes/shinyFeedback-intro.html][shinyFeedback]]?
++ Document what happens in September (almost everything) and October (rolling over Symphony logs).  Ideally, automate it all.
 
 * Guidelines
 
