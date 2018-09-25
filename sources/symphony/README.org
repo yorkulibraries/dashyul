@@ -118,3 +118,11 @@ TODO:
 ** ~extract-catalogue-title-metadata.rb~
 
 ** ~extract-catalogue-isbn-item-number-map.sh~
+
+** ~aggregate-annual-data.R~
+
+Aggregates all of the monthly transaction information into annual summaries (in CSV and RDS).
+
+TODO:
+
++ [ ] Document the annual work necessary in September.

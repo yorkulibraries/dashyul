@@ -7,12 +7,18 @@ library(tidyverse)
 library(yulr)
 library(lubridate)
 
-year <- 2017
+## Default to the previous academic year unless one is specified
+args <- commandArgs(trailingOnly = TRUE)
+ayear <- as.numeric(args[1])
+if (length(args) == 0) {
+    ayear <- academic_year(Sys.Date()) - 1
+    write(paste("Using year:", ayear), stderr())
+}
 
 symphony_trans_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
-months_to_read <- format(seq(from = start_of_academic_year(year),
-                             to = (start_of_academic_year(year + 1) - months(1)),
+months_to_read <- format(seq(from = start_of_academic_year(ayear),
+                             to = (start_of_academic_year(ayear + 1) - months(1)),
                              by = "month"),
                          "%Y%m")
 
@@ -55,10 +61,13 @@ yearly_users   <- yearly_users   %>% arrange(desc(user_barcode))   %>% distinct(
 
 write("Writing out ...", stderr())
 
-write_csv(yearly_items, paste0("symphony-items-a", year, ".csv"))
-write_csv(yearly_records, paste0("symphony-records-a", year, ".csv"))
-write_csv(yearly_transactions, paste0("symphony-transactions-a", year, ".csv"))
-write_csv(transactions_depii, paste0("symphony-transactions-a", year, "-depii.csv"))
-saveRDS(transactions_depii, paste0("symphony-transactions-a", year, "-depii.rds"))
+write_csv(yearly_items, paste0("symphony-items-a", ayear, ".csv"))
+write_csv(yearly_records, paste0("symphony-records-a", ayear, ".csv"))
+
+write_csv(yearly_transactions, paste0("symphony-transactions-a", ayear, ".csv"))
+saveRDS(yearly_transactions, paste0("symphony-transactions-a", ayear, ".rds"))
+
+write_csv(transactions_depii, paste0("symphony-transactions-a", ayear, "-depii.csv"))
+saveRDS(transactions_depii, paste0("symphony-transactions-a", ayear, "-depii.rds"))
 
 write(paste("Finished: ", Sys.time()), stderr())
