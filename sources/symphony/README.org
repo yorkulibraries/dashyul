@@ -126,3 +126,10 @@ Aggregates all of the monthly transaction information into annual summaries (in 
 TODO:
 
 + [ ] Document the annual work necessary in September.
+
+Use:
+
+#+begin_example
+cd ${DASHUL_DATA}/symphony/transactions/
+${DASHYUL_HOME}/sources/symphony/scripts/aggregate-annual-data.R
+#+end_example

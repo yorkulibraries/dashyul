@@ -22,10 +22,17 @@ files <- list.files(symphony_transactions_data_dir,
                     pattern = "symphony-transactions-a[[:digit:]]{4}.csv.gz$",
                     full.names = TRUE)
 
-past_simple_checkouts <- do.call("rbind", lapply(files, read_csv, col_types = "Dcccc")) %>%
+past_simple_checkouts <- do.call("rbind",
+                                 lapply(files, function(x) {
+                                     write(x, stderr())
+                                     read_csv(x, col_types = "Dcccc")
+                                 })) %>%
     filter(transaction_command == "CV") %>%
     mutate(circ_ayear = academic_year(date)) %>%
     select(circ_ayear, date, library, item_barcode)
+
+## If you don't want to note the files it's reading:
+## past_simple_checkouts <- do.call("rbind", lapply(files, read_csv, col_types = "Dcccc"))
 
 write("Writing out ...", stderr())
 saveRDS(past_simple_checkouts, paste0(symphony_transactions_data_dir, "simple-checkouts-past.rds"))
