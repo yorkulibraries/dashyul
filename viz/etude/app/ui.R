@@ -12,7 +12,7 @@ shinyUI(
                 tags$p('How students (undergraduate or graduate, but', em('only'), 'students, no others) use our collections.  Work in progress.'),
                 uiOutput("faculty"),
                 uiOutput("subject"),
-                tags$p("Covers September 2017 onwards. EZProxy updates happen daily; Symphony monthly."),
+                tags$p("Covers only this academic year. EZProxy updates happen daily; Symphony monthly."),
                 tags$p("William Denton (wdenton@yorku.ca)")
             ),
 
