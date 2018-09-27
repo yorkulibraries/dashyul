@@ -305,7 +305,7 @@ ggplot(ezp_daily_users, aes(x = date, y = users)) +
 Row
 -------------------------------------
 
-### most borrowed since Sep 1
+### Symphony: most borrowed since Sep 1
 
 ```{r}
 DT::renderDataTable(symphony_most_borrowed_titles %>%
@@ -315,7 +315,7 @@ DT::renderDataTable(symphony_most_borrowed_titles %>%
                     )
 ```
 
-### items borrowed per day (not including accessories)
+### Symphony: items borrowed per day (not including accessories)
 
 ```{r}
 ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) +
