@@ -305,7 +305,7 @@ ggplot(ezp_daily_users, aes(x = date, y = users)) +
 Row
 -------------------------------------
 
-### most borrowed since Sep 1 2017
+### most borrowed since Sep 1
 
 ```{r}
 DT::renderDataTable(symphony_most_borrowed_titles %>%
