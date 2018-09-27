@@ -7,6 +7,10 @@ library(tidyverse)
 library(yulr)
 library(lubridate)
 
+## TODO
+## Document.  Explain how this aggregates last year's
+## monthly data.  Is meant to be used in September.
+
 ## Default to the previous academic year unless one is specified
 args <- commandArgs(trailingOnly = TRUE)
 ayear <- as.numeric(args[1])

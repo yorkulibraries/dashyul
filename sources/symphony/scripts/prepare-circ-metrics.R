@@ -14,14 +14,14 @@ write(paste("Started: ", Sys.time()), stderr())
 circ_window_years <- 5
 
 ## All these file paths should just work and don't require tweaking
-metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
-circ_metrics_file <- paste0(metrics_data_dir, "circ-metrics.csv")
-circ_metrics_rds <- paste0(metrics_data_dir, "circ-metrics.rds")
+metrics_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
+circ_metrics_f <- paste0(metrics_data_d, "circ-metrics.csv")
+circ_metrics_rds <- paste0(metrics_data_d, "circ-metrics.rds")
 
-symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
+symphony_trans_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
-symphony_catalogue_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-catalogue_current_item_details_file <- paste0(symphony_catalogue_data_dir, "catalogue-current-item-details.rds")
+symphony_cat_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+cat_current_item_details_f <- paste0(symphony_cat_data_d, "catalogue-current-item-details.rds")
 
 ###
 ### Libraries
@@ -34,19 +34,19 @@ library(yulr)
 ###
 ### Checkouts
 ###
-write("1.  Reading checkouts ...", stderr())
-checkouts <- readRDS(paste0(symphony_transactions_data_dir, "simple-checkouts-all.rds"))
+write("Reading checkouts ...", stderr())
+checkouts <- readRDS(paste0(symphony_trans_data_d, "simple-checkouts-all.rds"))
 
 ###
 ### Catalogue data
 ###
-write("2.  Reading catalogue item data ...", stderr())
+write("Reading catalogue item data ...", stderr())
 
-catalogue_current_item_details <- readRDS(catalogue_current_item_details_file)
+cat_current_item_details <- readRDS(cat_current_item_details_f)
 
 ## First, pick out just items that are in LC and have the item type
 ## we're interested in.  Ignore copies that are lost or missing.
-items <- catalogue_current_item_details %>%
+items <- cat_current_item_details %>%
     filter(class_scheme == "LC",
            home_location %in% c("BRONFMAN",
                                 "FROST", "FR-OVERSZ",
@@ -83,12 +83,15 @@ items$current_location[is.na(items$current_location)] <- "X"
 items <- items %>% mutate(acq_ayear = academic_year(acq_date))
 
 ## And pick out the few fields we care about.
-items <- items %>% select(item_barcode, control_number, lc_letters, lc_digits, call_number, home_location, item_type, acq_ayear)
+items <- items %>% select(item_barcode, control_number,
+                          lc_letters, lc_digits,
+                          call_number, home_location,
+                          item_type, acq_ayear)
 
 ###
 ### Circulation metrics calculations
 ###
-write("3.  Calculating metrics ...", stderr())
+write("Calculating metrics ...", stderr())
 
 ## The starting year of the circulation window.  Used below for filtering.
 circ_window_ayear <- academic_year(Sys.Date()) - circ_window_years
@@ -139,7 +142,7 @@ call_number_circs_in_window <- item_circ_history %>%
 ## Join the circ_metrics data frame we began with this information
 ## about circs in the year window.
 circ_metrics <- left_join(circ_metrics, call_number_circs_in_window,
-                         by = c("control_number", "call_number", "home_location"))
+                          by = c("control_number", "call_number", "home_location"))
 
 ## Minor fixes so the arithmetic works.
 circ_metrics$circs_in_window[is.na(circ_metrics$circs_in_window)] <- "0"
@@ -147,6 +150,7 @@ circ_metrics$circs_in_window <- as.integer(circ_metrics$circs_in_window)
 
 ## Calculate busy factor
 write("Calculating busy factor ...", stderr())
+
 circ_metrics <- circ_metrics %>%
     mutate(raw_circs_per_copy = circs_in_window / copies,
            circs_per_copy = round(raw_circs_per_copy, 1),
@@ -155,7 +159,8 @@ circ_metrics <- circ_metrics %>%
 
 ## Phew, finally, we can write it all out.
 write("Writing circ metrics ...", stderr())
-write_csv(circ_metrics, circ_metrics_file)
+
+write_csv(circ_metrics, circ_metrics_f)
 saveRDS(circ_metrics %>% ungroup(), circ_metrics_rds)
 
 write(paste("Finished: ", Sys.time()), stderr())

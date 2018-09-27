@@ -13,18 +13,35 @@ symphony_trans_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transacti
 symphony_cat_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
 catalogue_title_metadata_f <- paste0(symphony_cat_data_d, "catalogue-current-title-metadata.csv")
 
-symphony_source_lib_d <- paste0(Sys.getenv("DASHYUL_HOME"), "/sources/symphony/lib/")
+## Every transaction, with PII
+all_trans_details <- readRDS(paste0(symphony_trans_data_d, "detailed-transactions-current-pii.rds"))
 
-## Read in the current year's transactions
-## Result is data frame: all_transaction_details
-source(paste0(symphony_source_lib_d, "get-current-year-transactions.R"))
+## Just checkouts, with chargers and laptops and things removed,
+## along with various other items that just don't belong.
+##
+## TODO:  I bet this gets used somewhere else, so move it
+## into one place.
 
-## Pick checkouts out from all_transaction_details,
-## dropping various types and sources of items we don't want to track.
-## Result is data frame: current_checkouts
-source(paste0(symphony_source_lib_d, "get-current-year-checkouts.R"))
+cleaned_checkouts <- all_trans_details %>%
+    filter(transaction_command == "CV") %>%
+    filter(! item_type %in% c("LAPTOP", "PHONECHAR", "SMIL-ACSRY",
+                              "ACCESSORY", "CABLEPC", "LAW-ACSRY",
+                              "IPAD")
+           ) %>%
+    filter(! grepl("(HEAD|MACBOOK|IPAD)", call_number)) %>%
+    filter(! control_number %in% c("a1506037", "a2529550", "a2215511",
+                                   "a3103097", "a2275708", "a1983265",
+                                   "a2309305", "a2877007", "a3103097",
+                                   "a3195548", "a3195552", "a3197914",
+                                   "a3326615", "a3355741", "a2999756",
+                                   "a1952111")
+           ) %>%
+    ## Not sure how this can happen, but it did
+    ## with a phone charger that seemed to be removed
+    ## from the catalogue.
+    filter(! is.na(call_number))
 
-all_holds <- all_transaction_details %>% filter(transaction_command == "JZ")
+all_holds <- all_trans_details %>% filter(transaction_command == "JZ")
 
 ## Title metdata
 write("Reading catalogue title metadata ...", stderr())
@@ -34,7 +51,7 @@ write("Calculating ...", stderr())
 
 ## Most checkouted
 most_checkouted_f <- paste0(dashboard_data_d,"symphony-most-checkouted.csv")
-most_checkouted <- current_checkouts %>%
+most_checkouted <- cleaned_checkouts %>%
     group_by(control_number, faculty, subject1) %>%
     summarise(checkouts = n()) %>%
     filter(checkouts >= 5) %>%
@@ -43,7 +60,7 @@ write_csv(most_checkouted, most_checkouted_f)
 
 ## Symphony borrows per day
 borrows_per_day_f <- paste0(dashboard_data_d, "symphony-borrows-per-day.csv")
-borrows_per_day <- current_checkouts %>%
+borrows_per_day <- cleaned_checkouts %>%
     group_by(date) %>%
     summarise(borrows = n())
 write_csv(borrows_per_day, borrows_per_day_f)
@@ -51,7 +68,7 @@ write_csv(borrows_per_day, borrows_per_day_f)
 ## Symphony most borrowed
 min_borrows <- 5
 most_borrowed_titles_f <- paste0(dashboard_data_d, "symphony-most-borrowed-titles.csv")
-most_borrowed_titles <- current_checkouts %>%
+most_borrowed_titles <- cleaned_checkouts %>%
     group_by(control_number) %>%
     summarise(borrows = n()) %>%
     filter(borrows >= min_borrows) %>%
@@ -74,7 +91,7 @@ write_csv(most_holded_titles, most_holded_titles_f)
 
 ## Total users
 users_so_far_f <- paste0(dashboard_data_d, "symphony-users-so-far.txt")
-users_so_far <- current_checkouts %>%
+users_so_far <- cleaned_checkouts %>%
     select(user_barcode) %>%
     distinct() %>%
     nrow()
@@ -82,7 +99,7 @@ write(users_so_far, file = users_so_far_f)
 
 ## Total items borrowed so far
 items_so_far_f <- paste0(dashboard_data_d, "symphony-items-so-far.txt")
-items_so_far <- current_checkouts %>%
+items_so_far <- cleaned_checkouts %>%
     select(item_barcode) %>%
     distinct() %>%
     nrow()
