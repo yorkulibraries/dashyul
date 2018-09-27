@@ -40,7 +40,12 @@ shinyServer(function(input, output, session) {
     })
 
     output$subject <- renderUI({
-        selectInput("subject", "Subject", all_faculties_and_subjects %>% filter(faculty == input$faculty) %>% select(subject1) %>% distinct %>% arrange(subject1))
+        selectInput("subject", "Subject", all_faculties_and_subjects %>%
+                                          filter(faculty == input$faculty) %>%
+                                          select(subject1) %>%
+                                          distinct() %>%
+                                          arrange(subject1)
+                    )
     })
 
     output$checkouts_by_class_letter_plot <- renderPlot({
