@@ -3,6 +3,10 @@
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
+library(tidyverse)
+library(lubridate)
+library(yulr)
+
 ###
 ### Configuration
 ###
@@ -13,130 +17,79 @@ write(paste("Started: ", Sys.time()), stderr())
 ## to date.
 circ_window_years <- 5
 
-## All these file paths should just work and don't require tweaking
-metrics_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
-circ_metrics_f <- paste0(metrics_data_d, "circ-metrics.csv")
-circ_metrics_rds <- paste0(metrics_data_d, "circ-metrics.rds")
-
-symphony_trans_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
-
-symphony_cat_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-cat_current_item_details_f <- paste0(symphony_cat_data_d, "catalogue-current-item-details.rds")
-
-###
-### Libraries
-###
-
-library(tidyverse)
-library(lubridate)
-library(yulr)
-
-###
-### Checkouts
-###
-write("Reading checkouts ...", stderr())
-checkouts <- readRDS(paste0(symphony_trans_data_d, "simple-checkouts-all.rds"))
-
-###
-### Catalogue data
-###
-write("Reading catalogue item data ...", stderr())
-
-cat_current_item_details <- readRDS(cat_current_item_details_f)
-
-## First, pick out just items that are in LC and have the item type
-## we're interested in.  Ignore copies that are lost or missing.
-items <- cat_current_item_details %>%
-    filter(class_scheme == "LC",
-           home_location %in% c("BRONFMAN",
-                                "FROST", "FR-OVERSZ",
-                                "LAW", "LAW-CD", "LAW-CORE", "LAW-FICT", "LAW-GRNDFL",
-                                "LAW-MICRO", "LAW-OVSZ", "LAW-REF", "LAW-REFDESK", "LAW-SC-REF", "LAW-STOR",
-                                "SCOTT", "SC-OVERSZ",
-                                "STEACIE"),
-           ! current_location %in% c("LOST", "MISSING", "DISCARD"),
-           item_type %in% c("BRONF-BOOK",
-                            "FROST-BOOK",
-                            "LAW-BOOK", "LAW-CORE", "BOOK",
-                            "SCOTT-BOOK",
-                            "STEAC-BOOK")
-           )
-
-items$home_location[items$home_location == "FR-OVERSZ"] <- "FROST"
-items$home_location[items$home_location == "SC-OVERSZ"] <- "SCOTT"
-
-items$home_location[items$home_location == "LAW-CD"]      <- "LAW"
-items$home_location[items$home_location == "LAW-CORE"]    <- "LAW"
-items$home_location[items$home_location == "LAW-FICT"]    <- "LAW"
-items$home_location[items$home_location == "LAW-GRNDFL"]  <- "LAW"
-items$home_location[items$home_location == "LAW-MICRO"]   <- "LAW"
-items$home_location[items$home_location == "LAW-OVSZ"]    <- "LAW"
-items$home_location[items$home_location == "LAW-REF"]     <- "LAW"
-items$home_location[items$home_location == "LAW-REFDESK"] <- "LAW"
-items$home_location[items$home_location == "LAW-SC-REF"]  <- "LAW"
-items$home_location[items$home_location == "LAW-STOR"]    <- "LAW"
-
-## If no location is known, mark it X, don't leave it as NA.
-items$current_location[is.na(items$current_location)] <- "X"
-
-## Set the academic year for the acquisition.
-items <- items %>% mutate(acq_ayear = academic_year(acq_date))
-
-## And pick out the few fields we care about.
-items <- items %>% select(item_barcode, control_number,
-                          lc_letters, lc_digits,
-                          call_number, home_location,
-                          item_type, acq_ayear)
-
-###
-### Circulation metrics calculations
-###
-write("Calculating metrics ...", stderr())
-
 ## The starting year of the circulation window.  Used below for filtering.
 circ_window_ayear <- academic_year(Sys.Date()) - circ_window_years
 
-## Glom together all items with all their checkouts. Makes it easy to
-## do some quick sums, but it's not elegant.
-items_and_checkouts <- left_join(items, checkouts, by = "item_barcode")
+## All these file paths should just work and don't require tweaking
+metrics_data_d    <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
+item_circ_history_rds <- paste0(metrics_data_d, "item-circ-history.rds")
+circ_metrics_f    <- paste0(metrics_data_d, "circ-metrics.csv")
+circ_metrics_rds  <- paste0(metrics_data_d, "circ-metrics.rds")
 
-## Circ details for each item, grouped by year. One row for each item
-## each year it circed (and one row if it didn't).
-write("Calculating item circ history ...", stderr())
+###
+### The work
+###
 
-item_circ_history <- items_and_checkouts %>%
-    mutate(has_circed = ! is.na(circ_ayear)) %>%
-    group_by(item_barcode, control_number, lc_letters, lc_digits, call_number, home_location, item_type, circ_ayear) %>%
-    summarise(circs = sum(has_circed))
+## The item circ history filed is prepared by another script,
+## so all the necessary information is ready and waiting.
 
-## Circ details for each item at a higher level: total circs and year
-## last circed. One row for each item. Grouping in item_circ_history
-## makes the mutation work.
-write("Calculating item circ summary ...", stderr())
-item_circ_summary <- item_circ_history %>%
+write("Reading item circ history ...", stderr())
+item_circ_history <- readRDS(item_circ_history_rds)
+
+## If an item has never circed, say it circed in 0, not NA.
+item_circ_history$circ_ayear[is.na(item_circ_history$circ_ayear)] <- "0"
+
+## Set up a table with two columns: item_barcode and the last year
+## that item circulated.  We'll paste this to another table in a moment.
+item_last_circed_ayear <- item_circ_history %>%
+    group_by(item_barcode) %>%
     mutate(item_last_circed_ayear = max(circ_ayear)) %>%
-    group_by(item_barcode, control_number, lc_letters, lc_digits, call_number, home_location, item_last_circed_ayear) %>%
-    summarise(total_circs = sum(circs))
-item_circ_summary$item_last_circed_ayear[is.na(item_circ_summary$item_last_circed_ayear)] <- "0"
+    distinct(item_barcode, item_last_circed_ayear)
+
+## Now count up the total circs for each item, across all years,
+## then paste in the last year circed (as calculated just above).
+item_circ_summary <- item_circ_history %>%
+    count(item_barcode,
+          control_number,
+          lc_letters,
+          lc_digits,
+          call_number,
+          home_location,
+          wt = circs) %>%
+    rename(total_circs = n) %>%
+    left_join(item_last_circed_ayear, by = "item_barcode")
 
 ## Create the circ metrics data frame, which we'll add to. Here, for
-## each control number, in each location, show the number of copies,
-## total circs, and year of last circ.
+## each control number (which could contain multiple items), in each
+## location, show the number of copies, total circs, and year of last
+## circ.
+
 write("Setting up circ metrics ...", stderr())
+
 circ_metrics <- item_circ_summary %>%
-    group_by(control_number, lc_letters, lc_digits, call_number, home_location) %>%
-    summarise(copies = n(),
-              total_circs = sum(total_circs),
-              last_circed_ayear = max(item_last_circed_ayear))
+       group_by(control_number,
+                lc_letters,
+                lc_digits,
+                call_number,
+                home_location
+                ) %>%
+       summarise(copies = n(),
+                 total_circs = sum(total_circs),
+                 last_circed_ayear = max(item_last_circed_ayear)
+                 )
 
 ## Now, count total number of circs (in the circ window) for all items
-## with the same control number and call number This lets us
+## with the same control number and call number. This lets us
 ## distinguish multiple volumes in a set (which each have different
 ## call numbers, ending e.g. in v1, v2, v3) from multiple copies of
-## the same edition (which all have the same call number)
+## the same edition (which all have the same call number).
+
 call_number_circs_in_window <- item_circ_history %>%
     filter(circ_ayear >= circ_window_ayear) %>%
-    group_by(control_number, call_number, home_location) %>%
+    group_by(control_number,
+             call_number,
+             home_location
+             ) %>%
     summarise(circs_in_window = sum(circs))
 
 ## Join the circ_metrics data frame we began with this information

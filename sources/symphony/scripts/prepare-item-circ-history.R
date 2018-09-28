@@ -80,10 +80,15 @@ items$current_location[is.na(items$current_location)] <- "X"
 items <- items %>% mutate(acq_ayear = academic_year(acq_date))
 
 ## And pick out the few fields we care about.
-items <- items %>% select(item_barcode, control_number,
-                          lc_letters, lc_digits,
-                          call_number, home_location,
-                          item_type, acq_ayear)
+items <- items %>% select(item_barcode,
+                          control_number,
+                          lc_letters,
+                          lc_digits,
+                          call_number,
+                          home_location,
+                          item_type,
+                          acq_ayear
+                          )
 
 ###
 ### Circulation metrics calculations
@@ -96,8 +101,17 @@ items_and_checkouts <- left_join(items, checkouts, by = "item_barcode")
 
 item_circ_history <- items_and_checkouts %>%
     mutate(has_circed = ! is.na(circ_ayear)) %>%
-    group_by(item_barcode, control_number, lc_letters, lc_digits, call_number, home_location, item_type, circ_ayear) %>%
-    summarise(circs = sum(has_circed))
+    count(item_barcode,
+          control_number,
+          lc_letters,
+          lc_digits,
+          call_number,
+          home_location,
+          item_type,
+          circ_ayear,
+          wt = has_circed
+          ) %>%
+    rename(circs = n)
 
 ## Phew, finally, we can write it all out.
 write("Writing item circ history ...", stderr())
