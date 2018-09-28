@@ -25,5 +25,5 @@ catalogue_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
 item_details_csv <- paste0(catalogue_data_dir, prefix, "-item-details.csv")
 item_details_rds <- paste0(catalogue_data_dir, prefix, "-item-details.rds")
 
-item_details <- read_csv(item_details_csv, col_types = "cccciiDDDiiccciccicccDcc")
+item_details <- read_csv(item_details_csv, col_types = "ccccciDDDiiccciccicccDcc")
 saveRDS(item_details, file = item_details_rds)
