@@ -16,10 +16,10 @@ item_circ_history_rds <- paste0(metrics_data_d, "item-circ-history.rds")
 record_min_acq_year_f <- paste0(metrics_data_d, "record-min-acquisition-year.csv")
 record_min_acq_year_rds <- paste0(metrics_data_d, "record-min-acquisition-year.rds")
 
-symphony_trans_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
+symph_trans_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
-symphony_cat_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-cat_current_item_details_f <- paste0(symphony_cat_data_d, "catalogue-current-item-details.rds")
+symph_cat_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+cat_current_item_details_f <- paste0(symph_cat_data_d, "catalogue-current-item-details.rds")
 
 ###
 ### Libraries
@@ -33,7 +33,7 @@ library(yulr)
 ### Checkouts
 ###
 write("Reading checkouts ...", stderr())
-checkouts <- readRDS(paste0(symphony_trans_data_d, "simple-checkouts-all.rds"))
+checkouts <- readRDS(paste0(symph_trans_data_d, "simple-checkouts-all.rds"))
 
 ###
 ### Catalogue data

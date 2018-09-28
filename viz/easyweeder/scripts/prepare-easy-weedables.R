@@ -7,22 +7,27 @@ library(tidyverse)
 library(stringr)
 library(yulr)
 
-symphony_metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
+symph_metrics_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
 
-catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-catalogue_current_title_metadata_file <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.csv")
+cat_data_d   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+cat_current_title_metadata_f <- paste0(cat_data_d, "catalogue-current-title-metadata.csv")
 
-easyweeder_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
+easyweeder_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
 
 write("Reading circ metrics ...", stderr())
-circ_metrics <- read_csv(paste0(symphony_metrics_data_dir, "circ-metrics.csv"))
+circ_metrics <- readRDS(paste0(symph_metrics_data_d, "circ-metrics.rds"))
 
 circ_window_years <- 5
 
 target_busy_factor <- 1
 
-how_many_copies_should_we_have <- function(copies = NULL, circs = NULL) {
-    if (circs == 0) { return(1) }
+how_many_copies_should_we_have <- function(copies = NULL,
+                                           circs = NULL,
+                                           circ_window_years = 5,
+                                           target_busy_factor = 1) {
+    if (circs == 0) {
+        return(1)
+    }
     ## Calculate a vector of all possible busy values
     ## for all possible numbers of copies, and then
     ## the first one where busy >= 0.5.  The index
@@ -43,17 +48,17 @@ write("Calculating ...", stderr())
 easy_weedable <- circ_metrics %>%
     filter(copies > 1, busy < target_busy_factor) %>%
     rowwise() %>%
-    mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window),
+    mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window, circ_window_years, target_busy_factor),
            weedable = copies - rec_copies) %>%
     select(-circs_per_copy)
 
 write("Adding title/author ...", stderr())
-catalogue_current_title_metadata <- read_csv(catalogue_current_title_metadata_file, col_types = "ccc")
+cat_current_title_metadata <- read_csv(cat_current_title_metadata_f, col_types = "ccc")
 
 easy_weedable <- easy_weedable %>%
-                      left_join(catalogue_current_title_metadata, by = c("control_number", "call_number")) %>%
-                      mutate(title_author = readable_marc245(title_author))
+    left_join(cat_current_title_metadata, by = c("control_number", "call_number")) %>%
+    mutate(title_author = readable_marc245(title_author))
 
-write_csv(easy_weedable, paste0(easyweeder_data_dir, "easy-weedable.csv"))
+write_csv(easy_weedable, paste0(easyweeder_data_d, "easy-weedable.csv"))
 
 write(paste("Finished: ", Sys.time()), stderr())
