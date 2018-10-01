@@ -101,6 +101,7 @@ items_and_checkouts <- left_join(items, checkouts, by = "item_barcode")
 
 item_circ_history <- items_and_checkouts %>%
     mutate(has_circed = ! is.na(circ_ayear)) %>%
+    mutate(lc_digits = as.numeric(lc_digits)) %>%
     count(item_barcode,
           control_number,
           lc_letters,
