@@ -6,18 +6,18 @@ library(yulr)
 ## TODO: Fix the hardcoding of the data directory.
 
 ## metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
-metrics_data_dir <- "/dashyul/data/symphony/metrics/"
+metrics_data_d <- "/dashyul/data/symphony/metrics/"
 
-item_circ_history <- readRDS(paste0(metrics_data_dir, "item-circ-history.rds")) %>% tbl_df()
+item_circ_history <- readRDS(paste0(metrics_data_d, "item-circ-history.rds")) %>% tbl_df()
 item_circ_history$circ_ayear[is.na(item_circ_history$circ_ayear)] <- 0
 
 ## record_min_acq_year <- read_csv(paste0(metrics_data_dir, "record-min-acquisition-year.csv"))
-record_min_acq_year <- readRDS(paste0(metrics_data_dir, "record-min-acquisition-year.rds")) %>% tbl_df()
+record_min_acq_year <- readRDS(paste0(metrics_data_d, "record-min-acquisition-year.rds")) %>% tbl_df()
 
 ## gardener_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/gardener/")
-gardener_data_dir <- "/dashyul/data/viz/gardener/"
+gardener_data_d <- "/dashyul/data/viz/gardener/"
 
-gardener_titles <- readRDS(paste0(gardener_data_dir, "gardener-titles.rds")) %>% tbl_df()
+gardener_titles <- readRDS(paste0(gardener_data_d, "gardener-titles.rds")) %>% tbl_df()
 
 locations <- c("BRONFMAN", "FROST", "LAW", "SCOTT", "STEACIE")
 
@@ -29,36 +29,7 @@ shinyServer(function(input, output, session) {
         selectInput("home_location", "Home location", locations, selected = "STEACIE")
     })
 
-    ## output$digits_low <- renderUI({
-    ##     textInput("min_lc_digits", "Min LC digits", value = 0)
-    ## })
-
-    ## output$digits_high <- renderUI({
-    ##     textInput("max_lc_digits", "Max LC digits", value = 10000)
-    ## })
-
     gardener_data <- reactive({
-        ## gardener <- item_circ_history %>%
-        ##     filter(home_location == input$home_location,
-        ##            lc_letters == toupper(input$lc_letters),
-        ##            lc_digits >= as.numeric(input$min_lc_digits),
-        ##            lc_digits <= as.numeric(input$max_lc_digits),
-        ##            circ_ayear >= as.numeric(input$min_circ_ayear),
-        ##            circ_ayear <= as.numeric(input$max_circ_ayear),
-        ##            ) %>%
-        ##     group_by(control_number, lc_letters, lc_digits, call_number) %>%
-        ##     summarise(copies = n(),
-        ##               total_circs = sum(circs),
-        ##               last_circed = max(circ_ayear)) %>%
-        ##     filter(copies >= input$num_copies[1],
-        ##            copies <= input$num_copies[2],
-        ##            total_circs >= as.numeric(input$min_total_circs),
-        ##            total_circs <= as.numeric(input$max_total_circs),
-        ##            last_circed <= input$last_circed_in_or_before
-        ##            ) %>%
-        ##     ungroup() %>%
-        ##     select(-lc_letters, -lc_digits)
-
         ## First, get all the items in the right location
         ## that are in the right LC range.
         all_items_in_range <- item_circ_history %>%
@@ -109,8 +80,6 @@ shinyServer(function(input, output, session) {
 
     gardener_readable <- reactive({
         gardener_data() %>%
-            ## mutate(link = link_to_vufind(control_number, title_author)) %>%
-            ## select link
             select(control_number, call_number, copies, total_circs, last_circed) %>%
             left_join(gardener_titles, by = "control_number")
     })

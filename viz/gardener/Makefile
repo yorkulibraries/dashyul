@@ -5,7 +5,6 @@ all:	prepare
 
 prepare:
 	./scripts/prepare-gardener.R
-	gzip -f ${GARDENER_DATA}/*csv
 
 push_app:
 	rsync --archive --verbose --compress --delete app/ ${DASHYUL_SERVER_NAME}:${GARDENER_SERVER_SHINY}
