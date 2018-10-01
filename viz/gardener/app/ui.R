@@ -7,7 +7,7 @@ shinyUI(
             sidebarPanel(
                 uiOutput("home_locations"),
                 uiOutput("item_types"),
-                textInput("lc_letters", label = "LC class letter(s)", value = "B"),
+                textInput("lc_letters", label = "LC class letter(s)", value = "FC"),
                 fluidRow(
                 ## Thanks to https://stackoverflow.com/a/42515042
                       splitLayout(

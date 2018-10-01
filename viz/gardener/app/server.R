@@ -26,7 +26,7 @@ current_academic_year <- academic_year(Sys.Date())
 shinyServer(function(input, output, session) {
 
     output$home_locations <- renderUI({
-        selectInput("home_location", "Home location", locations, selected = "STEACIE")
+        selectInput("home_location", "Home location", locations, selected = "SCOTT")
     })
 
     gardener_data <- reactive({
