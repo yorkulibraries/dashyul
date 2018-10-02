@@ -160,6 +160,7 @@ make setup_directories
 + Try [[https://cran.r-project.org/web/packages/shinyFeedback/vignettes/shinyFeedback-intro.html][shinyFeedback]]?
 + Document what happens in September (almost everything) and October (rolling over Symphony logs).  Ideally, automate it all.
 + Change the links in the Gardener so they point to the relevant record in CircYUL, which has the circ history for that title, not the catalogue, which is much less informative.
++ Use [[https://fs.r-lib.org/][fs]] and ~purrr~ to read in a list of CSV files at once (as [[https://www.gerkelab.com/blog/2018/09/import-directory-csv-purrr-readr/][described here]]).  Neater than my current method.
 
 * Guidelines
 
