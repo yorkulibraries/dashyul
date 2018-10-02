@@ -159,6 +159,7 @@ make setup_directories
 + Set up the environment variables in the server, or, failing that, set them as variables in a script that every viz and script can load, so they are all defined in a single place, not hard-coded.
 + Try [[https://cran.r-project.org/web/packages/shinyFeedback/vignettes/shinyFeedback-intro.html][shinyFeedback]]?
 + Document what happens in September (almost everything) and October (rolling over Symphony logs).  Ideally, automate it all.
++ Change the links in the Gardener so they point to the relevant record in CircYUL, which has the circ history for that title, not the catalogue, which is much less informative.
 
 * Guidelines
 
@@ -170,7 +171,7 @@ Notes to myself as I work on this.
 + sources and viz here; data separate
 + sources and viz both have ~scripts/~
 + Rely on ~DASHYUL_HOME~ and ~DASHYUL_DATA~.
-+ Use ~_file~ and ~_dir~ suffixes when storing file and directory names in variables.
++ Use ~_f~ and ~_d~ suffixes when storing file and directory names in variables.
 + Have a README.org for every source and viz to explain what they are.  Need to explain all the data somewhere, too.
 
 See also:

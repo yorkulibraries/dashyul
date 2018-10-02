@@ -1,13 +1,7 @@
 * EZProxy
 
-TODO: Move to tangle.
-
 TODO: Explain what is happening.
 
 ** Config
 
 ** Nightly processing
-
-* Mentions of current academic year start
-
-+ TODO: Look for "2017-09-01" and figure out a better way to handle these.  Shouldn't be hardcoded.
