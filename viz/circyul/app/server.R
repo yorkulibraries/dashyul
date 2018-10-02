@@ -7,10 +7,10 @@ library(yulr)
 ## TODO: Fix the hardcoding of the data directory.
 
 ## circyul_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
-circyul_data_dir <- "/dashyul/data/viz/circyul/"
-circyul_checkouts         <- readRDS(paste0(circyul_data_dir, "checkouts.rds"))
-circulated_item_details   <- readRDS(paste0(circyul_data_dir, "circulated_item_details.rds"))
-circulated_title_metadata <- readRDS(paste0(circyul_data_dir, "circulated_title_metadata.rds"))
+circyul_data_d <- "/dashyul/data/viz/circyul/"
+circyul_checkouts         <- readRDS(paste0(circyul_data_d, "checkouts.rds"))
+circulated_item_details   <- readRDS(paste0(circyul_data_d, "circulated_item_details.rds"))
+circulated_title_metadata <- readRDS(paste0(circyul_data_d, "circulated_title_metadata.rds"))
 
 ## Some items have never circulated, which causes an error when the
 ## circ history chart is being made. This line creates an empty tibble
@@ -72,7 +72,8 @@ shinyServer(function(input, output, session) {
     output$circ_history_plot <- renderPlot({
         checkouts_by_ayear <- record_item_history() %>%
             mutate(ayear = academic_year(date))
-        ggplot(checkouts_by_ayear, aes(x = ayear)) + geom_bar(width = 0.8) +
+        ggplot(checkouts_by_ayear, aes(x = ayear)) +
+            geom_bar(width = 0.8) +
             labs(title = paste("Circ history:", title_author()), x = "Academic year", y = "") +
             scale_y_continuous(breaks = pretty_breaks()) +
             scale_x_continuous(breaks = pretty_breaks())

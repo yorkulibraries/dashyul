@@ -1,22 +1,24 @@
 #!/usr/bin/env Rscript
+
 library(tidyverse)
 
-transaction_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
-catalogue_data_dir   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-catalogue_item_details_rds <- paste0(catalogue_data_dir, "catalogue-current-item-details.rds")
-catalogue_title_metadata_rds <- paste0(catalogue_data_dir, "catalogue-current-title-metadata.rds")
+trans_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
+cat_data_d   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+cat_item_details_rds <- paste0(cat_data_d, "catalogue-current-item-details.rds")
+cat_title_metadata_rds <- paste0(cat_data_d, "catalogue-current-title-metadata.rds")
 
-circyul_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
+circyul_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
+
 ## Append appropriate suffix when saving.
-circyul_checkouts_file <- paste0(circyul_data_dir, "checkouts")
-circulated_item_details_file <- paste0(circyul_data_dir, "circulated_item_details")
-circulated_title_metadata_file <- paste0(circyul_data_dir, "circulated_title_metadata")
+circyul_checkouts_f <- paste0(circyul_data_d, "checkouts")
+circulated_item_details_f <- paste0(circyul_data_d, "circulated_item_details")
+circulated_title_metadata_f <- paste0(circyul_data_d, "circulated_title_metadata")
 
 write("Reading checkouts ...", stderr())
-checkouts <- readRDS(paste0(transaction_data_dir, "simple-checkouts-all.rds"))
+checkouts <- readRDS(paste0(trans_data_d, "simple-checkouts-all.rds"))
 
 write("Reading item details ...", stderr())
-item_details <- readRDS(catalogue_item_details_rds) %>%
+item_details <- readRDS(cat_item_details_rds) %>%
     filter(library == "YORK") %>%
     filter(class_scheme == "LC") %>%
     filter(home_location %in% c("BRONFMAN",
@@ -43,18 +45,18 @@ circulated_item_details <- item_details %>%
     filter(item_barcode %in% checkouts$item_barcode)
 
 write("Reading title_metadata ...", stderr())
-title_metadata <- readRDS(catalogue_title_metadata_rds)
+title_metadata <- readRDS(cat_title_metadata_rds)
 
 circulated_title_metadata <- title_metadata %>%
     filter(control_number %in% circulated_item_details$control_number)
 
 write("Writing out ...", stderr())
 
-write_csv(checkouts, paste0(circyul_checkouts_file, ".csv"))
-saveRDS(checkouts,   paste0(circyul_checkouts_file, ".rds"))
+write_csv(checkouts, paste0(circyul_checkouts_f, ".csv"))
+saveRDS(checkouts,   paste0(circyul_checkouts_f, ".rds"))
 
-write_csv(circulated_item_details, paste0(circulated_item_details_file, ".csv"))
-saveRDS(circulated_item_details,   paste0(circulated_item_details_file, ".rds"))
+write_csv(circulated_item_details, paste0(circulated_item_details_f, ".csv"))
+saveRDS(circulated_item_details,   paste0(circulated_item_details_f, ".rds"))
 
-write_csv(circulated_title_metadata, paste0(circulated_title_metadata_file, ".csv"))
-saveRDS(circulated_title_metadata,   paste0(circulated_title_metadata_file, ".rds"))
+write_csv(circulated_title_metadata, paste0(circulated_title_metadata_f, ".csv"))
+saveRDS(circulated_title_metadata,   paste0(circulated_title_metadata_f, ".rds"))

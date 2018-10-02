@@ -5,7 +5,6 @@ all:	prepare
 
 prepare:
 	scripts/prepare-circyul.R
-	gzip -f ${CIRCYUL_DATA}/*.csv
 
 get_data:
 	rsync --archive --verbose --compress ${DASHYUL_SERVER_NAME}:${DASHYUL_SERVER_DATA}/viz/circyul/ ${CIRCYUL_DATA}/
