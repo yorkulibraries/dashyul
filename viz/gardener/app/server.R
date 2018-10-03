@@ -5,16 +5,16 @@ library(yulr)
 
 ## TODO: Fix the hardcoding of the data directory.
 
-## metrics_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
+## metrics_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
 metrics_data_d <- "/dashyul/data/symphony/metrics/"
 
 item_circ_history <- readRDS(paste0(metrics_data_d, "item-circ-history.rds")) %>% tbl_df()
 item_circ_history$circ_ayear[is.na(item_circ_history$circ_ayear)] <- 0
 
 ## record_min_acq_year <- read_csv(paste0(metrics_data_dir, "record-min-acquisition-year.csv"))
-record_min_acq_year <- readRDS(paste0(metrics_data_d, "record-min-acquisition-year.rds")) %>% tbl_df()
+record_min_acq_year <- readRDS(paste0(metrics_data_d, "record-min-acquisition-year.rds"))
 
-## gardener_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/gardener/")
+## gardener_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/gardener/")
 gardener_data_d <- "/dashyul/data/viz/gardener/"
 
 gardener_titles <- readRDS(paste0(gardener_data_d, "gardener-titles.rds")) %>% tbl_df()
@@ -59,12 +59,8 @@ shinyServer(function(input, output, session) {
             ## the same record were acquired before it).
             left_join(record_min_acq_year) %>%
             filter(min_acq_ayear <= input$acquired_in_or_before) %>%
-            ## And now filter all that to shows just the circs in the
-            ## given range
-            ## filter(circ_ayear >= as.numeric(input$min_circ_ayear),
-            ##        circ_ayear <= as.numeric(input$max_circ_ayear)) %>%
             group_by(control_number, lc_letters, lc_digits, call_number) %>%
-            summarise(copies = n(),
+            summarise(copies = n_distinct(item_barcode),
                       total_circs = sum(circs),
                       last_circed = max(circ_ayear)) %>%
             filter(copies >= input$num_copies[1],
