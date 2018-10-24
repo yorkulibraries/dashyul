@@ -6,6 +6,7 @@ setup_directories:
 	sudo chown ${USER}:${USER} ${DASHYUL_DATA}
 	mkdir -p ${DASHYUL_DATA}/ebooks/scholarsportal
 	mkdir -p ${DASHYUL_DATA}/ezproxy
+	mkdir -p ${DASHYUL_DATA}/ezproxy/metrics
 	mkdir -p ${DASHYUL_DATA}/libstats
 	mkdir -p ${DASHYUL_DATA}/prism
 	mkdir -p ${DASHYUL_DATA}/symphony/catalogue
