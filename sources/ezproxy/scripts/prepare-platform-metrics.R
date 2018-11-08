@@ -73,8 +73,9 @@ auf <- platform_use %>%
     count(platform, ayear) %>%
     rename(calendar_days = n) %>%
     left_join(dates_known, by = "ayear") %>%
-    mutate(auf = round(100 * calendar_days / dates_known, -1) / 10) %>%
-    select(ayear, platform, auf)
+    mutate(auf = round(100 * calendar_days / dates_known, 1),
+           auf_rank = round(auf, -1) / 10) %>%
+    select(ayear, platform, auf, auf_rank)
 
 interest_factor <- platform_use %>%
     count(ayear, platform, user_barcode) %>%
@@ -105,7 +106,10 @@ i_f_deciles <- platform_metrics %>% group_by(ayear) %>% summarise(deciles = list
 determine_ranks <- function(platform_name) {
     platform_years_known <- platform_metrics %>% filter(platform == platform_name) %>% pull(ayear)
 
-    relatives <- dplyr::tibble(platform = character(), ayear = integer(), upm_rank = integer(), i_f_rank = integer())
+    relatives <- dplyr::tibble(platform = character(),
+                               ayear = integer(),
+                               upm_rank = character(),
+                               i_f_rank = character())
 
     for (y in platform_years_known) {
         upm_rank <- platform_metrics %>%
@@ -127,7 +131,10 @@ determine_ranks <- function(platform_name) {
     return(relatives)
 }
 
-rankings <- dplyr::tibble(platform = character(), ayear = integer(), upm_rank = character(), i_f_rank = character())
+rankings <- dplyr::tibble(platform = character(),
+                          ayear = integer(),
+                          upm_rank = character(),
+                          i_f_rank = character())
 for (p in platform_metrics %>% select(platform) %>% distinct() %>% pull(platform)) {
     rankings <- rankings %>% bind_rows(determine_ranks(p))
 }
