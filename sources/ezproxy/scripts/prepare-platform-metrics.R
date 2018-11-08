@@ -97,11 +97,16 @@ platform_metrics$i_f[is.na(platform_metrics$i_f)] <- 0
 
 write("Calculating rank metrics ...", stderr())
 
-ranking_labels <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
-ranking_probs <- seq(0, 1, 0.1)
+## Deciles
+## ranking_labels <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+## ranking_probs <- seq(0, 1, 0.1)
 
-upm_deciles <- platform_metrics %>% group_by(ayear) %>% summarise(deciles = list(quantile(upm, ranking_probs)))
-i_f_deciles <- platform_metrics %>% group_by(ayear) %>% summarise(deciles = list(quantile(i_f, ranking_probs)))
+## Quartiles
+ranking_labels <- c("1", "2", "3", "4")
+ranking_probs <- seq(0, 1, 0.25)
+
+upm_quantiles <- platform_metrics %>% group_by(ayear) %>% summarise(quantiles = list(quantile(upm, ranking_probs)))
+i_f_quantiles <- platform_metrics %>% group_by(ayear) %>% summarise(quantiles = list(quantile(i_f, ranking_probs)))
 
 determine_ranks <- function(platform_name) {
     platform_years_known <- platform_metrics %>% filter(platform == platform_name) %>% pull(ayear)
@@ -115,12 +120,12 @@ determine_ranks <- function(platform_name) {
         upm_rank <- platform_metrics %>%
             filter(platform == platform_name, ayear == y) %>%
             pull(upm) %>%
-            cut(upm_deciles %>% filter(ayear == y) %>% pull(deciles) %>% unlist(),
+            cut(upm_quantiles %>% filter(ayear == y) %>% pull(quantiles) %>% unlist(),
                 labels = ranking_labels)
         i_f_rank <- platform_metrics %>%
             filter(platform == platform_name, ayear == y) %>%
             pull(i_f) %>%
-            cut(i_f_deciles %>% filter(ayear == y) %>% pull(deciles) %>% unlist(),
+            cut(i_f_quantiles %>% filter(ayear == y) %>% pull(quantiles) %>% unlist(),
                 labels = ranking_labels)
         relatives <- relatives %>%
             add_row(platform = platform_name,
