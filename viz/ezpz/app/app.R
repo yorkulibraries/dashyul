@@ -1,16 +1,19 @@
-library(dplyr)
+library(tidyverse)
 library(ggplot2)
-library(readr)
 library(scales)
 library(shiny)
 
-platform_metrics <- read_csv("data/platform_metrics.csv.gz")
-platform_metrics$platform <- as.factor(platform_metrics$platform)
+## ezpz_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/ezpz/")
+ezpz_data_d <- "/dashyul/data/viz/ezpz/"
+ezp_data_d <- "/dashyul/data/ezproxy/"
 
-daily_per_platform <- read_csv("data/daily_per_platform.csv.gz", col_names = TRUE, col_types = "Dccc")
-daily_per_platform$platform <- as.factor(daily_per_platform$platform)
+platform_metrics <- readRDS(paste0(ezp_data_d, "annual/platform-metrics.rds"))
+## platform_metrics$platform <- as.factor(platform_metrics$platform)
 
-platform_names <- levels(daily_per_platform$platform)
+daily_platform_use <- readRDS(paste0(ezpz_data_d, "daily-platform-use.rds"))
+## daily_per_platform$platform <- as.factor(daily_per_platform$platform)
+
+platform_names <- levels(daily_platform_use$platform)
 
 metrics_summary_by_platform <- function(platform_name) {
     platform_metrics %>% filter(platform == platform_name) %>% ungroup %>% select(ayear, users, auf, interest_factor)
@@ -39,10 +42,6 @@ server <- function(input, output, session) {
         users_per_day() %>% ggplot(aes(x = date, y = count)) + geom_bar(stat = "identity") + labs(x = "", y = "", title = paste0("Users per day in A2016: ", input$platform_name))
     })
 
-    output$change_in_usage_plot <- renderPlot ({
-        platform_metrics %>% filter(platform == input$platform_name ) %>% ggplot(aes(x = users, y = uses)) + geom_point() + geom_path(arrow = arrow(type ="closed", length = unit(0.2, "cm"))) + labs(x = "Users", y = "Uses", title = paste0("Usage of ", input$platform_name, ", A2012, A2013, A2016"))
-
-    })
 
     output$metrics_summary <- renderTable ({
         metrics_summary_by_platform(input$platform_name)
@@ -74,9 +73,7 @@ ui <- fluidPage(
             tags$h2("Primary metrics"),
             tableOutput("metrics_summary"),
             tags$h2("Relative metrics"),
-            tableOutput("relative_metrics"),
-            tags$h2("Change in usage"),
-            plotOutput("change_in_usage_plot")
+            tableOutput("relative_metrics")
         )
 
     )

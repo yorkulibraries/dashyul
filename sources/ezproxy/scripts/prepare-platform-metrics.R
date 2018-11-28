@@ -17,8 +17,8 @@ ezp_annual_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/annual/")
 ## All these file paths should just work and don't require tweaking
 ezp_metrics_data_d    <-  paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/metrics/")
 
-platform_use_csv <- paste0(ezp_metrics_data_d, "platform-use-pii.csv")
-platform_use_rds <- paste0(ezp_metrics_data_d, "platform-use-pii.rds")
+platform_use_csv <- paste0(ezp_annual_data_d, "platform-use-pii.csv")
+platform_use_rds <- paste0(ezp_annual_data_d, "platform-use-pii.rds")
 
 platform_metrics_csv <- paste0(ezp_metrics_data_d, "platform-metrics.csv")
 platform_metrics_rds <- paste0(ezp_metrics_data_d, "platform-metrics.rds")
@@ -73,9 +73,8 @@ auf <- platform_use %>%
     count(platform, ayear) %>%
     rename(calendar_days = n) %>%
     left_join(dates_known, by = "ayear") %>%
-    mutate(auf = round(100 * calendar_days / dates_known, 1),
-           auf_rank = round(auf, -1) / 10) %>%
-    select(ayear, platform, auf, auf_rank)
+    mutate(auf = round(100 * calendar_days / dates_known, 1)) %>%
+    select(ayear, platform, auf)
 
 interest_factor <- platform_use %>%
     count(ayear, platform, user_barcode) %>%
@@ -107,6 +106,7 @@ ranking_probs <- seq(0, 1, 0.25)
 
 upm_quantiles <- platform_metrics %>% group_by(ayear) %>% summarise(quantiles = list(quantile(upm, ranking_probs)))
 i_f_quantiles <- platform_metrics %>% group_by(ayear) %>% summarise(quantiles = list(quantile(i_f, ranking_probs)))
+auf_quantiles <- platform_metrics %>% group_by(ayear) %>% summarise(quantiles = list(quantile(auf, ranking_probs)))
 
 determine_ranks <- function(platform_name) {
     platform_years_known <- platform_metrics %>% filter(platform == platform_name) %>% pull(ayear)
@@ -114,7 +114,8 @@ determine_ranks <- function(platform_name) {
     relatives <- dplyr::tibble(platform = character(),
                                ayear = integer(),
                                upm_rank = character(),
-                               i_f_rank = character())
+                               i_f_rank = character(),
+                               auf_rank = character())
 
     for (y in platform_years_known) {
         upm_rank <- platform_metrics %>%
@@ -127,11 +128,17 @@ determine_ranks <- function(platform_name) {
             pull(i_f) %>%
             cut(i_f_quantiles %>% filter(ayear == y) %>% pull(quantiles) %>% unlist(),
                 labels = ranking_labels)
+        auf_rank <- platform_metrics %>%
+            filter(platform == platform_name, ayear == y) %>%
+            pull(auf) %>%
+            cut(auf_quantiles %>% filter(ayear == y) %>% pull(quantiles) %>% unlist(),
+                labels = ranking_labels)
         relatives <- relatives %>%
             add_row(platform = platform_name,
                     ayear = y,
                     upm_rank = upm_rank,
-                    i_f_rank = i_f_rank)
+                    i_f_rank = i_f_rank,
+                    auf_rank = auf_rank)
     }
     return(relatives)
 }
@@ -139,15 +146,19 @@ determine_ranks <- function(platform_name) {
 rankings <- dplyr::tibble(platform = character(),
                           ayear = integer(),
                           upm_rank = character(),
-                          i_f_rank = character())
+                          i_f_rank = character(),
+                          auf_rank = character())
+
 for (p in platform_metrics %>% select(platform) %>% distinct() %>% pull(platform)) {
     rankings <- rankings %>% bind_rows(determine_ranks(p))
 }
 
-rankings$i_f_rank[is.na(rankings$i_f_rank)] <- 0
 rankings$upm_rank[is.na(rankings$upm_rank)] <- 0
-rankings$i_f_rank <- as.integer(rankings$i_f_rank)
+rankings$i_f_rank[is.na(rankings$i_f_rank)] <- 0
+rankings$auf_rank[is.na(rankings$auf_rank)] <- 0
 rankings$upm_rank <- as.integer(rankings$upm_rank)
+rankings$i_f_rank <- as.integer(rankings$i_f_rank)
+rankings$auf_rank <- as.integer(rankings$auf_rank)
 
 platform_metrics <- platform_metrics %>% left_join(rankings, by = c("platform", "ayear"))
 
