@@ -180,13 +180,13 @@ ui <- fluidPage(
         ),
 
         mainPanel(
-            plotOutput("users_per_day_plot"),
+            plotOutput("users_per_day_plot", width = "75%"),
             ## plotOutput("platform_annual_overlay_plot"),
-            plotOutput("platform_ranks_plot"),
+            plotOutput("platform_ranks_plot", height = "400px", width = "400px"),
             tags$h2("Primary metrics"),
             tableOutput("metrics_summary"),
-            plotOutput("platform_upm_plot"),
-            plotOutput("platform_if_plot")
+            plotOutput("platform_upm_plot", height = "200px", width = "75%"),
+            plotOutput("platform_if_plot", height = "200px", width = "75%")
             ## tags$h2("Relative metrics")
             ## tableOutput("relative_metrics")
         )
