@@ -12,6 +12,7 @@ library(tidyverse)
 ## library(lubridate)
 ## library(scales)
 library(flexdashboard)
+library(yulr)
 
 ## TODO: Fix the hardcoding of the data directory.
 
@@ -34,11 +35,12 @@ l$ayear <- as.factor(l$ayear)
 question.types <- c("1. Non-Resource", "2. Skill-Based: Tech Support", "3. Skill-Based: Non-Technical", "4. Strategy-Based", "5. Specialized")
 research.questions <- question.types[4:5]
 
+current_academic_year <- academic_year(Sys.Date())
+
 ```
 
 Sidebar {.sidebar}
 =====================================
-
 (Data goes to end of last month.)
 
 ```{r}
@@ -70,7 +72,7 @@ Sidebar {.sidebar}
 
 ## , question.format %in% input$question_format
 
-checkboxGroupInput("ayear", "Academic year", 2010:2017, selected = 2010:2017)
+checkboxGroupInput("ayear", "Academic year", seq(2010, current_academic_year, by = 1), selected = seq(2011, current_academic_year, by = 1))
 
 checkboxGroupInput("question_type", label = "Question type", choices = c("1" = "1. Non-Resource", "2" = "2. Skill-Based: Tech Support", "3" = "3. Skill-Based: Non-Technical", "4" = "4. Strategy-Based", "5" = "5. Specialized"), selected = c("1. Non-Resource", "2. Skill-Based: Tech Support", "3. Skill-Based: Non-Technical", "4. Strategy-Based", "5. Specialized"))
 
@@ -226,7 +228,7 @@ renderPlot({
 })
 ```
 
-### Consultation Desk
+### Circulation Desk
 
 ```{r}
 renderPlot({
@@ -650,3 +652,4 @@ renderPlot({
     construct_monthly_chart(library_name = "Steacie", location_name = "Reference Desk")
 })
 ```
+
