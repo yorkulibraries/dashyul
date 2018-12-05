@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-# Generate a long but simple CSV file that maps ISBNs to item_numbers
-# (barcodes).
+# Generate a long but simple CSV file that maps ISBNs to
+# control_numbers and item_numbers (barcodes).
 
 require "marc"
 require "csv"
@@ -15,7 +15,7 @@ end
 
 reader = MARC::Reader.new(file, external_encoding: "UTF-8", invalid: :replace)
 
-puts %w[isbn item_barcode].to_csv
+puts %w[control_number isbn item_barcode].to_csv
 
 reader.each do |record|
   begin
@@ -42,7 +42,7 @@ reader.each do |record|
         # nnn["i"] is the item barcode
         # Print every possible pair of ISBNs and item barcodes
         isbns.each do |isbn|
-          puts [isbn, nnn["i"]].to_csv
+          puts [control_number, isbn, nnn["i"]].to_csv
         end
       end
     end

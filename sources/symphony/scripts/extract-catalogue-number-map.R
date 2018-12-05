@@ -7,7 +7,7 @@
 ## define the column types (character, integer, etc.) and then
 ## save it as an RDS file.
 
-"usage: extract-catalogue-isbn-item-number-map.R --prefix <prefix>
+"usage: extract-catalogue-number-map.R --prefix <prefix>
 
 options:
  --prefix <prefix>     Basename prefix to use
@@ -22,8 +22,8 @@ prefix <- opts["prefix"]
 
 catalogue_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
 
-isbn_item_number_csv <- paste0(catalogue_data_dir, prefix, "-isbn-item-number.csv")
-isbn_item_number_rds <- paste0(catalogue_data_dir, prefix, "-isbn-item-number.rds")
+number_mapping_csv <- paste0(catalogue_data_dir, prefix, "-number-mapping.csv")
+number_mapping_rds <- paste0(catalogue_data_dir, prefix, "-number-mapping.rds")
 
-isbn_item_number <- read_csv(isbn_item_number_csv, col_types = "cc")
-saveRDS(isbn_item_number, file = isbn_item_number_rds)
+number_mapping <- read_csv(number_mapping_csv, col_types = "ccc")
+saveRDS(number_mapping, file = number_mapping_rds)

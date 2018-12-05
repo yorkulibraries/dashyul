@@ -27,15 +27,19 @@ echo -n "title metadata ... (~ 20 mins) ... "
 ${SYMPHONY_SCRIPTS}/extract-catalogue-title-metadata.rb $MARC_DUMP > ${PREFIX}-title-metadata.csv
 ${SYMPHONY_SCRIPTS}/extract-catalogue-title-metadata.R --prefix ${PREFIX}
 
-echo -n "ISBNs and item numbers ... (~ 20 mins) ... "
-${SYMPHONY_SCRIPTS}/extract-catalogue-isbn-item-number-map.rb $MARC_DUMP > ${PREFIX}-isbn-item-number.csv
-${SYMPHONY_SCRIPTS}/extract-catalogue-isbn-item-number-map.R --prefix ${PREFIX}
+echo -n "numbers ... (~ 20 mins) ... "
+${SYMPHONY_SCRIPTS}/extract-catalogue-number-map.rb $MARC_DUMP > ${PREFIX}-number-mapping.csv
+${SYMPHONY_SCRIPTS}/extract-catalogue-number-map.R --prefix ${PREFIX}
+
+echo -n "856s ... (? mins) "
+${SYMPHONY_SCRIPTS}/extract-catalogue-856.rb $MARC_DUMP > ${PREFIX}-856.csv
+${SYMPHONY_SCRIPTS}/extract-catalogue-856.R --prefix ${PREFIX}
 
 echo -n "to text ... (~ 1 mins) "
 yaz-marcdump "$MARC_DUMP" > "${PREFIX}.txt"
 
 echo -n "linking ..."
-FILENAME_PIECES="item-details title-metadata isbn-item-number"
+FILENAME_PIECES="item-details title-metadata isbn-item-number 856"
 for PIECE in $FILENAME_PIECES
 do
     rm -f catalogue-current-${PIECE}.{csv,rds}
