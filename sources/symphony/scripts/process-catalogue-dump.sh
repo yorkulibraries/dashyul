@@ -31,7 +31,7 @@ echo -n "numbers ... (~ 20 mins) ... "
 ${SYMPHONY_SCRIPTS}/extract-catalogue-number-map.rb $MARC_DUMP > ${PREFIX}-number-mapping.csv
 ${SYMPHONY_SCRIPTS}/extract-catalogue-number-map.R --prefix ${PREFIX}
 
-echo -n "856s ... (? mins) "
+echo -n "856s ... (~ 20 mins) "
 ${SYMPHONY_SCRIPTS}/extract-catalogue-856.rb $MARC_DUMP > ${PREFIX}-856.csv
 ${SYMPHONY_SCRIPTS}/extract-catalogue-856.R --prefix ${PREFIX}
 
@@ -39,7 +39,7 @@ echo -n "to text ... (~ 1 mins) "
 yaz-marcdump "$MARC_DUMP" > "${PREFIX}.txt"
 
 echo -n "linking ..."
-FILENAME_PIECES="item-details title-metadata isbn-item-number 856"
+FILENAME_PIECES="item-details title-metadata number-mapping 856"
 for PIECE in $FILENAME_PIECES
 do
     rm -f catalogue-current-${PIECE}.{csv,rds}

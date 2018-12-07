@@ -22,8 +22,8 @@ prefix <- opts["prefix"]
 
 catalogue_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
 
-eight56_csv <- paste0(catalogue_data_dir, prefix, "-856.csv")
-eight56_rds <- paste0(catalogue_data_dir, prefix, "-856.rds")
+eight56_csv <- paste0(catalogue_data_d, prefix, "-856.csv")
+eight56_rds <- paste0(catalogue_data_d, prefix, "-856.rds")
 
 eight56 <- read_csv(eight56_csv, col_types = "cccc")
 saveRDS(eight56, file = eight56_rds)
