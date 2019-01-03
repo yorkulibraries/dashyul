@@ -11,7 +11,7 @@ shinyUI(
                 downloadButton("downloadData", "Download data"),
                 tags$hr(),
                 tags$p("William Denton (wdenton@yorku.ca)"),
-                tags$p("Updated 28 September 2018."),
+                tags$p("Updated 03 January 2019."),
                 tags$a(href="https://www.youtube.com/watch?v=g9eX2ajK3A4", "See also Easy Reader."),
                 width = 2
             ),
