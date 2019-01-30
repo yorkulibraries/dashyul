@@ -103,10 +103,17 @@ symphony_items_so_far <- scan(paste0(dashboard_data_dir, "symphony-items-so-far.
 Row
 -------------------------------------
 
+
 ### AskUs questions today
 
- ```{r}
+```{r}
 question_count_today_box("AskUs")
+```
+
+### Ask a Librarian
+
+```{r}
+question_count_today_box("Ask a Librarian")
 ```
 
 ### Building Services
