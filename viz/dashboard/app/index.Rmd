@@ -300,7 +300,7 @@ Row
 ### Symphony: most borrowed since Sep 1
 
 ```{r}
-DT::renderDataTable(symphony_most_borrowed_titles %>%
+DT::renderDataTable(symphony_most_borrowed_titles %>% filter(borrows >= 5) %>%
                     arrange(desc(borrows)),
                     escape = FALSE,
                     rownames = FALSE
@@ -311,6 +311,7 @@ DT::renderDataTable(symphony_most_borrowed_titles %>%
 
 ```{r}
 ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) +
+    ## geom_step() +
     geom_col(width = 0.6) +
     labs(title = "Items borrowed per day", x = "", y = "")
 ```
