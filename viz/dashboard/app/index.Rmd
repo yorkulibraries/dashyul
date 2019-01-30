@@ -170,22 +170,6 @@ question_count_today_box("SMIL")
 question_count_today_box("Steacie")
 ```
 
-
-Row
--------------------------------------
-
-### research qs at ref desks today
-
-```{r}
-gauge(research_at_desk_count, min = 0, max = nrow(desk_questions))
-```
-
-### research qs in offices today
-
-```{r}
-gauge(research_in_office_count, min = 0, max = nrow(office_questions))
-```
-
 Row
 -------------------------------------
 
@@ -305,7 +289,8 @@ DT::renderDataTable(platform_metrics %>% arrange(desc(users)), rownames = FALSE)
 
 ```{r}
 ggplot(ezp_daily_users, aes(x = date, y = users)) +
-    geom_col(width = 0.6) +
+    geom_step() +
+    ## geom_col(width = 0.6) +
     labs(title = "EZProxy users per day", x = "", y = "")
 ```
 
