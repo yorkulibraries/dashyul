@@ -282,7 +282,7 @@ Row
 ### EZProxy platform metrics since Sep 1
 
 ```{r}
-DT::renderDataTable(platform_metrics %>% arrange(desc(users)), rownames = FALSE)
+DT::renderDataTable(platform_metrics %>% filter(users >= 100) %>% arrange(desc(users)), rownames = FALSE)
 ```
 
 ### EZProxy users per day
