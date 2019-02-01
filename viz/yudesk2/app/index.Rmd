@@ -334,6 +334,22 @@ renderPlot({
 })
  ```
 
+### Circulation Desk (annual)
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Frost", location_name = "Circulation Desk")
+})
+```
+
+### Circulation Desk (monthly)
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Frost", location_name = "Circulation Desk")
+})
+```
+
 ### Office (annual)
 
 ```{r}
