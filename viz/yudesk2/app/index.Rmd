@@ -211,6 +211,31 @@ renderPlot({
 })
 ```
 
+Ask a Librarian
+=====================================
+
+
+Row {.tabset}
+-------------------------------------
+
+### All (annual)
+
+
+```{r}
+renderPlot({
+    construct_annual_chart(library_name = "Ask a Librarian")
+})
+```
+
+### All (monthly)
+
+
+```{r}
+renderPlot({
+    construct_monthly_chart(library_name = "Ask a Librarian")
+})
+ ```
+
 
 AskUs
 =====================================
