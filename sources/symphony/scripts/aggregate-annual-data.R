@@ -1,23 +1,27 @@
 #!/usr/bin/env Rscript
 
+## Aggregates all of the four types of monthly Symphony transaction
+## log files (e.g. YYYYMM-transactions.csv) from a given year, thus
+## combining all of the monthly data into nice annual files.
+## It is meant to be used in September.
+
+library(docopt)
+
+"usage: aggregate-annual-data.R --ayear <ayear>
+
+options:
+ --ayear <ayear>     Academic year to aggregate
+" -> doc
+
+opts <- docopt(doc)
+ayear <- as.integer(opts["ayear"])
+
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
-library(tidyverse)
+suppressMessages(library(tidyverse))
 library(yulr)
 library(lubridate)
-
-## TODO
-## Document.  Explain how this aggregates last year's
-## monthly data.  Is meant to be used in September.
-
-## Default to the previous academic year unless one is specified
-args <- commandArgs(trailingOnly = TRUE)
-ayear <- as.numeric(args[1])
-if (length(args) == 0) {
-    ayear <- academic_year(Sys.Date()) - 1
-    write(paste("Using year:", ayear), stderr())
-}
 
 symphony_trans_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 
@@ -65,13 +69,13 @@ yearly_users   <- yearly_users   %>% arrange(desc(user_barcode))   %>% distinct(
 
 write("Writing out ...", stderr())
 
-write_csv(yearly_items, paste0("symphony-items-a", ayear, ".csv"))
-write_csv(yearly_records, paste0("symphony-records-a", ayear, ".csv"))
+write_csv(yearly_items, paste0(symphony_trans_d, "symphony-items-a", ayear, ".csv"))
+write_csv(yearly_records, paste0(symphony_trans_d, "symphony-records-a", ayear, ".csv"))
 
-write_csv(yearly_transactions, paste0("symphony-transactions-a", ayear, ".csv"))
-saveRDS(yearly_transactions, paste0("symphony-transactions-a", ayear, ".rds"))
+write_csv(yearly_transactions, paste0(symphony_trans_d, "symphony-transactions-a", ayear, ".csv"))
+saveRDS(yearly_transactions, paste0(symphony_trans_d, "symphony-transactions-a", ayear, ".rds"))
 
-write_csv(transactions_depii, paste0("symphony-transactions-a", ayear, "-depii.csv"))
-saveRDS(transactions_depii, paste0("symphony-transactions-a", ayear, "-depii.rds"))
+write_csv(transactions_depii, paste0(symphony_trans_d, "symphony-transactions-a", ayear, "-depii.csv"))
+saveRDS(transactions_depii, paste0(symphony_trans_d, "symphony-transactions-a", ayear, "-depii.rds"))
 
 write(paste("Finished: ", Sys.time()), stderr())

@@ -8,7 +8,7 @@
 
 library(docopt)
 
-"usage: aggregate-daily-files-to-annual.R --year <ayear>
+"usage: aggregate-daily-files-to-annual.R --ayear <ayear>
 
 options:
  --ayear <ayear>     Academic year to aggregate
