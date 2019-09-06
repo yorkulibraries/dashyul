@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-library(tidyverse)
+suppressPackageStartupMessages(library(tidyverse))
 
 trans_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
 cat_data_d   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
