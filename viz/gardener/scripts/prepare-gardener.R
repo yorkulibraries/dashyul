@@ -10,8 +10,7 @@ write(paste("Started: ", Sys.time()), stderr())
 ## non-circulating stuff as well as circulating material that we don't
 ## track here (phone chargers, DVDs, etc.).
 
-library(tidyverse)
-library(stringr)
+suppressPackageStartupMessages(library(tidyverse))
 library(yulr)
 
 symph_metrics_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
