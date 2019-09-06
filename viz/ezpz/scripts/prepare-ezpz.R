@@ -3,9 +3,11 @@
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
-library(tidyverse)
-library(lubridate)
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(lubridate))
 library(yulr)
+
+ezpz_years <- c(2012, 2013, 2016, 2017, 2018)
 
 ezp_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/")
 
@@ -22,7 +24,7 @@ write("Calculating ...", stderr())
 
 daily_platform_use <- platform_use %>%
     filter(! grepl('[[:alnum:]]\\.[[:alnum:]]', platform)) %>%
-    filter(ayear %in% c(2012, 2013, 2016, 2017)) %>%
+    filter(ayear %in% ezpz_years) %>%
     count(date, platform, ayear)
 
 write("Writing ...", stderr())
