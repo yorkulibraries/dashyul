@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
 
-library(readr)
-library(dplyr)
+suppressPackageStartupMessages(library(tidyverse))
 
 args <- commandArgs(trailingOnly = TRUE)
 

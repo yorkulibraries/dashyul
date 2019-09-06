@@ -19,7 +19,7 @@ ayear <- as.integer(opts["ayear"])
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
-suppressMessages(library(tidyverse))
+suppressPackageStartupMessages(library(tidyverse))
 library(yulr)
 library(lubridate)
 
