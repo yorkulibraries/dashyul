@@ -8,7 +8,8 @@ library(shiny)
 ezpz_data_d <- "/dashyul/data/viz/ezpz/"
 ezp_data_d <- "/dashyul/data/ezproxy/"
 
-platform_metrics <- readRDS(paste0(ezp_data_d, "metrics/platform-metrics.rds")) %>% filter(ayear %in% c(2012, 2013, 2016, 2017))
+platform_metrics <- readRDS(paste0(ezp_data_d, "metrics/platform-metrics.rds")) %>%
+    filter(ayear %in% c(2012, 2013, 2016, 2017, 2018))
 platform_metrics$platform <- as.factor(platform_metrics$platform)
 
 daily_platform_use <- readRDS(paste0(ezpz_data_d, "daily-platform-use.rds"))
@@ -23,14 +24,25 @@ metrics_summary_by_platform <- function(platform_name) {
         select(ayear, users, uses, auf, upm, i_f, upm_rank, i_f_rank)
 }
 
-relative_metrics <- function(platform_name) {
-    ## First find the people who used the platform.
-    platform_users <- daily_per_platform %>% filter(ayear == 2016, platform == platform_name) %>% select(user_barcode) %>% distinct
-    ## Then calculate relative metrics.
-    relative_metrics <- daily_per_platform %>% filter(user_barcode %in% platform_users$user_barcode, ayear == 2016) %>% group_by(platform) %>% summarise(count = n()) %>% mutate(rif = round(count/length(platform_users$user_barcode), 1)) %>% select(platform, rif)
-    relative_metrics <- left_join(relative_metrics, platform_metrics %>% filter(ayear == 2016) %>% select(platform, interest_factor), by = "platform") %>% mutate(interestedness = round(rif/interest_factor, 1))
-    relative_metrics %>% filter(interestedness >= 1) %>% filter(platform != platform_name) %>% arrange(desc(interestedness))
-}
+## relative_metrics <- function(platform_name) {
+##     ## First find the people who used the platform.
+##     platform_users <- daily_per_platform %>%
+##         filter(ayear == 2016, platform == platform_name) %>%
+##         select(user_barcode) %>% distinct
+##     ## Then calculate relative metrics.
+##     relative_metrics <- daily_per_platform %>%
+##         filter(user_barcode %in% platform_users$user_barcode, ayear == 2016) %>%
+##         group_by(platform) %>%
+##         summarise(count = n()) %>%
+##         mutate(rif = round(count/length(platform_users$user_barcode), 1)) %>%
+##         select(platform, rif)
+##     relative_metrics <- left_join(relative_metrics, platform_metrics %>% filter(ayear == 2016) %>% select(platform, interest_factor), by = "platform") %>%
+##         mutate(interestedness = round(rif/interest_factor, 1))
+##     relative_metrics %>%
+##         filter(interestedness >= 1) %>%
+##         filter(platform != platform_name) %>%
+##         arrange(desc(interestedness))
+## }
 
 chart_platform_metrics <- function(platform_name) {
     this_platform_metrics <- platform_metrics %>%
@@ -158,9 +170,9 @@ server <- function(input, output, session) {
         metrics_summary_by_platform(input$platform_name)
     })
 
-    output$relative_metrics <- renderTable ({
-        relative_metrics(input$platform_name)
-    })
+    ## output$relative_metrics <- renderTable ({
+    ##     relative_metrics(input$platform_name)
+    ## })
 
 }
 
@@ -174,8 +186,8 @@ ui <- fluidPage(
 
             textInput("platform_guess", label = "Search for a platform ...", value = "Scholars Portal Journals"),
             uiOutput("platform_list"),
-            tags$p("Data covers A2012, A2013, A2016, A2017"),
-            tags$p("Updated 28 November 2018 by William Denton (wdenton@yorku.ca).")
+            tags$p("Data covers A2012, A2013, A2016, A2017, A2018"),
+            tags$p("Updated 06 Sep 2019 by William Denton (wdenton@yorku.ca).")
 
         ),
 
