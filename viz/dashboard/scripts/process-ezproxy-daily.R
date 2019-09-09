@@ -20,8 +20,10 @@ source(paste0(ezp_source_lib_dir, "get-current-ezproxy-use.R"))
 ## EZP platform metrics
 ezp_users <- ezp %>%
     select(platform, user_barcode) %>%
-    distinct %>% group_by(platform) %>%
+    distinct() %>%
+    group_by(platform) %>%
     summarise(users = n())
+
 ezp_uses  <- ezp %>%
     select(platform, date) %>%
     group_by(platform) %>%
@@ -36,7 +38,7 @@ write_csv(platform_metrics, platform_metrics_file)
 ## EZP daily users
 ezp_daily_users <- ezp %>%
     select(date, user_barcode) %>%
-    distinct %>%
+    distinct() %>%
     group_by(date) %>%
     summarise(users = n())
 write_csv(ezp_daily_users, ezp_daily_users_file)
