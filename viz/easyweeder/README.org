@@ -148,6 +148,16 @@ easy_weedable %>% count(home_location, wt = weedable) %>% mutate(stacks = round(
 #+RESULTS:
 | home_location |      n | stacks | rows |
 |---------------+--------+--------+------|
+| BRONFMAN      |    827 |      4 |    0 |
+| FROST         |    519 |      2 |    0 |
+| LAW           |    579 |      3 |    0 |
+| SCOTT         | 123619 |    589 |   29 |
+| STEACIE       |    485 |      2 |    0 |
+
+In April 2018 the numbers were:
+
+| home_location |      n | stacks | rows |
+|---------------+--------+--------+------|
 | BRONFMAN      |    842 |      4 |    0 |
 | FROST         |   2050 |     10 |    0 |
 | LAW           |    602 |      3 |    0 |
@@ -165,6 +175,35 @@ easy_weedable %>%
     count(home_location, lc_letter, wt = weedable) %>%
     spread(home_location, n, fill = "")
 #+END_SRC
+
+#+ATTR_LATEX: :environment longtable
+#+RESULTS:
+| lc_letter | BRONFMAN | FROST | LAW | SCOTT | STEACIE |
+|-----------+----------+-------+-----+-------+---------|
+| A         |          |       |     |   316 |         |
+| B         |        1 |       |   3 | 15184 |       2 |
+| C         |          |       |     |  1138 |         |
+| D         |          |     2 |     | 10303 |         |
+| E         |          |     1 |   1 |  4640 |         |
+| F         |          |     7 |   4 |  8826 |         |
+| G         |        2 |       |     |  5691 |       9 |
+| H         |      791 |    16 |  87 | 22346 |      28 |
+| J         |        2 |    10 |  17 |  2978 |         |
+| K         |        3 |     3 | 371 |  1453 |       4 |
+| L         |        1 |     2 |   6 |  2483 |       1 |
+| M         |          |       |     |  1359 |         |
+| N         |        4 |     2 |   2 |  6994 |       2 |
+| P         |        3 |   420 |  13 | 31476 |         |
+| Q         |        2 |    22 |     |   814 |     316 |
+| R         |        2 |    16 |   9 |  5275 |      87 |
+| S         |          |     2 |     |   160 |       2 |
+| T         |       16 |     5 |   2 |   815 |      31 |
+| U         |          |     9 |     |   746 |       1 |
+| V         |          |       |     |    44 |         |
+| X         |          |       |  47 |       |         |
+| Z         |          |     2 |  17 |   578 |       2 |
+
+In April 2018 the numbers were:
 
 #+ATTR_LATEX: :environment longtable
 #+RESULTS:
@@ -192,42 +231,6 @@ easy_weedable %>%
 | V         |          |       |     |    44 |         |
 | X         |          |       |  46 |       |         |
 | Z         |          |     2 |  11 |   593 |       9 |
-
-** Scott spreadsheet                                                                                                   :noexport:
-
-#+BEGIN_SRC R :session R:easyweeder :results none :exports results :colnames yes
-library(openxlsx)
-library(gtools)
-scott_first_letters <- easy_weedable %>%
-    select(call_number) %>%
-    mutate(first_letter = substr(call_number, 0, 1)) %>%
-    select(first_letter) %>%
-    distinct() %>%
-    pull()
-
-easy_weedable <- easy_weedable[mixedorder(easy_weedable$call_number), ]
-#+END_SRC
-
-#+BEGIN_SRC R :session R:easyweeder :results value :exports results :colnames yes
-scott_xl <- createWorkbook("Scott Easy Weedables")
-for (i in scott_first_letters) {
-   addWorksheet(scott_xl, i)
-   weedable_in_letter <- easy_weedable %>%
-       filter(home_location == "SCOTT", grepl(paste0("^", i), call_number)) %>%
-       select(-lc_letters) %>%
-       ## For some reason using the whole string corrupts the export
-       mutate(title_author = substr(title_author, 0, 50))
-   writeData(scott_xl, sheet = i, weedable_in_letter)
-}
-saveWorkbook(scott_xl, "/tmp/scott-easy-weedable.xlsx", overwrite = TRUE)
-#+END_SRC
-
-
-#+RESULTS:
-| x |
-|---|
-| 1 |
-
 
 * To note
 

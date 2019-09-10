@@ -3,8 +3,7 @@
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
-library(tidyverse)
-library(stringr)
+suppressMessages(library(tidyverse))
 library(yulr)
 
 symph_metrics_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
