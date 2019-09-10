@@ -1,15 +1,19 @@
 #!/usr/bin/env Rscript
 
+## Run this annually to update EZProxy metrics for EZPZ.
+
+## UPDATE THIS ANNUALLY
+## Everything else can stay the same.
+## Get the numbers from OIPA's Quick-Facts: http://oipa.info.yorku.ca/data-hub/quick-facts/
+## People = students + full-time faculty + full-time librarians + contract faculty
+people_per_year <- data.frame(ayear = seq(2011, 2018, 1), total = c(57781, 57848, 57352, 56210, 55709, 55563, 56797, 58998))
+
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
 suppressMessages(library(tidyverse))
 suppressMessages(library(lubridate))
 suppressMessages(library(scales))
-
-library(tidyverse)
-library(lubridate)
-library(scales)
 library(yulr)
 
 ezp_annual_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/annual/")
@@ -22,9 +26,6 @@ platform_use_rds <- paste0(ezp_annual_data_d, "platform-use-pii.rds")
 
 platform_metrics_csv <- paste0(ezp_metrics_data_d, "platform-metrics.csv")
 platform_metrics_rds <- paste0(ezp_metrics_data_d, "platform-metrics.rds")
-
-# People = students + full-time faculty + full-time librarians + contract faculty
-people_per_year <- data.frame(ayear = seq(2011, 2017, 1), total = c(57781, 57848, 57352, 56210, 55709, 55563, 56797))
 
 write("Reading daily use per platform files ...", stderr())
 dupp_files <- fs::dir_ls(ezp_annual_data_d, regexp = "daily-users-per-platform\\.csv$")
