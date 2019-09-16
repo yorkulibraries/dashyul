@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-library(tidyverse)
+suppressPackageStartupMessages(library(tidyverse))
 library(lubridate)
 library(yulr)
 
@@ -24,7 +24,6 @@ write("Reading transaction logs ...", stderr())
 files <- list.files(transaction_data_dir,
                    pattern = "symphony-transactions-a20[[:digit:]]{2}.csv.gz$",
                    full.names = TRUE)
-## files <- list.files(transaction_data_dir, pattern = "symphony-transactions-a(200[6789]|201[0123456]).csv.gz$", full.names = TRUE)
 
 checkouts <- do.call("rbind", lapply(files, read_csv, col_types = "Dcccc")) %>%
     filter(transaction_command == "CV") %>%
