@@ -16,6 +16,14 @@ easyweeder_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
 write("Reading circ metrics ...", stderr())
 circ_metrics <- readRDS(paste0(symph_metrics_data_d, "circ-metrics.rds"))
 
+## Use the minimum acquisition year to filter out any recent purchases.
+## We'll ignore any titles where the min acq year is within circ_window_years + 1
+## of the current academic year.
+## Thus if we have two copies of a book we got three years ago, and neither has circed,
+## we'll still keep both.
+write("Reading min acquisitions year ...", stderr())
+record_min_acq_year <- readRDS(paste0(symph_metrics_data_d, "record-min-acquisition-year.rds"))
+
 circ_window_years <- 5
 
 target_busy_factor <- 1
@@ -45,6 +53,8 @@ how_many_copies_should_we_have <- function(copies = NULL,
 write("Calculating ...", stderr())
 
 easy_weedable <- circ_metrics %>%
+    left_join(record_min_acq_year, by = "control_number") %>%
+    filter(min_acq_ayear <= academic_year(Sys.Date() - (circ_window_years + 1))) %>%
     filter(copies > 1, busy < target_busy_factor) %>%
     rowwise() %>%
     mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window, circ_window_years, target_busy_factor),
