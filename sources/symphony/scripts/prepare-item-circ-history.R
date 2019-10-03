@@ -46,6 +46,7 @@ cat_current_item_details <- readRDS(cat_current_item_details_f)
 items <- cat_current_item_details %>%
     filter(class_scheme == "LC",
            home_location %in% c("BRONFMAN",
+                                "E-ASIAN-RM",
                                 "FROST", "FR-OVERSZ",
                                 "LAW", "LAW-CD", "LAW-CORE", "LAW-FICT", "LAW-GRNDFL",
                                 "LAW-MICRO", "LAW-OVSZ", "LAW-REF", "LAW-REFDESK", "LAW-SC-REF", "LAW-STOR",
@@ -53,6 +54,7 @@ items <- cat_current_item_details %>%
                                 "STEACIE"),
            ! current_location %in% c("LOST", "MISSING", "DISCARD"),
            item_type %in% c("BRONF-BOOK",
+                            "E-ASIAN-BK",
                             "FROST-BOOK",
                             "LAW-BOOK", "LAW-CORE", "BOOK",
                             "SCOTT-BOOK",
