@@ -14,7 +14,7 @@ options:
 " -> doc
 
 library(docopt)
-library(tidyverse)
+suppressMessages(library(tidyverse))
 
 opts <- docopt(doc)
 

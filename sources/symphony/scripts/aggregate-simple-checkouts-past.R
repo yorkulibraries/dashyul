@@ -7,7 +7,7 @@
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
-library(tidyverse)
+suppressMessages(library(tidyverse))
 library(yulr)
 
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")

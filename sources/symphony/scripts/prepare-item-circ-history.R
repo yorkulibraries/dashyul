@@ -25,8 +25,8 @@ cat_current_item_details_f <- paste0(symph_cat_data_d, "catalogue-current-item-d
 ### Libraries
 ###
 
-library(tidyverse)
-library(lubridate)
+suppressMessages(library(tidyverse))
+suppressMessages(library(lubridate))
 library(yulr)
 
 ###

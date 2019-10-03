@@ -3,8 +3,8 @@
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
-library(tidyverse)
-library(lubridate)
+suppressMessages(library(tidyverse))
+suppressMessages(library(lubridate))
 library(yulr)
 
 symphony_transactions_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/transactions/")
