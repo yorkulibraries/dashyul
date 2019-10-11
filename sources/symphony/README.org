@@ -133,3 +133,32 @@ Use:
 cd ${DASHUL_DATA}/symphony/transactions/
 ${DASHYUL_HOME}/sources/symphony/scripts/aggregate-annual-data.R
 #+end_example
+
+* Circulation is declining
+
+This uses data from CircYUL, but is best placed here for maximum visibility.
+
+#+begin_src R :session R:tmp :results graphics file :file circulation-trends.png :width 800 :height 600
+library(tidyverse)
+circyul_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/circyul/")
+circyul_checkouts <- readRDS(paste0(circyul_data_d, "checkouts.rds"))
+
+circ_counts <- circyul_checkouts %>%
+    filter(circ_ayear < 2019) %>%
+    count(circ_ayear)
+
+ggplot(circ_counts, aes(x = circ_ayear, y = n/1000)) +
+    geom_col() +
+    labs(title = "Circulation at York University Libraries",
+         subtitle = "Including Osgoode",
+         x = "Academic year (September–August)",
+         y = "000s") +
+    annotate("text", x = 2012, y = 700, label = "‡ Lengthy strikes in 2008 and 2017\nreduced all library use, and\nlower circs are seen here.") +
+    annotate("text", x = 2016, y = 425, label = "From 2005 to 2018, while York's\nstudent population increased\nfrom 50½ to 55½ thousand,\ncircs shrank by 75%.") +
+    annotate("text", x = 2008, y = (circ_counts %>% filter(circ_ayear == 2008) %>% pull(n)) / 1000 + 15, label = "‡") +
+    annotate("text", x = 2017, y = (circ_counts %>% filter(circ_ayear == 2017) %>% pull(n)) / 1000 + 15, label = "‡") +
+    theme(panel.grid.minor = element_blank())
+#+end_src
+
+#+RESULTS:
+[[file:circulation-trends.png]]
