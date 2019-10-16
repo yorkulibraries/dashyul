@@ -8,7 +8,7 @@ require "csv"
 
 # Fields in the file:
 #  0 question_id
-#  1 patron_type
+#  1 patron_type           <-- use (added 16 Oct 2019)
 #  2 question_type         <-- use
 #  3 time_spent            <-- use
 #  4 question_format       <-- use
@@ -33,6 +33,7 @@ puts %w[timestamp
         time.spent
         library.name
         location.name
+        patron.type
         initials].to_csv
 
 CSV.foreach(all_libraries_csv, headers: true, header_converters: :symbol) do |row|
@@ -57,5 +58,6 @@ CSV.foreach(all_libraries_csv, headers: true, header_converters: :symbol) do |ro
         row[:time_spent],
         row[:library_name],
         row[:location_name],
+        row[:patron_type],
         row[:initials].to_s.upcase].to_csv
 end
