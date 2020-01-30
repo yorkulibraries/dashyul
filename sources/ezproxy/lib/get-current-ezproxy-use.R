@@ -3,7 +3,7 @@
 ####
 
 ezproxy_current_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/current/")
-files <- list.files(ezproxy_current_data_dir, pattern = "201.*-daily-users-per-platform-detailed.csv", full.names = TRUE)
+files <- list.files(ezproxy_current_data_dir, pattern = "20.*-daily-users-per-platform-detailed.csv", full.names = TRUE)
 
 write("Reading detailed EZProxy logs ...", stderr())
 
