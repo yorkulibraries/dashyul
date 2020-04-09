@@ -34,29 +34,3 @@
 #+BEGIN_EXAMPLE
 
 #+END_EXAMPLE
-
-* Symphony row
-
-Deleted until the Alma data can be brought in.
-
-Row
--------------------------------------
-
-### Symphony: most borrowed since Sep 1
-
-```{r}
-DT::renderDataTable(symphony_most_borrowed_titles %>% filter(borrows >= 5) %>%
-                    arrange(desc(borrows)),
-                    escape = FALSE,
-                    rownames = FALSE
-                    )
-```
-
-### Symphony: items borrowed per day (not including accessories)
-
-```{r}
-ggplot(symphony_borrows_per_day, aes(x = date, y = borrows)) +
-    ## geom_step() +
-    geom_col(width = 0.6) +
-    labs(title = "Items borrowed per day", x = "", y = "")
-```
