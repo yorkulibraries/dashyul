@@ -46,7 +46,7 @@ echo -n "platforming ... "
 ${EZPROXY_SCRIPTS}/rename-hosts-to-platforms.rb ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-host.csv | sort --buffer-size 75% --parallel=4 --numeric-sort | uniq > ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-platform.csv
 
 echo -n "merging ... "
-${EZPROXY_SCRIPTS}/ezp-merge-profile-affiliation-with-platform.R ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-platform.csv ${DASHYUL_DATA}/symphony/users/user-information.csv /tmp/tmp-$YYYYMMDD-merged.csv
+${EZPROXY_SCRIPTS}/ezp-merge-profile-affiliation-with-platform.R ${EZPROXY_DATA}/$YYYYMMDD-daily-users-per-platform.csv ${DASHYUL_DATA}/alma/users/user-information.csv /tmp/tmp-$YYYYMMDD-merged.csv
 
 echo -n "SISing ... "
 ${DASHYUL_HOME}/sources/sis/scripts/get-student-information.rb /tmp/tmp-$YYYYMMDD-merged.csv > /tmp/tmp-$YYYYMMDD-student-information.csv

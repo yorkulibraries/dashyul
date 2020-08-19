@@ -26,7 +26,7 @@ sort --buffer-size 75% --parallel=4 /tmp/tmp-$YYYYMMDD-sp-ebook-raw.csv | uniq >
 rm /tmp/tmp-$YYYYMMDD-sp-ebook-raw.csv
 
 echo -n "merging ... "
-${SP_EBOOKS_SCRIPTS}/merge-profile-affiliation-with-ebooks.R /tmp/tmp-$YYYYMMDD-sp-ebook-views.csv ${DASHYUL_DATA}/symphony/users/user-information.csv /tmp/tmp-$YYYYMMDD-sp-ebook-views-merged.csv
+${SP_EBOOKS_SCRIPTS}/merge-profile-affiliation-with-ebooks.R /tmp/tmp-$YYYYMMDD-sp-ebook-views.csv ${DASHYUL_DATA}/alma/users/user-information.csv /tmp/tmp-$YYYYMMDD-sp-ebook-views-merged.csv
 
 echo -n "SISing ... "
 ${DASHYUL_HOME}/sources/sis/scripts/get-student-information.rb /tmp/tmp-$YYYYMMDD-sp-ebook-views-merged.csv > /tmp/tmp-$YYYYMMDD-student-information.csv

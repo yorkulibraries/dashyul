@@ -1,0 +1,19 @@
+#+TITLE: Source: Alma
+
+#+STARTUP: showall entitiespretty inlineimages
+#+OPTIONS: toc:nil ^:nil
+
+* About
+
+* Scripts
+
+** ~get-alma-user-information.rb~
+
+The output is written to ~${DASHYUL_DATA}/alma/users/user-information-$YYYYMMDD.csv~, and a symlink is made so that ~${DASHYUL_DATA}/alma/users/user-information.csv~ is a stable filename that always points to the most recent data.
+
+Crontab:
+
+#+BEGIN_EXAMPLE
+## User information (weekly)
+0 9 * * Sat  ${DASHYUL_HOME}/alma/scripts/get-alma-user-information.rb
+#+END_EXAMPLE
