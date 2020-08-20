@@ -52,7 +52,7 @@ R and the packages need to be available system-wide to all users, including Shin
 
 *** Ruby
 
-A lot of text munging and data cleaning is done in [[https://www.ruby-lang.org/en/][Ruby]]. (I am using version 2.5.0 right now.)
+A lot of text munging and data cleaning is done in [[https://www.ruby-lang.org/en/][Ruby]]. (I am using version 2.7 right now.)
 
 Some gems are required:
 
@@ -61,8 +61,17 @@ Some gems are required:
 + [[https://github.com/kubo/ruby-oci8][ruby-oci8]], for talking to Oracle (requires Oracle libraries, follow [[https://help.ubuntu.com/community/Oracle%2520Instant%2520Client][Oracle Instant Client]] instructions for how to get it working)
 + [[https://github.com/yorkulibraries/rubyul][rubyul]] is the Ruby parallel to [[https://github.com/yorkulibraries/yulr][yulr]], and offers small useful YUL-related helper functions in Ruby
 
+You can install them with [[https://bundler.io/][Bundler]], which installs gems listed in ~Gemfile~:
+
 #+BEGIN_SRC shell :eval no
-sudo gem install marc nokogiri sqlite3 bundler ruby-oci8 rubyul
+sudo gem install bundler
+bundle install
+#+END_SRC
+
+By default it will install ~ruby-oci8~, but if you don't have the Oracle libraries and don't want to install all that, run:
+
+#+BEGIN_SRC shell :eval no
+bundle config set without 'oracle'
 #+END_SRC
 
 Ruby and the packages need to be available system-wide, not under RVM or rbenv.
