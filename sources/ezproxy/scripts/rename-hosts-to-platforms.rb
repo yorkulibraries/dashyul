@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# coding: utf-8
+# frozen_string_literal: true
 
 require "csv"
 
@@ -7,14 +7,16 @@ ARGF.each do |line|
   line_array = line.parse_csv
   host = line_array[2]
 
-  ### All of these are forbiddem
+  ### All of these are forbidden
 
-  # Junk
+  # Easily ignorable, trackers, etc.
   next if /ratingwidget.services.bmj.com/            =~ host
   next if /phpadsnew/                                =~ host # eg phpadsnew.cup.cam.ac.uk
   next if /oas.*/                                    =~ host
   next if /^ads\./                                   =~ host
   next if /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/       =~ host # Also catches 500.500.500.500, but who cares
+  next if /amazonaws.com/                            =~ host
+  next if /geoplugin.net/                            =~ host
 
   # Google
   next if /google.c(a|om)$/                          =~ host
@@ -125,6 +127,7 @@ ARGF.each do |line|
   next if /repository.up.ac.za/                      =~ host
 
   # Open data and access
+  next if /europepmc.org/                            =~ host
   next if /aof.revues.org/                           =~ host
   next if /.*mdpi.com/                               =~ host
   next if /\.plos.org$/                              =~ host
@@ -175,8 +178,13 @@ ARGF.each do |line|
   next if /frontiersin.org$/                         =~ host
 
   # Misc
+  next if /appdynamics.com$/                         =~ host
+  next if /noodletools.com$/                         =~ host
+  next if /scholarlyiq.com$/                         =~ host # tracker
   next if /fdslive.oup.com$/                         =~ host # CDN
   next if /cloudfront.net$/                          =~ host # CDN
+  next if /silverchair-cdn.com$/                     =~ host # CDN
+  next if /silverchair.com$/                         =~ host # publishing platform
   next if /readspeaker.com$/                         =~ host
   next if /support.ebsco.com$/                       =~ host
   next if /literatumonline.com$/                     =~ host # publishing platform
@@ -212,6 +220,7 @@ ARGF.each do |line|
   next if /www.jci.org/                              =~ host
   next if /www.inthefirstperson.com/                 =~ host
   next if /deepblue.lib.umich.edu/                   =~ host
+  next if /umich.edu/                                =~ host
   next if /pkp.sfu.ca/                               =~ host
   next if /www.lights.ca/                            =~ host
   next if /www.trialsjournal.com/                    =~ host
@@ -428,6 +437,7 @@ ARGF.each do |line|
              when /sociologyencyclopedia.com/.match(host)              then "Blackwell Encyc of Soc"
              when /bloodjournal.org/.match(host)                       then "Blood J"
              when /\.bna.com$/.match(host)                             then "Bloomberg BNA"
+             when /bloomsburydesignlibrary.com$/.match(host)           then "Bloomsbury Design Library"
              when /bmj.com$/.match(host)                               then "British Medical J"
              when /boneandjoint.org.uk/.match(host)                    then "Bone & Joint"
              when /books24x7.com$/.match(host)                         then "Books 24x7"
@@ -441,6 +451,7 @@ ARGF.each do |line|
              when /businessmonitor.com$/.match(host)                   then "Business Monitor"
              when /bmiresearch.com$/.match(host)                       then "Business Monitor"
              when /.*.cairn.info/.match(host)                          then "Cairn..info"
+             when /cairn-int.info/.match(host)                         then "Cairn..info"
              when /cardonline.ca/.match(host)                          then "CARDOnline"
              when /ebooks.cambridge.org/.match(host)                   then "Cambridge Books Online"
              when /histories.cambridge.org/.match(host)                then "Cambridge Histories Online"
@@ -489,6 +500,7 @@ ARGF.each do |line|
              when /nii.ac.jp/.match(host)                              then "CiNii"
              when /circ.greyhouse.ca/.match(host)                      then "CIRC (Greyhouse)"
              when /citeseerx.ist.psu.edu/.match(host)                  then "CiteSeerX"
+             when /clarivate.com/.match(host)                          then "Clarivate Analytics"
              when /projectne.thomsonreuters.com/.match(host)           then "Clarivate Analytics"
              when /clinicalkey.com$/.match(host)                       then "ClinicalKey"
              when /cshlp.org$/.match(host)                             then "Cold Spring Harbor Lab Pr"
@@ -510,9 +522,12 @@ ARGF.each do |line|
              when /dbpia.co.kr$/.match(host)                           then "DBpia (Korean)"
              when /degruyter.com$/.match(host)                         then "De Gruyter"
              when /doiserbia.nb.rs$/.match(host)                       then "doiSerbia"
+             when /dramonlinelibrary.com$/.match(host)                 then "Drama Online"
              when /dukejournals.org$/.match(host)                      then "Duke Journals"
              when /eblib.com$/.match(host)                             then "Ebook Library"
              when /ebrary.com$/.match(host)                            then "Ebrary"
+             when /ebsco.com$/.match(host)                             then "EbscoHost"
+             when /ebsco.zone$/.match(host)                            then "EbscoHost"
              when /ebscohost.com$/.match(host)                         then "EbscoHost"
              when /epnet.com$/.match(host)                             then "EbscoHost"
              when /hwwilsonweb.com$/.match(host)                       then "EbscoHost"
@@ -521,12 +536,14 @@ ARGF.each do |line|
              when /store.eiu.com/.match(host)                          then "Economist Intelligence Unit"
              when /www.euppublishing.com$/.match(host)                 then "Edinburgh University Press"
              when /educause.edu$/.match(host)                          then "Educause"
+             when /elgaronline.com/.match(host)                        then "Edward Elgar"
              when /\.ecsdl.org$/.match(host)                           then "Electrochemical Society"
              when /e-enlightenment.com$/.match(host)                   then "Electronic Enlightenment"
              when /elsevier.com$/.match(host)                          then "Elsevier"
              when /els-cdn.com$/.match(host)                           then "Elsevier"
              when /elsevierhealth.com$/.match(host)                    then "Elsevier Health"
              when /embassynews.ca$/.match(host)                        then "Embassy News"
+             when /emerald.com$/.match(host)                           then "Emerald Insight"
              when /emeraldinsight.com$/.match(host)                    then "Emerald Insight"
              when /emerald-library.com$/.match(host)                   then "Emerald Insight"
              when /\.eb.com$/.match(host)                              then "Encyc Britannica"
@@ -542,6 +559,7 @@ ARGF.each do |line|
              when /www.eje-online.org$/.match(host)                    then "European J Endocrinology"
              when /erj.ersjournals.com$/.match(host)                   then "European Respiratory Soc"
              when /.*.engineeringvillage.com/.match(host)              then "Engineering Village"
+             when /equinoxpub.com$/.match(host)                        then "Equinox Online"
              when /factiva.com$/.match(host)                           then "Factiva"
              when /familiesinsociety.org$/.match(host)                 then "Families in Society"
              when /www.fasebj.org$/.match(host)                        then "Fdn Amer Soc Experimental Biol"
@@ -570,10 +588,13 @@ ARGF.each do |line|
              when /hilltimes.com/.match(host)                          then "Hill Times"
              when /hsus.cambridge.org/.match(host)                     then "Historical Statistics of US"
              when /hoovers.com$/.match(host)                           then "Hoovers"
+             when /avention.com$/.match(host)                          then "Hoovers"
+             when /onesource.com$/.match(host)                         then "Hoovers"
              when /hrcak.srce.hr$/.match(host)                         then "Hrčak"
              when /www.hugeog.com$/.match(host)                        then "Human Geography"
              when /ibfd.org$/.match(host)                              then "IBFD"
              when /humankinetics.com$/.match(host)                     then "Human Kinetics"
+             when /ibisworld.ca$/.match(host)                          then "IbisWorld"
              when /ibisworld.com$/.match(host)                         then "IbisWorld"
              when /ibisworld.com.cn$/.match(host)                      then "IbisWorld"
              when /icevirtuallibrary.com$/.match(host)                 then "ICE Virtual Library"
@@ -603,6 +624,7 @@ ARGF.each do |line|
              when /nlx.com$/.match(host)                               then "InteLex"
              when /ipasource.com$/.match(host)                         then "IPA (Intl Phonetic Alphabet) Source"
              when /\.iop.org$/.match(host)                             then "Inst of Physics"
+             when /iopscience.org$/.match(host)                        then "Inst of Physics"
              when /communicationencyclopedia.com$/.match(host)         then "Intl Encyc Communication"
              when /ijmhs.com$/.match(host)                             then "Intl J Mental Health Systems"
              when /iucr.org$/.match(host)                              then "Intl Union Crystallography"
@@ -634,16 +656,21 @@ ARGF.each do |line|
              when /knovel.com$/.match(host)                            then "Knovel"
              when /krpia.co.kr$/.match(host)                           then "KRpia (Korean)"
              when /llmcdigital.org$/.match(host)                       then "Law Lib Microform Consortium"
+             when /lawyersdaily.ca$/.match(host)                       then "Lawyer's Daily"
              when /www.lawyersweekly-digital.com$/.match(host)         then "Lawyers Weekly"
              when /www.editlib.org$/.match(host)                       then "LearnTechLib"
+             when /lerobert.com/.match(host)                           then "Le Robert"
              when /lexisnexis.com$/.match(host)                        then "LexisNexis"
              when /lexis-nexis.com$/.match(host)                       then "LexisNexis"
+             when /lexis.com$/.match(host)                             then "LexisNexis"
+             when /nexisuni.com$/.match(host)                          then "LexisNexis"
              when /advance.lexis.com/.match(host)                      then "Lexis Advance Quicklaw"
              when /lexisadvancequicklaw.ca/.match(host)                then "Lexis Advance Quicklaw"
              when /lexissecuritiesmosaic.com/.match(host)              then "Lexis Securities Mosaic"
              when /liebertpub.com$/.match(host)                        then "Liebert"
              when /liverpooluniversitypress.co.uk/.match(host)         then "Liverpool U Press"
              when /llmc.com$/.match(host)                              then "LLMC Digital"
+             when /loebclassics.com$/.match(host)                      then "Loeb Classics"
              when /.*.longwoods.com/.match(host)                       then "Longwoods"
              when /manupatra.*in$/.match(host)                         then "Manupatra"
              when /.*.marketline.com/.match(host)                      then "MarketLine"
@@ -732,6 +759,7 @@ ARGF.each do |line|
              when /plunkettresearchonline.com$/.match(host)            then "Plunkett"
              when /pnas.org$/.match(host)                              then "Proc Nat Acad Sci"
              when /preqin.com$/.match(host)                            then "Preqin"
+             when /pressreader.com/.match(host)                        then "PressReader"
              when /annals.math.princeton.edu/.match(host)              then "Princeton: Annals of Mathematics"
              when /privco.com$/.match(host)                            then "PrivCo"
              when /projecteuclid.org$/.match(host)                     then "Project Euclid"
@@ -794,18 +822,22 @@ ARGF.each do |line|
              when /endocrinology-journals.org$/.match(host)            then "Soc Endocrinology"
              when /siam.org$/.match(host)                              then "Soc Industrial Applied Math"
              when /www.socresonline.org.uk/.match(host)                then "Sociological Research Online"
-             when /simplymap.c(a|om)$/.match(host)                     then "Simply Map"
+             when /simplymap.c(a|om)$/.match(host)                     then "Simply Analytics"
+             when /simplyanalytics.com)$/.match(host)                  then "Simply Analytics"
              when /\.snl.com$/.match(host)                             then "SNL Financial"
              when /seg.org$/.match(host)                               then "Soc Exploration Geophysicists"
              when /www.biolreprod.org$/.match(host)                    then "Soc Study Reproduction"
              when /spiedigitallibrary.org$/.match(host)                then "SPIE Digital Lib"
              when /springer.com$/.match(host)                          then "Springer"
              when /springerlink.com$/.match(host)                      then "Springer"
+             when /springernature.com$/.match(host)                    then "Springer"
+             when /springerpub.com$/.match(host)                       then "Springer"
              when /palgraveconnect.com$/.match(host)                   then "Springer"
              when /adisonline.com$/.match(host)                        then "Springer"
              when /springerprotocols.com$/.match(host)                 then "Springer Protocols"
              when /standardandpoors.com$/.match(host)                  then "Standard & Poor's"
              when /statista.com$/.match(host)                          then "Statista"
+             when /statcdn.com$/.match(host)                           then "Statista"
              when /sustainalytics.com$/.match(host)                    then "Sustainalytics"
              when /wwwords.co.uk$/.match(host)                         then "Symposium Books"
              when /taylorfrancis.com$/.match(host)                     then "T & F eBooks"
@@ -823,6 +855,7 @@ ARGF.each do |line|
              when /(www|stephanus).tlg.uci.edu$/.match(host)           then "Thesauraus Linguae Graecae"
              when /thieme-connect.(com|de)$/.match(host)               then "Thieme"
              when /thomsonib.com$/.match(host)                         then "Thomson Research"
+             when /thomsonreuters.com$/.match(host)                    then "Thomson Reuters"
              when /trb.org$/.match(host)                               then "Transportation Research Board"
              when /utopia.cs.man.ac.uk/.match(host)                    then "U Manchester: Utopia"
              when /artfl.*uchicago.edu/.match(host)                    then "U Chicago: ARTFL"
@@ -831,7 +864,7 @@ ARGF.each do |line|
              when /bmc.lib.umich.edu/.match(host)                      then "U Mich: Bib Asian Studies"
              when /hapi.ucla.edu/.match(host)                          then "UCLA: Hispanic American Periodicals Ind"
              when /uclajournals.org/.match(host)                       then "UCLA: Asian American Studies Center"
-             when /www.utpjournals.pres/.match(host)                   then "U Toronto Press"
+             when /utpjournals.press/.match(host)                      then "U Toronto Press"
              when /uwpress.org$/.match(host)                           then "U Wisconsin Press"
              when /ulrichsweb.serialssolutions.com/.match(host)        then "Ulrich's"
              when /ulrichsweb.com/.match(host)                         then "Ulrich's"
@@ -844,13 +877,9 @@ ARGF.each do |line|
              when /vlex.com/.match(host)                               then "vLex"
              when /wanfangdata.com$/.match(host)                       then "Wanfang Data"
              when /wanfangdata.com.cn$/.match(host)                    then "Wanfang Data"
-             when /www.psychosomaticmedicine.org$/.match(host)         then "Wolters Kluwer"
-             when /anesthesia-analgesia.org$/.match(host)              then "Wolters Kluwer"
-             when /\.lww.com$/.match(host)                             then "Wolters Kluwer"
-             when /\.cch.com/.match(host)                              then "Wolters Kluwer"
-             when /warc.com$/.match(host)                              then "World Advertising Research Ctr"
              when /webofknowledge.com$/.match(host)                    then "Web of Science"
              when /webofscience.com$/.match(host)                      then "Web of Science"
+             when /wrds.*wharton.upenn.edu$/.match(host)               then "Wharton Research Data Serv"
              when /westlaw.com$/.match(host)                           then "Westlaw"
              when /wiley.com$/.match(host)                             then "Wiley"
              when /blackwell-?synergy.com$/.match(host)                then "Wiley"
@@ -858,8 +887,15 @@ ARGF.each do |line|
              when /\.els.net$/.match(host)                             then "Wiley"
              when /esajournals.org$/.match(host)                       then "Wiley"
              when /www.jphysiol.org$/.match(host)                      then "Wiley"
+             when /wol-prod-cdn.literatumonline.com$/.match(host)      then "Wiley"
              when /www.literatureencyclopedia.com$/.match(host)        then "Wiley-Blackwell Encyc Literature"
-             when /wrds.*wharton.upenn.edu$/.match(host)               then "Wharton Research Data Serv"
+             when /www.psychosomaticmedicine.org$/.match(host)         then "Wolters Kluwer"
+             when /anesthesia-analgesia.org$/.match(host)              then "Wolters Kluwer"
+             when /\.lww.com$/.match(host)                             then "Wolters Kluwer"
+             when /\.cch.com/.match(host)                              then "Wolters Kluwer"
+             when /wolterskluwer.com/.match(host)                      then "Wolters Kluwer"
+             when /wkhealth.com/.match(host)                           then "Wolters Kluwer"
+             when /warc.com$/.match(host)                              then "World Advertising Research Ctr"
              when /worldscientific.com/.match(host)                    then "World Scientific"
              else
                host
