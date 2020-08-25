@@ -127,6 +127,7 @@ ARGF.each do |line|
   next if /repository.up.ac.za/                      =~ host
 
   # Open data and access
+  next if /springeropen.com/                         =~ host
   next if /europepmc.org/                            =~ host
   next if /aof.revues.org/                           =~ host
   next if /.*mdpi.com/                               =~ host
