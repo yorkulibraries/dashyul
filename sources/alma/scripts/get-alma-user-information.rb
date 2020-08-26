@@ -36,8 +36,8 @@ api_url = "https://api-ca.hosted.exlibrisgroup.com/almaws/v1/analytics/reports"
 # curl to grab the data by hand, you'll need to replace the spaces
 # with + or %20.
 root_path = "/shared/York University 01OCUL_YOR/Reports/Patron Stats"
-profile_path = "#{root_path}/Active Patrons and Groups"
-affiliation_path = "#{root_path}/Active Patrons and Stat Categories"
+profile_path = "#{root_path}/Active Patrons and Groups (DashYUL)"
+affiliation_path = "#{root_path}/Active Patrons and Stat Categories (DashYUL)"
 # TODO: Include an image in the docs that shows the structure in the browser.
 
 # How many records to get at a time.  Min 25, max 1000.
