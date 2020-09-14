@@ -22,20 +22,20 @@ end
 api_url = "https://api-ca.hosted.exlibrisgroup.com/almaws/v1/analytics/reports"
 
 # Paths to the two reports that generate the data we want.
-root_path = "/shared/York University 01OCUL_YOR/Reports/Patron+Stats"
+root_path = "/shared/York University 01OCUL_YOR/Reports/DashYUL 2"
 
 # "Profile" information.
 # This report gives:
 # Primary Identifier: user_barcode
 # Identifier Value: CYIN
 # User Group Code: profile (as we used to call it)
-profile_path = "#{root_path}/Active+Patrons+and+Groups+(DashYUL)"
+profile_path = "#{root_path}/Active+Patrons+and+Groups"
 
 # "Affiliation" information.
 # This report gives:
 # Primary Identifier: (user_barcode)
 # Statistical Category: affiliation (as we used to call it)
-affiliation_path = "#{root_path}/Active+Patrons+and+Stat+Categories+(DashYUL)"
+affiliation_path = "#{root_path}/Active+Patrons+and+Stat+Categories"
 
 # TODO: Include an image in the docs that shows the structure in the browser.
 
