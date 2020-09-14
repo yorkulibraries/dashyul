@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "oci8"
 require "csv"
@@ -35,11 +36,12 @@ seen = {}
 
 puts %w[cyin faculty degree progtype year subject1 subject2].to_csv
 
-CSV.parse(File.read(input_csv_file), { headers: true, header_converters: :symbol } ) do |row|
+CSV.parse(File.read(input_csv_file), headers: true, header_converters: :symbol) do |row|
   cyin = row[:cyin]
   next if cyin.to_s[0] == "1"
 
   next if seen[cyin]
+
   seen[cyin] = true
 
   # while r = cursor.fetch_hash()
@@ -48,7 +50,7 @@ CSV.parse(File.read(input_csv_file), { headers: true, header_converters: :symbol
 
   begin
     cursor = connection.exec("SELECT * from view_uit_passportyork WHERE sisid = #{cyin} ORDER BY STUDYSESSION")
-    r = cursor.fetch_hash()
+    r = cursor.fetch_hash
     if !r.nil?
       faculty  = r["PROGFACULTY"]
       degree   = r["ACADQUALIFICATION"].gsub(/\s*/, "")
@@ -62,7 +64,7 @@ CSV.parse(File.read(input_csv_file), { headers: true, header_converters: :symbol
     end
     cursor.close
   rescue StandardError => e
-    STDERR.puts "#{e}: #{cyin} unknown"
+    warn "#{e}: #{cyin} unknown"
   end
 end
 
