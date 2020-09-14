@@ -824,7 +824,7 @@ ARGF.each do |line|
              when /siam.org$/.match(host)                              then "Soc Industrial Applied Math"
              when /www.socresonline.org.uk/.match(host)                then "Sociological Research Online"
              when /simplymap.c(a|om)$/.match(host)                     then "Simply Analytics"
-             when /simplyanalytics.com)$/.match(host)                  then "Simply Analytics"
+             when /simplyanalytics.com$/.match(host)                   then "Simply Analytics"
              when /\.snl.com$/.match(host)                             then "SNL Financial"
              when /seg.org$/.match(host)                               then "Soc Exploration Geophysicists"
              when /www.biolreprod.org$/.match(host)                    then "Soc Study Reproduction"
