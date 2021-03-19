@@ -6,17 +6,15 @@
 suppressMessages(library(tidyverse))
 library(yulr)
 
-ezproxy_current_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/current/")
-files <- list.files(ezproxy_current_data_dir, pattern = "20.*-daily-users-per-platform-detailed.csv", full.names = TRUE)
-
-ezp_annual_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/annual/")
+ezproxy_a2019_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/annual/A2019/")
+files <- list.files(ezproxy_a2019_data_dir, pattern = "20.*-daily-users-per-platform-detailed.csv", full.names = TRUE)
 
 ## Get all the user information from the various sources
 write("Reading user information ...", stderr())
 
 ## Alma knows CYIN, user_barcode, profile and affiliation
 write("  Alma user data ...", stderr())
-alma_users <- read_csv(paste0(Sys.getenv("DASHYUL_DATA"), "/alma/users/user-information.csv"), col_types = "cccc")
+alma_users <- read_csv(paste0(Sys.getenv("DASHYUL_DATA"), "/alma/users/user-information-20200819.csv"), col_types = "cccc")
 
 ## This file has the CYIN numbers for the 10,000-odd PPY usernames that were
 ## recorded for a couple of weeks in May.
@@ -25,7 +23,7 @@ ppy2cyin <- read_csv(paste0(Sys.getenv("DASHYUL_DATA"), "/sis/a2019-fix-ppy-cyin
 
 ## This has all the detailed student information (from SIS)
 write("  Student information ...", stderr())
-student_data <- read_csv(paste0(Sys.getenv("DASHYUL_DATA"), "/sis/all-students.csv"), col_types = "ccccccc") %>%
+student_data <- read_csv(paste0(Sys.getenv("DASHYUL_DATA"), "/sis/all-students-20200829.csv"), col_types = "ccccccc") %>%
     group_by(cyin) %>%
     slice(1) ## Students may be listed multiple times, for various reasons.  Just use the first.
 
@@ -98,40 +96,62 @@ fixed_ezp <- bind_rows(ezp_barcodes,
 write("Fixing domain and platform names ...", stderr())
 
 ## Remove ignored platforms that weren't ignored from the start
+ignorable_domains <- c("adserver",
+                       "appdynamics.com",
+                       "sso.apa.org",
+                       "s3.amazonaws.com",
+                       "crossref.org",
+                       "europepmc.org",
+                       "noodletools.com",
+                       "sams-sigma.com",
+                       "scholarlyiq.com",
+                       "analytics.scholarsportal.info",
+                       "silverchair.com",
+                       "silverchair-cdn.com",
+                       "umich.edu"
+                       )
+## This paste command turns c("a", "b", "c") into "a|b|c", which makes the regex we want.
 fixed_ezp <- fixed_ezp %>%
-    filter(! grepl("(appdynamics.com|noodletools.com|scholarlyiq.com|silverchair.com|silverchair-cdn.com|umich.edu|analytics.scholarsportal.info|europepmc.org)", platform))
+    filter(! grepl(paste(ignorable_domains, collapse = "|"), platform))
 
 ## Fix up domain names that are actually platforms.
 ## (These come from the updated rename-hosts-to-platform.rb).
-fixed_ezp$platform[grepl("bloomsburydesignlibrary", fixed_ezp$platform)] <- "Bloomsbury Design Library"
-fixed_ezp$platform[grepl("cairn-int.info", fixed_ezp$platform)]     <- "Cairn..info"
-fixed_ezp$platform[grepl("clarivate", fixed_ezp$platform)]          <- "Clarivate Analytics"
-fixed_ezp$platform[grepl("dramaonlinelibrary.com", fixed_ezp$platform)]  <- "Drama Online"
-fixed_ezp$platform[grepl("ebsco.com", fixed_ezp$platform)]          <- "EbscoHost"
-fixed_ezp$platform[grepl("ebsco.zone", fixed_ezp$platform)]         <- "EbscoHost"
-fixed_ezp$platform[grepl("elgaronline", fixed_ezp$platform)]        <- "Edward Elgar"
-fixed_ezp$platform[grepl("els-cdn.com", fixed_ezp$platform)]        <- "Elsevier"
-fixed_ezp$platform[grepl("emerald.com", fixed_ezp$platform)]        <- "Emerald Insight"
-fixed_ezp$platform[grepl("equinoxpub.com", fixed_ezp$platform)]     <- "Equinox Online"
-fixed_ezp$platform[grepl("avention.com", fixed_ezp$platform)]       <- "Hoovers"
-fixed_ezp$platform[grepl("onesource.com", fixed_ezp$platform)]      <- "Hoovers"
-fixed_ezp$platform[grepl("ibisworld", fixed_ezp$platform)]          <- "IbisWorld"
-fixed_ezp$platform[grepl("iopscience.org", fixed_ezp$platform)]     <- "Inst of Physics"
-fixed_ezp$platform[grepl("lawyersdaily", fixed_ezp$platform)]       <- "Lawyer's Daily"
-fixed_ezp$platform[grepl("lerobert.com", fixed_ezp$platform)]       <- "Le Robert"
-fixed_ezp$platform[grepl("lexis.com", fixed_ezp$platform)]          <- "LexisNexis"
-fixed_ezp$platform[grepl("nexisuni.com", fixed_ezp$platform)]       <- "LexisNexis"
-fixed_ezp$platform[grepl("loebclassics.com", fixed_ezp$platform)]   <- "Loeb Classics"
-fixed_ezp$platform[grepl("pressreader.com", fixed_ezp$platform)]    <- "PressReader"
-fixed_ezp$platform[grepl("simplyanalytics", fixed_ezp$platform)]    <- "Simply Analytics"
-fixed_ezp$platform[grepl("springernature.com", fixed_ezp$platform)] <- "Springer"
-fixed_ezp$platform[grepl("springerpub.com", fixed_ezp$platform)]    <- "Springer"
-fixed_ezp$platform[grepl("statcdn.com", fixed_ezp$platform)]        <- "Statista"
-fixed_ezp$platform[grepl("thomsonreuters.com", fixed_ezp$platform)] <- "Thomson Reuters"
-fixed_ezp$platform[grepl("utpjournals.press", fixed_ezp$platform)]  <- "U Toronto Press"
-fixed_ezp$platform[grepl("wol-prod-cdn.literatumonline.com", fixed_ezp$platform)]   <- "Wiley"
-fixed_ezp$platform[grepl("wolterskluwer.com", fixed_ezp$platform)]  <- "Wolters Kluwer"
-fixed_ezp$platform[grepl("wkhealth.com", fixed_ezp$platform)]       <- "Wolters Kluwer"
+fixed_ezp$platform[grepl("bloomsburydesignlibrary", fixed_ezp$platform)]          <- "Bloomsbury Design Library"
+fixed_ezp$platform[grepl("bloomsburycollections.com", fixed_ezp$platform)]        <- "Bloomsbury Collections"
+fixed_ezp$platform[grepl("cairn-int.info", fixed_ezp$platform)]                   <- "Cairn..info"
+fixed_ezp$platform[grepl("chronicle.com", fixed_ezp$platform)]                    <- "Chronicle of Higher Education"
+fixed_ezp$platform[grepl("clarivate", fixed_ezp$platform)]                        <- "Clarivate Analytics"
+fixed_ezp$platform[grepl("vividata.dapresy.com", fixed_ezp$platform)]             <- "Dapresy"
+fixed_ezp$platform[grepl("docuseek2.com", fixed_ezp$platform)]                    <- "Docuseek"
+fixed_ezp$platform[grepl("dramaonlinelibrary.com", fixed_ezp$platform)]           <- "Drama Online"
+fixed_ezp$platform[grepl("ebsco.com", fixed_ezp$platform)]                        <- "EbscoHost"
+fixed_ezp$platform[grepl("ebsco.zone", fixed_ezp$platform)]                       <- "EbscoHost"
+fixed_ezp$platform[grepl("elgaronline", fixed_ezp$platform)]                      <- "Edward Elgar"
+fixed_ezp$platform[grepl("els-cdn.com", fixed_ezp$platform)]                      <- "Elsevier"
+fixed_ezp$platform[grepl("emerald.com", fixed_ezp$platform)]                      <- "Emerald Insight"
+fixed_ezp$platform[grepl("equinoxpub.com", fixed_ezp$platform)]                   <- "Equinox Online"
+fixed_ezp$platform[grepl("avention.com", fixed_ezp$platform)]                     <- "Hoovers"
+fixed_ezp$platform[grepl("onesource.com", fixed_ezp$platform)]                    <- "Hoovers"
+fixed_ezp$platform[grepl("ibisworld", fixed_ezp$platform)]                        <- "IbisWorld"
+fixed_ezp$platform[grepl("iopscience.org", fixed_ezp$platform)]                   <- "Inst of Physics"
+fixed_ezp$platform[grepl("lawyersdaily", fixed_ezp$platform)]                     <- "Lawyer's Daily"
+fixed_ezp$platform[grepl("lerobert.com", fixed_ezp$platform)]                     <- "Le Robert"
+fixed_ezp$platform[grepl("lexis.com", fixed_ezp$platform)]                        <- "LexisNexis"
+fixed_ezp$platform[grepl("nexisuni.com", fixed_ezp$platform)]                     <- "LexisNexis"
+fixed_ezp$platform[grepl("loebclassics.com", fixed_ezp$platform)]                 <- "Loeb Classics"
+fixed_ezp$platform[grepl("oxfordclinicalpsychology.com", fixed_ezp$platform)]     <- "Oxford Clinical Psychology"
+fixed_ezp$platform[grepl("pressreader.com", fixed_ezp$platform)]                  <- "PressReader"
+fixed_ezp$platform[grepl("scitation.org", fixed_ezp$platform)]                    <- "Scitation"
+fixed_ezp$platform[grepl("simplyanalytics", fixed_ezp$platform)]                  <- "Simply Analytics"
+fixed_ezp$platform[grepl("springernature.com", fixed_ezp$platform)]               <- "Springer"
+fixed_ezp$platform[grepl("springerpub.com", fixed_ezp$platform)]                  <- "Springer"
+fixed_ezp$platform[grepl("sso.apa.org", fixed_ezp$platform)]                      <- "APA"
+fixed_ezp$platform[grepl("statcdn.com", fixed_ezp$platform)]                      <- "Statista"
+fixed_ezp$platform[grepl("thomsonreuters.com", fixed_ezp$platform)]               <- "Thomson Reuters"
+fixed_ezp$platform[grepl("utpjournals.press", fixed_ezp$platform)]                <- "U Toronto Press"
+fixed_ezp$platform[grepl("wol-prod-cdn.literatumonline.com", fixed_ezp$platform)] <- "Wiley"
+fixed_ezp$platform[grepl("wolterskluwer.com", fixed_ezp$platform)]                <- "Wolters Kluwer"
+fixed_ezp$platform[grepl("wkhealth.com", fixed_ezp$platform)]                     <- "Wolters Kluwer"
 
 ## Dedupe and we're almost done.
 fixed_ezp <- fixed_ezp %>%

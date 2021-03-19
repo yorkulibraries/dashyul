@@ -12,6 +12,7 @@ ARGF.each do |line|
   # Easily ignorable, trackers, etc.
   next if /ratingwidget.services.bmj.com/            =~ host
   next if /phpadsnew/                                =~ host # eg phpadsnew.cup.cam.ac.uk
+  next if /adserver/                                 =~ host # eg phpadsnew.cup.cam.ac.uk
   next if /oas.*/                                    =~ host
   next if /^ads\./                                   =~ host
   next if /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/       =~ host # Also catches 500.500.500.500, but who cares
@@ -309,6 +310,7 @@ ARGF.each do |line|
   next if /oi-underbar.oup.com/                      =~ host
   next if /cdn.cengage.com/                          =~ host
   next if /hsrc.ac.za/                               =~ host
+  next if /sams-sigma.com/                           =~ host # SSO provider
 
   # OA journals
   next if /pimatisiwin.com$/                         =~ host
@@ -421,7 +423,7 @@ ARGF.each do |line|
              when /psycnet.apa.org/.match(host)                        then "APA: PsycNet"
              when /(content|my|doi).apa.org/.match(host)               then "APA: PsycNet"
              when /psyctherapy.apa.org/.match(host)                    then "APA: PsycTherapy"
-             when /(static|www).apa.org/.match(host)                   then "APA"
+             when /(sso|static|www).apa.org/.match(host)               then "APA"
              when /artstor.org/.match(host)                            then "Artstor"
              when /ascojournals.org/.match(host)                       then "ASCO Journals"
              when /\.arl.org$/.match(host)                             then "Assoc Research Libraries"
@@ -438,6 +440,7 @@ ARGF.each do |line|
              when /sociologyencyclopedia.com/.match(host)              then "Blackwell Encyc of Soc"
              when /bloodjournal.org/.match(host)                       then "Blood J"
              when /\.bna.com$/.match(host)                             then "Bloomberg BNA"
+             when /bloomsburycollections.com$/.match(host)             then "Bloomsbury Collections"
              when /bloomsburydesignlibrary.com$/.match(host)           then "Bloomsbury Design Library"
              when /bmj.com$/.match(host)                               then "British Medical J"
              when /boneandjoint.org.uk/.match(host)                    then "Bone & Joint"
@@ -498,6 +501,7 @@ ARGF.each do |line|
              when /\.cas.org/.match(host)                              then "Chem Abstracts"
              when /chicagomanualofstyle.org/.match(host)               then "Chicago Manual of Style"
              when /cnki.com.cn/.match(host)                            then "China National Knowledge Infrastructure"
+             when /chronicle.com$/.match(host)                         then "Chronicle of Higher Education"
              when /nii.ac.jp/.match(host)                              then "CiNii"
              when /circ.greyhouse.ca/.match(host)                      then "CIRC (Greyhouse)"
              when /citeseerx.ist.psu.edu/.match(host)                  then "CiteSeerX"
@@ -519,10 +523,12 @@ ARGF.each do |line|
              when /\.csa.ca$/.match(host)                              then "CSA Group"
              when /statindex.org$/.match(host)                         then "Current Index to Statistics"
              when /curio.ca$/.match(host)                              then "Curio..ca"
+             when /vividata.dapresy.com/.match(host)                   then "Dapresy"
              when /datamonitor.com/.match(host)                        then "Data Monitor"
              when /dbpia.co.kr$/.match(host)                           then "DBpia (Korean)"
              when /degruyter.com$/.match(host)                         then "De Gruyter"
              when /doiserbia.nb.rs$/.match(host)                       then "doiSerbia"
+             when /docuseek2.com$/.match(host)                         then "Docuseek"
              when /dramonlinelibrary.com$/.match(host)                 then "Drama Online"
              when /dukejournals.org$/.match(host)                      then "Duke Journals"
              when /eblib.com$/.match(host)                             then "Ebook Library"
@@ -728,6 +734,7 @@ ARGF.each do |line|
              when /academic.oup.com/.match(host)                       then "Oxford Academic"
              when /oxfordartonline.com/.match(host)                    then "Oxford Art Online"
              when /oxfordbibliographies.com/.match(host)               then "Oxford Bibliographies"
+             when /oxfordclinicalpsych.com/.match(host)                then "Oxford Clinical Psychology"
              when /oxfordlanguagedictionaries.com/.match(host)         then "Oxford Dictionaries"
              when /oxforddictionaries.com/.match(host)                 then "Oxford Dictionaries"
              when /oxforddnb.com/.match(host)                          then "Oxford DNB"
@@ -816,6 +823,7 @@ ARGF.each do |line|
              when /sciencemag.org$/.match(host)                        then "Science (AAAS)"
              when /scialert.net/.match(host)                           then "Science Alert"
              when /sciencedirect.com$/.match(host)                     then "ScienceDirect"
+             when /scitation.com$/.match(host)                         then "Scitation"
              when /\.scival.com/.match(host)                           then "SciVal"
              when /\.scopus.com/.match(host)                           then "Scopus"
              when /socialistregister.com/.match(host)                  then "Socialist Register"
