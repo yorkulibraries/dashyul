@@ -16,16 +16,16 @@ EZPROXY_LOG_FULL_PATH=$1
 
 if [ -z $EZPROXY_LOG_FULL_PATH ]
 then
-    EZPROXY_LOG_FULL_PATH=`ls -rt /accesslogs/ezproxy.log-20* | tail -1`
+    EZPROXY_LOG_FULL_PATH=$(ls -rt /accesslogs/ezproxy.log-20* | tail -1)
 fi
 
-YYYYMMDD=`basename -s .gz $EZPROXY_LOG_FULL_PATH | sed 's/ezproxy.log-//'`
+YYYYMMDD=$(basename -s .gz $EZPROXY_LOG_FULL_PATH | sed 's/ezproxy.log-//')
 
 EZPROXY_SCRIPTS=${DASHYUL_HOME}/sources/ezproxy/scripts
 EZPROXY_DATA=${DASHYUL_DATA}/ezproxy/current
 
 echo "------"
-echo "Started: `date`"
+echo "Started: $(date)"
 
 echo -n "$YYYYMMDD: grepping ... "
 gunzip -c $EZPROXY_LOG_FULL_PATH | ${EZPROXY_SCRIPTS}/extract-date-userbarcode-host.rb > /tmp/tmp-$YYYYMMDD-host.csv
@@ -57,4 +57,5 @@ ${EZPROXY_SCRIPTS}/ezp-merge-all-information.R /tmp/tmp-$YYYYMMDD-merged.csv /tm
 rm /tmp/tmp-$YYYYMMDD-merged.csv
 rm /tmp/tmp-$YYYYMMDD-student-information.csv
 
-echo "Finished: `date`"
+echo
+echo "Finished: $(date)"
