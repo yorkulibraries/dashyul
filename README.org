@@ -52,7 +52,7 @@ R and the packages need to be available system-wide to all users, including Shin
 
 *** Ruby
 
-A lot of text munging and data cleaning is done in [[https://www.ruby-lang.org/en/][Ruby]]. (I am using version 2.7 right now.)
+A lot of text munging and data cleaning is done in [[https://www.ruby-lang.org/en/][Ruby]]. (I am using version 3.0 right now.)
 
 Some gems are required:
 
