@@ -17,3 +17,26 @@ Crontab:
 ## User information (weekly)
 0 9 * * Sat  ${DASHYUL_HOME}/alma/scripts/get-alma-user-information.rb
 #+END_EXAMPLE
+
+** =get-alma-user-information-plus.rb=
+
+Same script as above except that the account's expiry date is also included.  The output is written to ~${DASHYUL_DATA}/alma/users/user-information-plus-$YYYYMMDD.csv~, and a symlink is made so that ~${DASHYUL_DATA}/alma/users/user-information-plus.csv~ is a stable filename that always points to the most recent data.
+
+When the pandemic started we allowed anyone with a working PPY login to use electronic resources through EZProxy.  I need to expiry date to distinguish between people who normally have access (whose expiry date is in the future) and those who don't.
+
+For interest's sake, this is the SQL:
+
+#+begin_src sql
+SELECT
+   0 s_0,
+   "Users"."Identifier"."Identifier Value" s_1,
+   "Users"."User Details"."Expiry Date" s_2,
+   "Users"."User Details"."Primary Identifier" s_3,
+   "Users"."User Details"."User Group Code" s_4
+FROM "Users"
+WHERE (("User Details"."Status" = 'Active') AND
+      ("Identifier"."Identifier Type" = 'University ID') AND
+      ("User Details"."Primary Identifier" LIKE '29007%'))
+ORDER BY 4 ASC NULLS FIRST, 5 ASC NULLS FIRST, 2 ASC NULLS FIRST, 3 ASC NULLS FIRST
+FETCH FIRST 10000001 ROWS ONLY
+#+end_src
