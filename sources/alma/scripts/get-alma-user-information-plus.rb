@@ -173,7 +173,7 @@ end
 # Now write it all out.
 
 File.open(user_information_dated_file, "w") do |file|
-  file.write %w[user_barcode cyin profile affiliation].to_csv
+  file.write %w[user_barcode cyin profile affiliation expiry_date].to_csv
   users.each_pair do |barcode, data|
     file.write [barcode, data[:cyin], data[:profile], data[:affiliation], data[:expiry_date]].to_csv
   end
