@@ -29,7 +29,7 @@ root_path = "/shared/York University 01OCUL_YOR/Reports/DashYUL 2"
 # Primary Identifier: user_barcode
 # Identifier Value: CYIN
 # User Group Code: profile (as we used to call it)
-profile_path = "#{root_path}/Active+Patrons+and+Groups+with+Expiry+Dates"
+profile_path = "#{root_path}/All+Patrons+and+Groups+with+Expiry+Dates"
 
 # "Affiliation" information.
 # This report gives:
@@ -112,6 +112,7 @@ until we_are_done
     users[user_info["Primary Identifier"]][:cyin] = user_info["Identifier Value"]
     users[user_info["Primary Identifier"]][:profile] = user_info["User Group Code"]
     users[user_info["Primary Identifier"]][:expiry_date] = user_info["Expiry Date"]
+    users[user_info["Primary Identifier"]][:status] = user_info["Status"]
   end
 
   we_are_done = doc.at_xpath("//IsFinished").text == "true"
@@ -173,9 +174,9 @@ end
 # Now write it all out.
 
 File.open(user_information_dated_file, "w") do |file|
-  file.write %w[user_barcode cyin profile affiliation expiry_date].to_csv
+  file.write %w[user_barcode cyin profile affiliation expiry_date status].to_csv
   users.each_pair do |barcode, data|
-    file.write [barcode, data[:cyin], data[:profile], data[:affiliation], data[:expiry_date]].to_csv
+    file.write [barcode, data[:cyin], data[:profile], data[:affiliation], data[:expiry_date], data[:status]].to_csv
   end
 end
 
