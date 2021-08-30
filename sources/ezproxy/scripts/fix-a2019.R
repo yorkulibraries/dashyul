@@ -6,6 +6,8 @@
 suppressMessages(library(tidyverse))
 library(yulr)
 
+ezp_annual_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/annual/")
+
 ezproxy_a2019_data_dir <-  paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/annual/A2019/")
 files <- list.files(ezproxy_a2019_data_dir, pattern = "20.*-daily-users-per-platform-detailed.csv", full.names = TRUE)
 
@@ -43,6 +45,7 @@ ezp$subject1[ezp$faculty == "ED"] <- "EDUC"
 
 ## Identify which user ID was used.
 ezp <- ezp %>%
+    mutate(user_barcode = str_replace(user_barcode, "^ID", "")) %>% ## Sometimes "ID29100..." appears as barcode; don't know why
     mutate(type = case_when(grepl("^[[:digit:]]{9}$", user_barcode) ~ "cyin",
                             grepl("^[[:digit:]]{14}$", user_barcode) ~ "user_barcode",
                             grepl("^[[:alpha:]]*$", user_barcode) ~ "ppy",
@@ -159,7 +162,11 @@ fixed_ezp <- fixed_ezp %>%
     as_tibble()
 
 ## Write out annual information all together in one file..
-## Don't need the -per-platform.csv (without detailed information), so just write out this one.
 write("Writing out annual files ...", stderr())
 write_csv(fixed_ezp, paste0(ezp_annual_data_d, "a2019-daily-users-per-platform-detailed.csv"))
 saveRDS(fixed_ezp, paste0(ezp_annual_data_d, "a2019-daily-users-per-platform-detailed.rds"))
+
+## And the no-detail version.
+fixed_ezp_no_detail <- fixed_ezp %>% select(date, user_barcode, platform)
+write_csv(fixed_ezp_no_detail, paste0(ezp_annual_data_d, "a2019-daily-users-per-platform.csv"))
+saveRDS(fixed_ezp_no_detail, paste0(ezp_annual_data_d, "a2019-daily-users-per-platform.rds"))
