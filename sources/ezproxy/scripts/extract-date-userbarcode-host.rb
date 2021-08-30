@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "csv"
 require "date"
@@ -12,7 +13,7 @@ OptionParser.new do |opts|
   opts.on("--show-errors", "Show all the errors") { options[:showerrors] = true }
 end.parse!
 
-STDOUT.sync = true
+$stdout.sync = true
 
 error_types = Hash.new(0)
 
@@ -38,9 +39,9 @@ ARGF.each do |line|
 
     puts [date, user_barcode, host].to_csv
   rescue StandardError => e
-    STDERR.puts e.to_s if options[:showerrors]
+    warn e.to_s if options[:showerrors]
     error_types[e.class] += 1
   end
 end
 
-STDERR.puts error_types
+warn error_types
