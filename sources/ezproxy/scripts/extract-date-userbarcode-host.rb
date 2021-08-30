@@ -25,7 +25,8 @@ ARGF.each do |line|
     ayear = Rubyul.academic_year(date)
     next if options[:ayear] && options[:ayear] != ayear
 
-    user_barcode = elements[3]
+    # Sometimes the barcode is ID29100, not 29100.  Don't know why.
+    user_barcode = elements[3].sub(/^ID/, "")
 
     # Before grokking the URI, wipe out bad characters that may
     # actualy work but technically aren't valid. We only care about
