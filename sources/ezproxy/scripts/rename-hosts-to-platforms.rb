@@ -34,7 +34,7 @@ ARGF.each do |line|
   # Scholars Portal
   # Remember there are some very important scholarsportal.info domains!!!
   next if /^scholarsportal.info/                     =~ host
-  next if /analytics.scholarsportal.info/              =~ host
+  next if /analytics.scholarsportal.info/            =~ host
   next if /answers.scholarsportal.info/              =~ host
   next if /brock.scholarsportal.info/                =~ host
   next if /dataverse.scholarsportal.info/            =~ host
@@ -428,6 +428,7 @@ ARGF.each do |line|
              when /ascojournals.org/.match(host)                       then "ASCO Journals"
              when /\.arl.org$/.match(host)                             then "Assoc Research Libraries"
              when /atypon-link.com$/.match(host)                       then "Atypon"
+             when /acf-film.com$/.match(host)                          then "Audio Ciné Films"
              when /responsa.co.il/.match(host)                         then "Bar Ilan Responsa Project"
              when /begellhouse.com/.match(host)                        then "Begell House"
              when /bepress.com$/.match(host)                           then "bepress"
@@ -544,6 +545,7 @@ ARGF.each do |line|
              when /www.euppublishing.com$/.match(host)                 then "Edinburgh University Press"
              when /educause.edu$/.match(host)                          then "Educause"
              when /elgaronline.com/.match(host)                        then "Edward Elgar"
+             when /ehrafworldcultures/.match(host)                     then "eHRAF World Cultures"
              when /\.ecsdl.org$/.match(host)                           then "Electrochemical Society"
              when /e-enlightenment.com$/.match(host)                   then "Electronic Enlightenment"
              when /elsevier.com$/.match(host)                          then "Elsevier"
@@ -785,6 +787,7 @@ ARGF.each do |line|
              when /pep-web.org$/.match(host)                           then "Psychoanalytic Electronic Pub"
              when /.*pubmedcentral.com/.match(host)                    then "PubMed Central"
              when /.*pubmedcentral.nih.gov/.match(host)                then "PubMed Central"
+             when /r2library.com/.match(host)                          then "R2 Digital Library"
              when /rep.routledge.com/.match(host)                      then "Routledge Encyc of Phil"
              when /\.rsc.org/.match(host)                              then "Royal Soc Chem"
              when /\.reaxys.com/.match(host)                           then "Reaxys"
@@ -823,7 +826,7 @@ ARGF.each do |line|
              when /sciencemag.org$/.match(host)                        then "Science (AAAS)"
              when /scialert.net/.match(host)                           then "Science Alert"
              when /sciencedirect.com$/.match(host)                     then "ScienceDirect"
-             when /scitation.com$/.match(host)                         then "Scitation"
+             when /scitation.(com|org)$/.match(host)                   then "Scitation"
              when /\.scival.com/.match(host)                           then "SciVal"
              when /\.scopus.com/.match(host)                           then "Scopus"
              when /socialistregister.com/.match(host)                  then "Socialist Register"
@@ -880,6 +883,7 @@ ARGF.each do |line|
              when /universalis-edu.com/.match(host)                    then "Universalis"
              when /universitypressscholarship.com/.match(host)         then "University Press Scholarship"
              when /universitypublishingonline.org/.match(host)         then "University Pub Online"
+             when /veryshortintroductions/.match(host)                 then "Very Short Introductions"
              when /www.pmb.ca/.match(host)                             then "Vividata"
              when /kmrsoftware.net/.match(host)                        then "Vividata"
              when /vividata.ca/.match(host)                            then "Vividata"

@@ -3,8 +3,8 @@
 ## Aggregates a year's worth of daily EZProxy daily users files
 ## into annual files, suitable for analysis.
 ##
-## Depends on all the daily files having been moved into
-## DASHYUL_DATA/ezproxy/annual/A2017 (for 2017)
+## Depends on all the daily files having been moved into e.g.
+## DASHYUL_DATA/ezproxy/annual/A2020/ (for 2020)
 
 library(docopt)
 
@@ -17,9 +17,7 @@ options:
 opts <- docopt(doc)
 
 suppressMessages(library(tidyverse))
-
 library(fs)
-library(tidyverse)
 library(yulr)
 
 ayear <- opts["ayear"]
@@ -38,15 +36,15 @@ dupp <- dupp_files %>% map_dfr(read_csv, col_names=c("date", "user_barcode", "pl
 ## Correct raw hostnames that didn't get transformed into platform names
 ## and then remove any resulting duplicates
 ## Replace and update each year as necessary
-dupp$platform[dupp$platform == "yorku.kanopy.com"]          <- "Kanopy"
-dupp$platform[dupp$platform == "www.kanopy.com"]            <- "Kanopy"
-dupp$platform[dupp$platform == "www.taylorfrancis.com"]     <- "T & F Online"
-dupp$platform[dupp$platform == "wwww.taylorandfrancis.com"] <- "T & F Online"
-dupp$platform[dupp$platform == "www.fulcrum.org"]           <- "Fulcrum"
-dupp$platform[dupp$platform == "www.statista.com"]          <- "Statista"
-dupp$platform[dupp$platform == "lexisadvancequicklaw.ca"]   <- "Lexis Advance Quicklaw"
-dupp$platform[dupp$platform == "www.criterionondemand.com"] <- "Criterion on Demand"
-dupp$platform[dupp$platform == "filmplatform.net"]          <- "Film Platform"
+dupp$platform[grep("apa.org", dupp$platform)] <- "APA"
+dupp$platform[grep("acf-film.com", dupp$platform)] <- "Audio Ciné Films"
+dupp$platform[grep("bloomsburycollections", dupp$platform)] <- "Bloomsbury Collections"
+dupp$platform[grep("chronicle.com", dupp$platform)] <- "Chronicle of Higher Education"
+dupp$platform[grep("dramaonlinelibrary", dupp$platform)] <- "Drama Online"
+dupp$platform[grep("docuseek2", dupp$platform)] <- "Docuseek"
+dupp$platform[grep("r2library.com", dupp$platform)] <- "R2 Digital Library"
+dupp$platform[grep("scitation", dupp$platform)] <- "Scitation"
+dupp$platform[grep("veryshortintroductions", dupp$platform)] <- "Very Short Introductions"
 dupp <- dupp %>% unique()
 
 write_csv(dupp, paste0(ezp_annual_data_d, "a", ayear, "-daily-users-per-platform.csv"))
@@ -64,15 +62,15 @@ duppd <- duppd_files %>% map_dfr(read_csv, col_types = "Dccccccccccc")
 ## and then remove any resulting duplicates
 ## (Duplicate of above, but different data frame.)
 ## Replace and update each year as necessary
-duppd$platform[duppd$platform == "yorku.kanopy.com"]          <- "Kanopy"
-duppd$platform[duppd$platform == "www.kanopy.com"]            <- "Kanopy"
-duppd$platform[duppd$platform == "www.taylorfrancis.com"]     <- "T & F Online"
-duppd$platform[duppd$platform == "wwww.taylorandfrancis.com"] <- "T & F Online"
-duppd$platform[duppd$platform == "www.fulcrum.org"]           <- "Fulcrum"
-duppd$platform[duppd$platform == "www.statista.com"]          <- "Statista"
-duppd$platform[duppd$platform == "lexisadvancequicklaw.ca"]   <- "Lexis Advance Quicklaw"
-duppd$platform[duppd$platform == "www.criterionondemand.com"] <- "Criterion on Demand"
-duppd$platform[duppd$platform == "filmplatform.net"]          <- "Film Platform"
+duppd$platform[grep("apa.org", duppd$platform)] <- "APA"
+duppd$platform[grep("acf-film.com", duppd$platform)] <- "Audio Ciné Films"
+duppd$platform[grep("bloomsburycollections", duppd$platform)] <- "Bloomsbury Collections"
+duppd$platform[grep("chronicle.com", duppd$platform)] <- "Chronicle of Higher Education"
+duppd$platform[grep("dramaonlinelibrary", duppd$platform)] <- "Drama Online"
+duppd$platform[grep("docuseek2", duppd$platform)] <- "Docuseek"
+duppd$platform[grep("r2library.com", duppd$platform)] <- "R2 Digital Library"
+duppd$platform[grep("scitation", duppd$platform)] <- "Scitation"
+duppd$platform[grep("veryshortintroductions", duppd$platform)] <- "Very Short Introductions"
 duppd <- duppd %>% unique()
 
 write_csv(duppd, paste0(ezp_annual_data_d, "a", ayear, "-daily-users-per-platform-detailed.csv"))
