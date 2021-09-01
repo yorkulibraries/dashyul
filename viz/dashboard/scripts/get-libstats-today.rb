@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # CONFIGURING
 #
 # Explain about the LIBSTATS_LOGIN_COOKIE.
 
-STDERR.puts "------"
-STDERR.puts "Started: #{Time.now}"
+warn "------"
+warn "Started: #{Time.now}"
 
 require "cgi"
 require "csv"
@@ -51,7 +52,7 @@ puts %w[timestamp time library.name location.name question.type question.format]
 data = ""
 
 begin
-  open(csv_url, "Cookie" => "login=#{ENV['LIBSTATS_LOGIN_COOKIE']}") do |f|
+  URI.open(csv_url, "Cookie" => "login=#{ENV['LIBSTATS_LOGIN_COOKIE']}") do |f|
     if f.status[0] == "200"
       data = f.read
       # warn data if options[:verbose]
@@ -77,7 +78,7 @@ unless csv.empty?
   csv.each do |row|
     timestamp = row[:asked_at]
     # One-digit days are possible in timestamp; prepend 0 if necessary
-    timestamp = "0" + timestamp if timestamp.index("/") == 1
+    timestamp = "0#{timestamp}" if timestamp.index("/") == 1
 
     time = case row[:time_spent]
            when "0-1 minute"    then 1
@@ -100,4 +101,4 @@ unless csv.empty?
   end
 end
 
-STDERR.puts "Finished: #{Time.now}"
+warn "Finished: #{Time.now}"
