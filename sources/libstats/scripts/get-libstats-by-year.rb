@@ -48,8 +48,6 @@ csv_url = data_url +
 
 warn "Start: #{start_time}. End: #{end_time}." if options[:verbose]
 
-puts %w[timestamp time library.name location.name question.type question.format].to_csv
-
 # Get the raw CSV data from LibStats
 # Fail in various ways if something goes wrong.
 
@@ -77,6 +75,8 @@ rescue StandardError => e
 end
 
 # Now we know we have some data, so we can work on it.
+
+puts %w[timestamp question.type question.format time_spent library.name location.name patron_type initials].to_csv
 
 csv = CSV.parse(data, headers: true, header_converters: :symbol)
 unless csv.empty?
