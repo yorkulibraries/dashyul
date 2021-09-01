@@ -4,9 +4,9 @@
 
 ## UPDATE THIS ANNUALLY
 ## Everything else can stay the same.
-## Get the numbers from OIPA's Quick-Facts: http://oipa.info.yorku.ca/data-hub/quick-facts/
+## Get the numbers from OIPA's Quick-Facts: https://oipa.info.yorku.ca/data-hub/quick-facts/
 ## People = students + full-time faculty + full-time librarians + contract faculty
-people_per_year <- data.frame(ayear = seq(2011, 2018, 1), total = c(57781, 57848, 57352, 56210, 55709, 55563, 56797, 58998))
+people_per_year <- data.frame(ayear = seq(2011, 2020, 1), total = c(57781, 57848, 57352, 56210, 55709, 55563, 56797, 59144, 59295, 59369))
 
 write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
@@ -35,6 +35,8 @@ platform_use <- dupp_files %>%
 write("Processing the data ...", stderr())
 platform_use <- platform_use %>%
     mutate(ayear = academic_year(date)) %>% ## Could use platform = as.factor(platform), but no need
+    filter(ayear %in% people_per_year$ayear) %>% ## Keep out stragglers if running midyear
+    mutate(user_barcode = str_replace(user_barcode, "^ID", "")) %>% ## Sometimes "ID29100..." appears as barcode; don't know why
     filter(! user_barcode %in% c("OCULVR", "-")) %>% ## Remove the OCULVR account and unknown account
     filter(! grepl("[[:alnum:]]\\.[[:alnum:]]", platform)) %>% ## Remove the raw hostnames.
     distinct()
