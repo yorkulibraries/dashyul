@@ -20,7 +20,10 @@ suppressMessages(library(tidyverse))
 library(fs)
 library(yulr)
 
-ayear <- opts["ayear"]
+ayear <- as.integer(opts["ayear"])
+
+start_of_ayear <- start_of_academic_year(ayear)
+end_of_ayear <- start_of_academic_year(ayear + 1) - 1
 
 ezp_annual_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/ezproxy/annual/")
 ezp_this_year_data_d <- paste0(ezp_annual_data_d, "A", ayear)
@@ -46,7 +49,8 @@ dupp$platform[grep("docuseek2", dupp$platform)] <- "Docuseek"
 dupp$platform[grep("r2library.com", dupp$platform)] <- "R2 Digital Library"
 dupp$platform[grep("scitation", dupp$platform)] <- "Scitation"
 dupp$platform[grep("veryshortintroductions", dupp$platform)] <- "Very Short Introductions"
-dupp <- dupp %>% unique()
+
+dupp <- dupp %>% filter(date >= start_of_ayear, date <= end_of_ayear) %>% unique()
 
 write_csv(dupp, paste0(ezp_annual_data_d, "a", ayear, "-daily-users-per-platform.csv"))
 saveRDS(dupp, paste0(ezp_annual_data_d, "a", ayear, "-daily-users-per-platform.rds"))
@@ -73,7 +77,8 @@ duppd$platform[grep("docuseek2", duppd$platform)] <- "Docuseek"
 duppd$platform[grep("r2library.com", duppd$platform)] <- "R2 Digital Library"
 duppd$platform[grep("scitation", duppd$platform)] <- "Scitation"
 duppd$platform[grep("veryshortintroductions", duppd$platform)] <- "Very Short Introductions"
-duppd <- duppd %>% unique()
+
+duppd <- duppd %>% filter(date >= start_of_ayear, date <= end_of_ayear)  %>% unique()
 
 write_csv(duppd, paste0(ezp_annual_data_d, "a", ayear, "-daily-users-per-platform-detailed.csv"))
 saveRDS(duppd, paste0(ezp_annual_data_d, "a", ayear, "-daily-users-per-platform-detailed.rds"))
