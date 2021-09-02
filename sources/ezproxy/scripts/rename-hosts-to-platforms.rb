@@ -528,6 +528,7 @@ ARGF.each do |line|
              when /datamonitor.com/.match(host)                        then "Data Monitor"
              when /dbpia.co.kr$/.match(host)                           then "DBpia (Korean)"
              when /degruyter.com$/.match(host)                         then "De Gruyter"
+             when /dimensions.ai$/.match(host)                         then "Dimensions"
              when /doiserbia.nb.rs$/.match(host)                       then "doiSerbia"
              when /docuseek2.com$/.match(host)                         then "Docuseek"
              when /dramonlinelibrary.com$/.match(host)                 then "Drama Online"
