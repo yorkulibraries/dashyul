@@ -19,9 +19,9 @@ library(yulr)
 ## yudesk_data_dir <- paste0(Sys.getenv("DASHYUL_DATA"), "/viz/yudesk/")
 yudesk_data_dir <- "/dashyul/data/viz/yudesk/"
 
-yudesk_data_file <- paste0(yudesk_data_dir, "yudesk-summary.csv.gz")
+yudesk_data_file <- paste0(yudesk_data_dir, "yudesk-summary.rds")
 
-l <- read_csv(yudesk_data_file)
+l <- readRDS(yudesk_data_file)
 
 l$month_name <- factor(l$month_name, levels = c("Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"))
 
@@ -97,7 +97,7 @@ subset_by_library_and_location <- function (library_name = NULL, location_name =
 
 construct_annual_chart <- function(library_name = NULL, location_name = NULL) {
     annual_data <- subset_by_library_and_location(library_name, location_name)
-    annual_data <- annual_data %>% group_by(ayear) %>% summarise(total = sum(count))
+    annual_data <- annual_data %>% count(ayear, name = "total", wt = n)
     if (! is.null(library_name)) {
         chart_title <- library_name
     } else {
@@ -115,7 +115,7 @@ construct_annual_chart <- function(library_name = NULL, location_name = NULL) {
 
 construct_monthly_chart <- function(library_name = NULL, location_name = NULL) {
     monthly_data <- subset_by_library_and_location(library_name, location_name)
-    monthly_data <- monthly_data %>% group_by(ayear, month_name) %>% summarise(total = sum(count))
+    monthly_data <- monthly_data %>% count(ayear, month_name, name = "total", wt = n)
     if (! is.null(library_name)) {
         chart_title <- library_name
     } else {
@@ -693,4 +693,3 @@ renderPlot({
     construct_monthly_chart(library_name = "Steacie", location_name = "Reference Desk")
 })
 ```
-
