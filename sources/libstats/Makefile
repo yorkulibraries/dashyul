@@ -1,7 +1,7 @@
 LIBSTATS_DATA := ${DASHYUL_DATA}/libstats
 
 all:
-	scripts/get-libstats-by-year.rb > ${LIBSTATS_DATA}/libstats.csv
+	scripts/get-libstats-by-year.rb > ${LIBSTATS_DATA}/libstats-current.csv
 	scripts/aggregate-libstats.R
 
 old_all:	fetch clean
