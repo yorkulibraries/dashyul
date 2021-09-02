@@ -7,7 +7,7 @@ prepare:
 	echo "------"
 	echo "Started: `date`"
 	scripts/prepare-yudesk.R
-	gzip -f ${YUDESK_DATA}/yudesk-summary.csv
+	# gzip -f ${YUDESK_DATA}/yudesk-summary.csv
 	echo "Finished: `date`"
 
 get_data:
