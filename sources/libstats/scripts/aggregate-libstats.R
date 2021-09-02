@@ -9,7 +9,6 @@ library(yulr)
 library(lubridate)
 
 libstats_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/libstats/")
-libstats_summary <- paste0(libstats_data_d, "summary.rds")
 
 write("Reading ...", stderr())
 
@@ -24,5 +23,5 @@ l <- files %>%
 
 write("Writing ...", stderr())
 
-write_csv(l, paste0(libstats_data_d, "summary.csv"))
-saveRDS(l, paste0(libstats_data_d,  "summary.rds"))
+write_csv(l, paste0(libstats_data_d, "all.csv"))
+saveRDS(l, paste0(libstats_data_d,  "all.rds"))
