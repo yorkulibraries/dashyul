@@ -293,8 +293,9 @@ DT::renderDataTable(platform_metrics %>% filter(users >= 100) %>% arrange(desc(u
 
 ```{r}
 ggplot(ezp_daily_users, aes(x = date, y = users)) +
-    geom_step() +
-    ## geom_col(width = 0.6) +
+    ## Use col when fewer days, step when year is well underway.
+    ## geom_step() +
+    geom_col() +
     labs(title = "EZProxy users per day", x = "", y = "")
 ```
 
