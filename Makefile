@@ -5,6 +5,7 @@ setup_directories:
 	sudo mkdir -p ${DASHYUL_DATA}
 	sudo chown ${USER}:${USER} ${DASHYUL_DATA}
 	mkdir -p ${DASHYUL_DATA}/alma/users
+	mkdir -p ${DASHYUL_DATA}/alma/items
 	mkdir -p ${DASHYUL_DATA}/ebooks/scholarsportal
 	mkdir -p ${DASHYUL_DATA}/ezproxy
 	mkdir -p ${DASHYUL_DATA}/ezproxy/metrics
