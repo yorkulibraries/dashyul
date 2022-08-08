@@ -4,7 +4,7 @@
 
 library(docopt)
 
-"usage: extract-alma-transaction-details.R --id <id>
+"usage: extract-alma-transaction-data.R --id <id>
 
 options:
  --id <id>     Report number (e.g. 202207110308)

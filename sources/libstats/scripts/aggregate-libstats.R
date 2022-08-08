@@ -10,7 +10,7 @@ library(lubridate)
 
 libstats_data_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/libstats/")
 
-write("Reading ...", stderr())
+message("Reading ...")
 
 ## Catch libstats-YYYY.csv and the current one, libstats-current.csv.
 files <- fs::dir_ls(libstats_data_d, glob = "*libstats-*.csv")
@@ -21,7 +21,7 @@ l <- files %>%
     mutate(ayear = academic_year(date)) %>%
     select(date, month_name, ayear, question.type, question.format, time_spent, library.name, location.name, patron_type)
 
-write("Writing ...", stderr())
+message("Writing ...")
 
 write_csv(l, paste0(libstats_data_d, "all.csv"))
 saveRDS(l, paste0(libstats_data_d,  "all.rds"))

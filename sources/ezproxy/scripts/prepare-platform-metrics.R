@@ -8,8 +8,8 @@
 ## People = students + full-time faculty + full-time librarians + contract faculty
 people_per_year <- data.frame(ayear = seq(2011, 2020, 1), total = c(57781, 57848, 57352, 56210, 55709, 55563, 56797, 59144, 59295, 59369))
 
-write("------", stderr())
-write(paste("Started: ", Sys.time()), stderr())
+message("------")
+message(paste("Started: ", Sys.time()))
 
 suppressMessages(library(tidyverse))
 suppressMessages(library(lubridate))
@@ -27,12 +27,12 @@ platform_use_rds <- paste0(ezp_annual_data_d, "platform-use-pii.rds")
 platform_metrics_csv <- paste0(ezp_metrics_data_d, "platform-metrics.csv")
 platform_metrics_rds <- paste0(ezp_metrics_data_d, "platform-metrics.rds")
 
-write("Reading daily use per platform files ...", stderr())
+message("Reading daily use per platform files ...")
 dupp_files <- fs::dir_ls(ezp_annual_data_d, regexp = "daily-users-per-platform\\.csv$")
 platform_use <- dupp_files %>%
     map_dfr(read_csv, col_types = "Dcc")
 
-write("Processing the data ...", stderr())
+message("Processing the data ...")
 platform_use <- platform_use %>%
     mutate(ayear = academic_year(date)) %>% ## Could use platform = as.factor(platform), but no need
     filter(ayear %in% people_per_year$ayear) %>% ## Keep out stragglers if running midyear
@@ -41,14 +41,14 @@ platform_use <- platform_use %>%
     filter(! grepl("[[:alnum:]]\\.[[:alnum:]]", platform)) %>% ## Remove the raw hostnames.
     distinct()
 
-write("Writing platform use ...", stderr())
+message("Writing platform use ...")
 
 write_csv(platform_use, platform_use_csv)
 saveRDS(platform_use, platform_use_rds)
 
 ## Metrics
 
-write("Calculating use metrics ...", stderr())
+message("Calculating use metrics ...")
 
 dates_known <- platform_use %>%
     select(ayear, date) %>%
@@ -97,7 +97,7 @@ platform_metrics$i_f[is.na(platform_metrics$i_f)] <- 0
 
 ## Now the rankings, which are based on deciles.
 
-write("Calculating rank metrics ...", stderr())
+message("Calculating rank metrics ...")
 
 ## Deciles
 ## ranking_labels <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
@@ -165,9 +165,9 @@ rankings$auf_rank <- as.integer(rankings$auf_rank)
 
 platform_metrics <- platform_metrics %>% left_join(rankings, by = c("platform", "ayear"))
 
-write("Writing metrics ...", stderr())
+message("Writing metrics ...")
 
 write_csv(platform_metrics, platform_metrics_csv)
 saveRDS(platform_metrics, platform_metrics_rds)
 
-write(paste("Finished: ", Sys.time()), stderr())
+message(paste("Finished: ", Sys.time()))

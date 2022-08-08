@@ -25,7 +25,7 @@ items <- readRDS(paste0(alma_items_d, "items-12052900060005164.rds"))
 
 detailed <- left_join(trans, items,
                       by = c("MMS.Record.ID", "Title", "Barcode", "Call.Number")) |>
-    mutate(ayear = academic_year(Loan.Date))
+    mutate(circ_ayear = academic_year(Loan.Date))
 
 ## Now I need to merge in the user information.
 

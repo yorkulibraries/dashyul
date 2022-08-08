@@ -27,7 +27,7 @@ ezp_this_year_data_d <- paste0(ezp_annual_data_d, "A", ayear)
 
 ## First, aggregate the daily users per platform files.
 
-write("Aggregating daily users per platform ...", stderr())
+message("Aggregating daily users per platform ...")
 
 dupp_files <- fs::dir_ls(ezp_this_year_data_d, regexp = "daily-users-per-platform\\.csv$")
 
@@ -55,7 +55,7 @@ saveRDS(dupp, paste0(ezp_annual_data_d, "a", ayear, "-daily-users-per-platform.r
 
 ## First, aggregate the *detailed* daily users per platform files.
 
-write("Aggregating daily detailed users per platform ...", stderr())
+message("Aggregating daily detailed users per platform ...")
 
 duppd_files <- fs::dir_ls(ezp_this_year_data_d, regexp = "daily-users-per-platform-detailed\\.csv$")
 
