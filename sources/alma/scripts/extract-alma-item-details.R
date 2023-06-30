@@ -22,6 +22,17 @@ alma_items_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/alma/items/")
 
 item_files <- fs::dir_ls(alma_items_d, regexp = paste0("PHYSICAL_ITEM_", report_number))
 
+## EXPLAIN WHY THIS IS NEEDED
+shelf_call_number <- function(this, that, theother) {
+    if (! is.na(that)) {
+        that
+    }
+    if (! is.na(theother)) {
+        return(paste(this, theother))
+    }
+    this
+}
+
 items <- item_files |>
     map_dfr(read_csv, name_repair = "universal", col_types = list(.default = col_character())) |>
     ## There are some bad rows in the CSV export that mess up the parsing,
@@ -40,11 +51,15 @@ items <- item_files |>
            Item.Material.Type,
            Bib.Material.Type,
            date,
+           Creation.date,
            Call.Number,
+           Alt..call..,
            Description,
            Copy.ID,
            Title,
-           Creator)
+           Creator) |>
+    rowwise() |>
+    mutate(Shelf.Call.Number = shelf_call_number(Call.Number, Alt..call.., Description))
 
 write_csv(items, paste0(alma_items_d, "items-", report_number, ".csv"))
 saveRDS(items, paste0(alma_items_d, "items-", report_number, ".rds"))

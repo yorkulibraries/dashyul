@@ -2,7 +2,7 @@
 
 library(docopt)
 
-"usage: merge-transaction-info --yyyymmdd <yyyymmdd>
+"usage: make-detailed-transactions.R --yyyymmdd <yyyymmdd>
 
 options:
  --yyyymmdd <yyyymmdd>      (e.g. 20220711)
@@ -21,7 +21,7 @@ trans <- readRDS(alma_trans_rds)
 
 alma_items_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/alma/items/")
 
-items <- readRDS(paste0(alma_items_d, "items-12052900060005164.rds"))
+items <- readRDS(paste0(alma_items_d, "items-current.rds"))
 
 detailed <- left_join(trans, items,
                       by = c("MMS.Record.ID", "Title", "Barcode", "Call.Number")) |>

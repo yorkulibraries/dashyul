@@ -6,17 +6,15 @@ write(paste("Started: ", Sys.time()), stderr())
 suppressMessages(library(tidyverse))
 library(yulr)
 
-metrics_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/metrics/")
+symph_metrics_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/metrics/")
 
-alma_items_current_f <- paste0(Sys.getenv("DASHYUL_DATA"), "/alma/items/items-current.rds")
-
-## cat_data_d   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
-## cat_current_title_metadata_f <- paste0(cat_data_d, "catalogue-current-title-metadata.csv")
+cat_data_d   <- paste0(Sys.getenv("DASHYUL_DATA"), "/symphony/catalogue/")
+cat_current_title_metadata_f <- paste0(cat_data_d, "catalogue-current-title-metadata.csv")
 
 easyweeder_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/viz/easyweeder/")
 
-write("Reading book metrics ...", stderr())
-book_metrics <- readRDS(paste0(metrics_data_d, "book-metrics.rds"))
+write("Reading circ metrics ...", stderr())
+circ_metrics <- readRDS(paste0(symph_metrics_data_d, "circ-metrics.rds"))
 
 ## Use the minimum acquisition year to filter out any recent purchases.
 ## We'll ignore any titles where the min acq year is within circ_window_years + 1
@@ -24,13 +22,11 @@ book_metrics <- readRDS(paste0(metrics_data_d, "book-metrics.rds"))
 ## Thus if we have two copies of a book we got three years ago, and neither has circed,
 ## we'll still keep both.
 write("Reading min acquisitions year ...", stderr())
-record_min_acq_year <- readRDS(paste0(metrics_data_d, "record-min-acquisition-year.rds"))
+record_min_acq_year <- readRDS(paste0(symph_metrics_data_d, "record-min-acquisition-year.rds"))
 
 circ_window_years <- 5
 
 target_busy_factor <- 1
-
-this_academic_year <- academic_year(Sys.Date())
 
 how_many_copies_should_we_have <- function(copies = NULL,
                                            circs = NULL,
@@ -56,9 +52,9 @@ how_many_copies_should_we_have <- function(copies = NULL,
 
 write("Calculating ...", stderr())
 
-easy_weedable <- book_metrics |>
-    left_join(record_min_acq_year, by = "MMS.Record.ID") |>
-    filter(min_acq_ayear <= this_academic_year - (circ_window_years + 1)) %>%
+easy_weedable <- circ_metrics %>%
+    left_join(record_min_acq_year, by = "control_number") %>%
+    filter(min_acq_ayear <= academic_year(Sys.Date() - (circ_window_years + 1))) %>%
     filter(copies > 1, busy < target_busy_factor) %>%
     rowwise() %>%
     mutate(rec_copies = how_many_copies_should_we_have(copies, circs_in_window, circ_window_years, target_busy_factor),
@@ -66,12 +62,11 @@ easy_weedable <- book_metrics |>
     select(-circs_per_copy)
 
 write("Adding title/author ...", stderr())
-alma_title_author <- readRDS(alma_items_current_f) |>
-    select(MMS.Record.ID, Title, Creator) |>
-    distinct()
+cat_current_title_metadata <- read_csv(cat_current_title_metadata_f, col_types = "ccc")
 
-easy_weedable <- easy_weedable |>
-    left_join(alma_title_author, by = c("MMS.Record.ID", "call_number"))
+easy_weedable <- easy_weedable %>%
+    left_join(cat_current_title_metadata, by = c("control_number", "call_number")) %>%
+    mutate(title_author = readable_marc245(title_author))
 
 write_csv(easy_weedable, paste0(easyweeder_data_d, "easy-weedable.csv"))
 
