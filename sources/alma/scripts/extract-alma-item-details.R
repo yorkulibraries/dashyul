@@ -88,6 +88,8 @@ write("Writing ...", stderr())
 write_csv(items, paste0(alma_items_d, "items-", report_number, ".csv"))
 saveRDS(items, paste0(alma_items_d, "items-", report_number, ".rds"))
 
+write(paste("Finished: ", Sys.time()), stderr())
+
 ## From the old item information:
 
 ## puts %w[item_barcode control_number call_number lc_letters lc_digits copy

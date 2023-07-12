@@ -76,9 +76,13 @@ alma_simple <- alma_transactions |>
     select(circ_ayear, Loan.Date, Barcode)
 merged_checkouts_simple <- bind_rows(symphony_checkouts_renamed, alma_simple)
 
-## Now combine that with the simple checkout information.
+## Save memory!  This helps it run on my laptop (with 16 GB RAM).
+rm(symphony_checkouts)
+rm(symphony_checkouts_renamed)
+rm(alma_transactions)
+rm(alma_simple)
 
-## Note: I don't know the acquisition date here, but I should get that.  For now, skip it.
+## Now combine that with the simple checkout information.
 
 write("Merging checkouts and item details ...", stderr())
 items_and_checkouts <- bibliographic_items |>
