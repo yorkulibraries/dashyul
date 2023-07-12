@@ -52,6 +52,7 @@ alma_items_current <- readRDS(alma_items_current_f)
 write("Filtering to books ...", stderr())
 bibliographic_items <- alma_items_current |>
     filter(Local.Location %in% c("SCOTT", "FROST", "STEACIE", "BRONFMAN"),
+           Item.Material.Type == "BOOK",
            Permanent.Physical.Location %in% c("SCOTT", "SC-OVERSZ", "SCOTT-JUV",
                                               "FROST", "FR-OVERSZ",
                                               "STEACIE",
@@ -63,11 +64,11 @@ bibliographic_items <- alma_items_current |>
                          "BOOK")
            )
 
-
 ###
 ### Merge Symphony and Alma checkouts
 ###
 
+write("Merging Symphony and Alma ...", stderr())
 symphony_checkouts_renamed <- symphony_checkouts |>
     rename(Loan.Date = date, Barcode = item_barcode) |>
     select(circ_ayear, Loan.Date, Barcode)
@@ -90,7 +91,7 @@ items_and_checkouts <- bibliographic_items |>
            Local.Location,
            Permanent.Physical.Location,
            Policy,
-           Item.Material.Type,
+           ## Item.Material.Type,
            circ_ayear
            )
 
@@ -103,7 +104,6 @@ write("Calculating histories ...", stderr())
 ## easy to do some quick sums, but it's not elegant.
 
 book_circ_histories <- items_and_checkouts |>
-    filter(Item.Material.Type == "BOOK") |>
     mutate(has_circed = ! is.na(circ_ayear)) |>
     count(Barcode,
           MMS.Record.ID,
@@ -113,7 +113,7 @@ book_circ_histories <- items_and_checkouts |>
           Local.Location,
           Permanent.Physical.Location,
           Policy,
-          Item.Material.Type,
+          ## Item.Material.Type,
           circ_ayear,
           wt = has_circed
           ) |>
@@ -124,19 +124,3 @@ write("Writing book circ histories ...", stderr())
 
 write_csv(book_circ_histories, book_circ_histories_f)
 saveRDS(book_circ_histories, book_circ_histories_rds)
-
-## Now we need to know the minimum acquisition date for records
-## (because one record might represent two copies of the same book
-## that were bought at different times)
-write("Writing minimum acquisition year for records ...", stderr())
-record_min_acq_year <- alma_items_current |>
-    select(MMS.Record.ID, Creation.date) |>
-    mutate(acq_ayear = academic_year(Creation.date)) |>
-    group_by(MMS.Record.ID) |>
-    mutate(min_acq_ayear = min(acq_ayear)) |>
-    distinct(MMS.Record.ID, min_acq_ayear)
-
-write_csv(record_min_acq_year, record_min_acq_year_f)
-saveRDS(record_min_acq_year, record_min_acq_year_rds)
-
-write(paste("Finished: ", Sys.time()), stderr())

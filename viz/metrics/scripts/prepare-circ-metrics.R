@@ -51,12 +51,11 @@ item_last_circed_ayear <- book_circ_histories %>%
 item_circ_summary <- book_circ_histories |>
     count(Barcode,
           MMS.Record.ID,
-          Call.Number,
-          Item.Call.Number,
+          Shelf.Call.Number,
           Local.Location,
           Permanent.Physical.Location,
           Policy,
-          Item.Material.Type,
+          ## Item.Material.Type,
           wt = circs) |>
     rename(total_circs = n) |>
     left_join(item_last_circed_ayear, by = "Barcode")
@@ -70,8 +69,7 @@ write("Setting up circ metrics ...", stderr())
 
 book_metrics <- item_circ_summary %>%
     group_by(MMS.Record.ID,
-             Call.Number,
-             Item.Call.Number,
+             Shelf.Call.Number,
              Local.Location,
              Permanent.Physical.Location,
              Policy
@@ -90,7 +88,7 @@ book_metrics <- item_circ_summary %>%
 call_number_circs_in_window <- book_circ_histories %>%
     filter(circ_ayear >= circ_window_ayear) %>%
     group_by(MMS.Record.ID,
-             Call.Number,
+             Shelf.Call.Number,
              Local.Location,
              Permanent.Physical.Location,
              Policy
@@ -100,12 +98,12 @@ call_number_circs_in_window <- book_circ_histories %>%
 ## Join the circ_metrics data frame we began with this information
 ## about circs in the year window.
 book_metrics <- left_join(book_metrics, call_number_circs_in_window,
-                          by = c("MMS.Record.ID", "Call.Number", "Local.Location",
-                                 "Permanent.Physical.Location", "Policy"))
+                          by = c("MMS.Record.ID", "Shelf.Call.Number",
+                                 "Local.Location", "Permanent.Physical.Location", "Policy"))
 
 ## Minor fixes so the arithmetic works.
-book_metrics$circs_in_window[is.na(circ_metrics$circs_in_window)] <- "0"
-book_metrics$circs_in_window <- as.integer(circ_metrics$circs_in_window)
+book_metrics$circs_in_window[is.na(book_metrics$circs_in_window)] <- "0"
+book_metrics$circs_in_window <- as.integer(book_metrics$circs_in_window)
 
 ## Calculate busy factor
 write("Calculating busy factor ...", stderr())

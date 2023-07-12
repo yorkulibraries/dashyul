@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+write("------", stderr())
+write(paste("Started: ", Sys.time()), stderr())
+
 ## ADD NOTES
 
 library(docopt)
@@ -16,6 +19,10 @@ suppressMessages(library(tidyverse))
 library(fs)
 library(yulr)
 
+## Don't report on all the name repair done when reading the CSV
+## files.  It just takes up space.
+options(rlib_name_repair_verbosity = "quiet")
+
 report_number <- opts["id"]
 
 alma_items_d <- paste0(Sys.getenv("DASHYUL_DATA"), "/alma/items/")
@@ -24,24 +31,42 @@ item_files <- fs::dir_ls(alma_items_d, regexp = paste0("PHYSICAL_ITEM_", report_
 
 ## EXPLAIN WHY THIS IS NEEDED
 shelf_call_number <- function(this, that, theother) {
+    ## Call.Number always exists
+    shelf <- this
+    ## If Alt..call.. exists, we want to use it instead
     if (! is.na(that)) {
-        that
+        shelf <- that
     }
+    ## If Description exists, tack it on, in either case
     if (! is.na(theother)) {
-        return(paste(this, theother))
+        shelf <- (paste(shelf, theother))
     }
-    this
+    return(shelf)
 }
+
+decide_received_date <- function(receiving, creation) {
+    if (! is.na(receiving)) {
+        return(as.Date(receiving, format = "%a %b %d %T UTC %Y"))
+    } else {
+        return(as.Date(creation))
+    }
+}
+
+write("Reading and processing CSV files (this takes a while) ...", stderr())
 
 items <- item_files |>
     map_dfr(read_csv, name_repair = "universal", col_types = list(.default = col_character())) |>
     ## There are some bad rows in the CSV export that mess up the parsing,
     ## so skip any where the date doesn't start YYYY-MM-DD.  There are under 8,000 of these as of mid-2022.
     filter(grepl("^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}", Creation.date)) |>
-    mutate(date = as.Date(Creation.date),
-           MMS.Record.ID = gsub("'", "", MMS.Record.ID), ## Don't know why it's '123' and not just 123
+    mutate(MMS.Record.ID = gsub("'", "", MMS.Record.ID), ## Don't know why it's '123' and not just 123
            Item.PID = gsub("'", "", Item.PID),
-           Barcode = gsub("'", "", Barcode)) |>
+           Barcode = gsub("'", "", Barcode)
+    ) |>
+    rowwise() |>
+    mutate(Received.Date = decide_received_date(Receiving.date, Creation.date),
+           Shelf.Call.Number = shelf_call_number(Call.Number, Alt..call.., Description)
+           ) |>
     select(MMS.Record.ID,
            Item.PID,
            Barcode,
@@ -50,17 +75,16 @@ items <- item_files |>
            Policy,
            Item.Material.Type,
            Bib.Material.Type,
-           date,
-           Creation.date,
+           Received.Date,
            Call.Number,
            Alt..call..,
            Description,
+           Shelf.Call.Number,
            Copy.ID,
            Title,
-           Creator) |>
-    rowwise() |>
-    mutate(Shelf.Call.Number = shelf_call_number(Call.Number, Alt..call.., Description))
+           Creator)
 
+write("Writing ...", stderr())
 write_csv(items, paste0(alma_items_d, "items-", report_number, ".csv"))
 saveRDS(items, paste0(alma_items_d, "items-", report_number, ".rds"))
 

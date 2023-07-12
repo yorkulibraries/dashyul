@@ -4,6 +4,7 @@ write("------", stderr())
 write(paste("Started: ", Sys.time()), stderr())
 
 suppressMessages(library(tidyverse))
+library(gtools)
 library(yulr)
 
 metrics_data_d <-  paste0(Sys.getenv("DASHYUL_DATA"), "/metrics/")
@@ -65,14 +66,23 @@ easy_weedable <- book_metrics |>
            weedable = copies - rec_copies) %>%
     select(-circs_per_copy)
 
+## Sort by call numbers so it's neat and orderly and we
+## don't have to do it in every subsequent script.
+## gtools::mixedorder sorts LC call numbers perfectly.
+easy_weedable <- easy_weedable[mixedorder(easy_weedable$Shelf.Call.Number), ]
+
+## TODO Fix this so it's just a join and then select.
+
 write("Adding title/author ...", stderr())
 alma_title_author <- readRDS(alma_items_current_f) |>
-    select(MMS.Record.ID, Title, Creator) |>
+    select(MMS.Record.ID, Shelf.Call.Number, Title, Creator, Local.Location, Permanent.Physical.Location, Policy) |>
     distinct()
 
 easy_weedable <- easy_weedable |>
-    left_join(alma_title_author, by = c("MMS.Record.ID", "call_number"))
+    left_join(alma_title_author,
+              by = c("MMS.Record.ID", "Shelf.Call.Number", "Local.Location", "Permanent.Physical.Location", "Policy"))
 
 write_csv(easy_weedable, paste0(easyweeder_data_d, "easy-weedable.csv"))
+saveRDS(easy_weedable |> ungroup(), paste0(easyweeder_data_d, "easy-weedable.rds"))
 
 write(paste("Finished: ", Sys.time()), stderr())
